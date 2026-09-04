@@ -1,0 +1,758 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Roles y permisos</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 28px;
+            background: #f4f6f8;
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+            color: #182230;
+        }
+
+        .contenedor {
+            max-width: 1500px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            margin: 0 0 8px 0;
+            font-size: 34px;
+        }
+
+        .subtitulo {
+            margin: 0 0 28px 0;
+            color: #637083;
+            font-size: 17px;
+        }
+
+        .aviso {
+            background: #fff8dc;
+            border-left: 5px solid #d8b24c;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 22px;
+            color: #5c4a12;
+        }
+
+        .puesto {
+            background: white;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow:
+                0 5px 18px rgba(0,0,0,0.07);
+            overflow: hidden;
+        }
+
+        .puesto-cabecera {
+            padding: 20px 22px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e7ee;
+
+            display: grid;
+            grid-template-columns:
+                minmax(260px, 1.6fr)
+                minmax(180px, 1fr)
+                minmax(180px, 1fr)
+                minmax(230px, 1.1fr);
+
+            gap: 18px;
+            align-items: center;
+        }
+
+        .campo-titulo {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #778397;
+            margin-bottom: 6px;
+        }
+
+        .puesto-nombre {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .dato {
+            font-size: 15px;
+        }
+
+        .selector-rol {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cfd7e2;
+            border-radius: 9px;
+            background: white;
+            font-size: 15px;
+        }
+
+        .permisos {
+            padding: 20px 22px 24px 22px;
+        }
+
+        .permisos-titulo {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .tabla {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tabla th {
+            text-align: left;
+            font-size: 13px;
+            color: #667387;
+            background: #f7f9fb;
+            padding: 11px 12px;
+            border-bottom: 1px solid #dde3ea;
+        }
+
+        .tabla td {
+            padding: 12px;
+            border-bottom: 1px solid #edf0f4;
+            vertical-align: middle;
+        }
+
+        .tabla tr:last-child td {
+            border-bottom: none;
+        }
+
+        .permiso-nombre {
+            font-weight: 600;
+        }
+
+        .permiso-descripcion {
+            display: block;
+            margin-top: 3px;
+            color: #788497;
+            font-size: 12px;
+        }
+
+        .check-wrap {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .check-permiso {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .estado-permiso {
+            font-size: 13px;
+            color: #6e7b8c;
+        }
+
+        .alcance {
+            width: 100%;
+            max-width: 260px;
+            padding: 9px 11px;
+            border: 1px solid #cfd7e2;
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+        }
+
+        .acciones {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 14px;
+            margin-top: 26px;
+            padding-bottom: 15px;
+        }
+
+        .nota {
+            color: #657286;
+            font-size: 14px;
+        }
+
+        .boton {
+            border: 0;
+            border-radius: 9px;
+            padding: 12px 20px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .boton-principal {
+            background: #172033;
+            color: white;
+        }
+
+        .rol-mensaje {
+            margin-top: 10px;
+            padding: 9px 11px;
+            border-radius: 8px;
+            background: #eef4ff;
+            color: #40577a;
+            font-size: 13px;
+        }
+
+        @media (max-width: 1050px) {
+
+            .puesto-cabecera {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 720px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .puesto-cabecera {
+                grid-template-columns: 1fr;
+            }
+
+            .tabla {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="contenedor">
+
+    <h1>Roles y permisos</h1>
+
+    <p class="subtitulo">
+        Configuración de permisos por puesto, rol y alcance.
+    </p>
+
+
+    <div class="aviso">
+
+        Cada puesto tiene un rol base.
+        Los permisos se administran mediante ese rol.
+        El alcance define hasta dónde aplica cada permiso.
+
+    </div>
+
+
+    <form
+        method="POST"
+        id="formRolesPermisos"
+    >
+
+
+        {% for puesto in puestos %}
+
+        {% set nombre_puesto = puesto.nombre|lower %}
+
+        {% set rol_inicial = "colaborador" %}
+
+        {% if nombre_puesto == "gerente general" %}
+
+            {% set rol_inicial = "gerente_area" %}
+
+        {% elif nombre_puesto == "gerente de operaciones" %}
+
+            {% set rol_inicial = "gerente_operaciones" %}
+
+        {% elif nombre_puesto == "gerente de recursos humanos" %}
+
+            {% set rol_inicial = "rh" %}
+
+        {% elif nombre_puesto == "supervisor de producción" %}
+
+            {% set rol_inicial = "supervisor" %}
+
+        {% elif nombre_puesto == "supervisor de mp" %}
+
+            {% set rol_inicial = "supervisor" %}
+
+        {% endif %}
+
+
+        <section
+            class="puesto"
+            data-puesto-id="{{ puesto.id }}"
+        >
+
+
+            <div class="puesto-cabecera">
+
+
+                <div>
+
+                    <div class="campo-titulo">
+                        Puesto
+                    </div>
+
+                    <div class="puesto-nombre">
+                        {{ puesto.nombre }}
+                    </div>
+
+                </div>
+
+
+                <div>
+
+                    <div class="campo-titulo">
+                        Área
+                    </div>
+
+                    <div class="dato">
+
+                        {% if puesto.departamento and puesto.departamento.area %}
+
+                            {{ puesto.departamento.area.nombre }}
+
+                        {% elif puesto.area %}
+
+                            {{ puesto.area.nombre }}
+
+                        {% else %}
+
+                            Sin área
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <div>
+
+                    <div class="campo-titulo">
+                        Departamento
+                    </div>
+
+                    <div class="dato">
+
+                        {% if puesto.departamento %}
+
+                            {{ puesto.departamento.nombre }}
+
+                        {% else %}
+
+                            Sin departamento
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <div>
+
+                    <div class="campo-titulo">
+                        Rol
+                    </div>
+
+
+                    <select
+                        class="selector-rol"
+                        name="puesto_rol_{{ puesto.id }}"
+                        data-puesto="{{ puesto.id }}"
+                        onchange="actualizarRol(this)"
+                        {% if not es_admin|default(false) %}
+                            disabled
+                        {% endif %}
+                    >
+
+                        {% for rol in roles %}
+
+                            <option
+                                value="{{ rol.nombre }}"
+                                {% if rol.nombre == rol_inicial %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {% if rol.nombre == "administrador" %}
+                                    Administrador
+
+                                {% elif rol.nombre == "gerente_area" %}
+                                    Gerente de Área
+
+                                {% elif rol.nombre == "gerente_operaciones" %}
+                                    Gerente de Operaciones
+
+                                {% elif rol.nombre == "supervisor" %}
+                                    Supervisor
+
+                                {% elif rol.nombre == "rh" %}
+                                    RH
+
+                                {% elif rol.nombre == "colaborador" %}
+                                    Colaborador
+
+                                {% else %}
+                                    {{ rol.nombre }}
+                                {% endif %}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                    <div
+                        class="rol-mensaje"
+                        id="rol-mensaje-{{ puesto.id }}"
+                    >
+                        Rol seleccionado:
+                        <strong>
+                            {{ rol_inicial }}
+                        </strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="permisos">
+
+
+                <div class="permisos-titulo">
+                    Permisos
+                </div>
+
+
+                <table class="tabla">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Permiso
+                            </th>
+
+                            <th>
+                                Permitido
+                            </th>
+
+                            <th>
+                                Alcance
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                    {% for permiso in permisos %}
+
+
+                        {% set seleccionado = namespace(
+                            permitido=false,
+                            alcance="empresa"
+                        ) %}
+
+
+                        {% for rol in roles %}
+
+                            {% if rol.nombre == rol_inicial %}
+
+                                {% set dato = matriz
+                                    [rol.id]
+                                    [permiso.id]
+                                %}
+
+                                {% if dato is mapping %}
+
+                                    {% if dato.permitido %}
+                                        {% set seleccionado.permitido = true %}
+                                    {% endif %}
+
+                                    {% if dato.alcance %}
+                                        {% set seleccionado.alcance = dato.alcance %}
+                                    {% endif %}
+
+                                {% elif dato %}
+
+                                    {% set seleccionado.permitido = true %}
+
+                                {% endif %}
+
+                            {% endif %}
+
+                        {% endfor %}
+
+
+                        <tr
+                            data-puesto-permiso="{{ puesto.id }}-{{ permiso.id }}"
+                            data-puesto="{{ puesto.id }}"
+                            data-permiso="{{ permiso.id }}"
+                        >
+
+                            <td>
+
+                                <span class="permiso-nombre">
+                                    {{ permiso.nombre }}
+                                </span>
+
+                                {% if permiso.descripcion %}
+
+                                    <span class="permiso-descripcion">
+                                        {{ permiso.descripcion }}
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="check-wrap">
+
+                                    <input
+                                        type="checkbox"
+                                        class="check-permiso"
+                                        name="permiso_{{ puesto.id }}_{{ permiso.id }}"
+                                        {% if seleccionado.permitido %}
+                                            checked
+                                        {% endif %}
+                                        {% if not es_admin|default(false) %}
+                                            disabled
+                                        {% endif %}
+                                    >
+
+                                    <span class="estado-permiso">
+
+                                        {% if seleccionado.permitido %}
+                                            Permitido
+                                        {% else %}
+                                            Denegado
+                                        {% endif %}
+
+                                    </span>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                <select
+                                    class="alcance"
+                                    name="alcance_{{ puesto.id }}_{{ permiso.id }}"
+                                    {% if not es_admin|default(false) %}
+                                        disabled
+                                    {% endif %}
+                                >
+
+                                    <option
+                                        value="propio"
+                                        {% if seleccionado.alcance == "propio" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Propio
+                                    </option>
+
+                                    <option
+                                        value="departamento"
+                                        {% if seleccionado.alcance == "departamento" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Departamento
+                                    </option>
+
+                                    <option
+                                        value="area"
+                                        {% if seleccionado.alcance == "area" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Área
+                                    </option>
+
+                                    <option
+                                        value="empresa"
+                                        {% if seleccionado.alcance == "empresa" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Empresa
+                                    </option>
+
+                                </select>
+
+                            </td>
+
+                        </tr>
+
+
+                    {% endfor %}
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        {% endfor %}
+
+
+        <div class="acciones">
+
+            <div class="nota">
+
+                Los cambios podrán guardarse después de validar
+                la relación Puesto → Rol.
+
+            </div>
+
+
+            <button
+                type="button"
+                class="boton boton-principal"
+                onclick="guardarPendiente()"
+                {% if not es_admin|default(false) %}
+                    disabled
+                {% endif %}
+            >
+                Guardar cambios
+            </button>
+
+        </div>
+
+
+    </form>
+
+</div>
+
+
+<script>
+
+    function actualizarRol(select) {
+
+        var puestoId =
+            select.getAttribute("data-puesto");
+
+        var mensaje =
+            document.getElementById(
+                "rol-mensaje-" + puestoId
+            );
+
+        if (!mensaje) {
+            return;
+        }
+
+        var texto =
+            select.options[
+                select.selectedIndex
+            ].text.trim();
+
+        mensaje.innerHTML =
+            "Rol seleccionado: <strong>"
+            + texto
+            + "</strong>";
+    }
+
+
+    function actualizarEstados() {
+
+        var checks =
+            document.querySelectorAll(
+                ".check-permiso"
+            );
+
+        checks.forEach(function(check) {
+
+            var estado =
+                check.parentElement.querySelector(
+                    ".estado-permiso"
+                );
+
+            if (!estado) {
+                return;
+            }
+
+            estado.textContent =
+                check.checked
+                ? "Permitido"
+                : "Denegado";
+        });
+    }
+
+
+    function guardarPendiente() {
+
+        alert(
+            "La interfaz de Puesto → Rol → Permisos → Alcance ya está lista para validación. La persistencia se habilitará en el siguiente paso."
+        );
+    }
+
+
+    document.addEventListener(
+        "change",
+        function(event) {
+
+            if (
+                event.target.classList.contains(
+                    "check-permiso"
+                )
+            ) {
+
+                actualizarEstados();
+            }
+
+        }
+    );
+
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            actualizarEstados();
+
+        }
+    );
+
+</script>
+
+
+</body>
+
+</html>

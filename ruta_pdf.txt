@@ -1,0 +1,12 @@
+﻿# =========================
+# ARCHIVOS PDF DE CURSOS
+# =========================
+
+@app.route("/curso-pdf/<nombre_archivo>")
+def curso_pdf(nombre_archivo):
+
+    return send_from_directory(
+        app.config["UPLOAD_FOLDER"],
+        nombre_archivo
+    )
+

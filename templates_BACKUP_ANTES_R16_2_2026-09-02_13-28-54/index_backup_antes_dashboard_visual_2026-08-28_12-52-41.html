@@ -1,0 +1,728 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard | Matriz ILUO</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        .dashboard-header {
+            margin-bottom: 25px;
+        }
+
+        .dashboard-header h1 {
+            margin-bottom: 5px;
+        }
+
+        .dashboard-header p {
+            margin-top: 0;
+            color: #666;
+        }
+
+        .filtros-dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.08);
+        }
+
+        .filtro-dashboard {
+            display: flex;
+            flex-direction: column;
+            min-width: 220px;
+        }
+
+        .filtro-dashboard label {
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .filtro-dashboard select {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .seccion-dashboard {
+            margin-bottom: 25px;
+        }
+
+        .tarjetas-dashboard {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(210px, 1fr));
+            gap: 18px;
+        }
+
+        .tarjeta-dashboard {
+            background: white;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.08);
+        }
+
+        .tarjeta-dashboard h3 {
+            margin-top: 0;
+        }
+
+        .numero-dashboard {
+            font-size: 34px;
+            font-weight: bold;
+            margin: 12px 0;
+        }
+
+        .semaforo-container {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .semaforo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            box-shadow:
+                0 5px 18px rgba(0,0,0,.20);
+        }
+
+        .semaforo-rojo {
+            background: #dc3545;
+        }
+
+        .semaforo-amarillo {
+            background: #ffc107;
+            color: #222;
+        }
+
+        .semaforo-verde {
+            background: #198754;
+        }
+
+        .semaforo-gris {
+            background: #777;
+        }
+
+        .dominio-porcentaje {
+            font-size: 52px;
+            font-weight: bold;
+        }
+
+        .dominio-estado {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .leyenda-semaforo {
+            display: grid;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .leyenda-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .punto-leyenda {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .punto-rojo {
+            background: #dc3545;
+        }
+
+        .punto-amarillo {
+            background: #ffc107;
+        }
+
+        .punto-verde {
+            background: #198754;
+        }
+
+        .tabla-dashboard {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .tabla-dashboard th,
+        .tabla-dashboard td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tabla-dashboard th {
+            background: #f5f5f5;
+        }
+
+        .nivel-iluo {
+            display: inline-block;
+            min-width: 32px;
+            text-align: center;
+            padding: 5px 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .nivel-i {
+            background: #f8d7da;
+        }
+
+        .nivel-l {
+            background: #ffe5b4;
+        }
+
+        .nivel-u {
+            background: #fff3cd;
+        }
+
+        .nivel-o {
+            background: #d1e7dd;
+        }
+
+        .sin-datos {
+            color: #777;
+            font-style: italic;
+        }
+
+        @media (max-width: 700px) {
+
+            .semaforo-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .dominio-porcentaje {
+                font-size: 42px;
+            }
+
+            .tabla-dashboard {
+                font-size: 13px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <aside class="menu">
+
+        <h2>MATRIZ ILUO</h2>
+
+        <a href="/">🏠 Dashboard</a>
+
+        <a href="/colaboradores">
+            👥 Empleados
+        </a>
+
+        <a href="/colaboradores/inactivos">
+            🔴 Inactivos
+        </a>
+
+        <a href="/habilidades">
+            🛠️ Habilidades
+        </a>
+
+        <a href="/evaluaciones">
+            📝 Evaluaciones
+        </a>
+
+        <a href="/matriz">
+            📊 Matriz ILUO
+        </a>
+
+        <a href="/cursos">
+            📚 Cursos
+        </a>
+
+    </aside>
+
+
+    <main class="contenido">
+
+        <!-- ================================================= -->
+        <!-- ENCABEZADO -->
+        <!-- ================================================= -->
+
+        <div class="dashboard-header">
+
+            <h1>
+                Leyenda Dashboard de Operaciones
+            </h1>
+
+            <p>
+                Análisis general del dominio de habilidades
+                de los colaboradores.
+            </p>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- FILTROS -->
+        <!-- ================================================= -->
+
+        <div class="filtros-dashboard">
+
+            <div class="filtro-dashboard">
+
+                <label for="filtro-area">
+                    Área
+                </label>
+
+                <select id="filtro-area">
+
+                    <option value="1">
+                        OPERACIONES
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filtro-dashboard">
+
+                <label for="filtro-departamento">
+                    Departamento
+                </label>
+
+                <select id="filtro-departamento">
+
+                    <option value="todos">
+                        Todos los departamentos
+                    </option>
+
+                    {% for departamento in departamentos %}
+
+                    <option value="{{ departamento.id }}">
+                        {{ departamento.nombre }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- SEMAFORO -->
+        <!-- ================================================= -->
+
+        <div class="seccion-dashboard">
+
+            <div class="tarjeta-dashboard">
+
+                <h2>
+                    Dominio general del área
+                </h2>
+
+                <div class="semaforo-container">
+
+                    <div
+                        id="semaforo"
+                        class="semaforo semaforo-gris">
+
+                        --
+
+                    </div>
+
+
+                    <div>
+
+                        <div
+                            id="dominio-porcentaje"
+                            class="dominio-porcentaje">
+
+                            0%
+
+                        </div>
+
+
+                        <div
+                            id="dominio-estado"
+                            class="dominio-estado">
+
+                            Sin evaluaciones
+
+                        </div>
+
+
+                        <div class="leyenda-semaforo">
+
+                            <div class="leyenda-item">
+
+                                <span
+                                    class="punto-leyenda punto-rojo">
+                                </span>
+
+                                <span>
+                                    <strong>Rojo</strong>
+                                    — Requiere Atención
+                                    (0% - &lt;70%)
+                                </span>
+
+                            </div>
+
+
+                            <div class="leyenda-item">
+
+                                <span
+                                    class="punto-leyenda punto-amarillo">
+                                </span>
+
+                                <span>
+                                    <strong>Amarillo</strong>
+                                    — En desarrollo
+                                    (70% - &lt;85%)
+                                </span>
+
+                            </div>
+
+
+                            <div class="leyenda-item">
+
+                                <span
+                                    class="punto-leyenda punto-verde">
+                                </span>
+
+                                <span>
+                                    <strong>Verde</strong>
+                                    — Buen dominio
+                                    (85% - 100%)
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- TARJETAS RESUMEN -->
+        <!-- ================================================= -->
+
+        <div class="seccion-dashboard">
+
+            <div class="tarjetas-dashboard">
+
+                <div class="tarjeta-dashboard">
+
+                    <h3>
+                        👥 Colaboradores
+                    </h3>
+
+                    <div
+                        id="total-colaboradores"
+                        class="numero-dashboard">
+
+                        {{ colaboradores }}
+
+                    </div>
+
+                    <p>
+                        Colaboradores activos
+                    </p>
+
+                </div>
+
+
+                <div class="tarjeta-dashboard">
+
+                    <h3>
+                        🛠️ Habilidades
+                    </h3>
+
+                    <div
+                        id="total-habilidades"
+                        class="numero-dashboard">
+
+                        {{ habilidades }}
+
+                    </div>
+
+                    <p>
+                        Habilidades evaluadas
+                    </p>
+
+                </div>
+
+
+                <div class="tarjeta-dashboard">
+
+                    <h3>
+                        📝 Evaluaciones
+                    </h3>
+
+                    <div
+                        id="total-evaluaciones"
+                        class="numero-dashboard">
+
+                        {{ evaluaciones }}
+
+                    </div>
+
+                    <p>
+                        Evaluaciones registradas
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- DISTRIBUCION ILUO -->
+        <!-- ================================================= -->
+
+        <div class="seccion-dashboard">
+
+            <div class="tarjeta-dashboard">
+
+                <h2>
+                    Distribución del dominio ILUO
+                </h2>
+
+                <p>
+                    Nivel actual de dominio de las habilidades
+                    evaluadas.
+                </p>
+
+
+                <div>
+
+                    <span class="nivel-iluo nivel-i">
+                        I
+                    </span>
+
+                    Inicial / Aprendiz:
+                    <strong id="nivel-i">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <br>
+
+
+                <div>
+
+                    <span class="nivel-iluo nivel-l">
+                        L
+                    </span>
+
+                    Local / Operario:
+                    <strong id="nivel-l">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <br>
+
+
+                <div>
+
+                    <span class="nivel-iluo nivel-u">
+                        U
+                    </span>
+
+                    Útil / Autónomo:
+                    <strong id="nivel-u">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <br>
+
+
+                <div>
+
+                    <span class="nivel-iluo nivel-o">
+                        O
+                    </span>
+
+                    Óptimo / Instructor:
+                    <strong id="nivel-o">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- RESUMEN POR DEPARTAMENTO -->
+        <!-- ================================================= -->
+
+        <div class="seccion-dashboard">
+
+            <div class="tarjeta-dashboard">
+
+                <h2>
+                    Dominio por departamento
+                </h2>
+
+                <table class="tabla-dashboard">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Departamento
+                            </th>
+
+                            <th>
+                                Colaboradores
+                            </th>
+
+                            <th>
+                                Evaluaciones
+                            </th>
+
+                            <th>
+                                Dominio
+                            </th>
+
+                            <th>
+                                Estado
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for departamento in departamentos %}
+
+                        <tr>
+
+                            <td>
+                                {{ departamento.nombre }}
+                            </td>
+
+                            <td>
+                                {{ departamento.colaboradores_count }}
+                            </td>
+
+                            <td>
+                                {{ departamento.evaluaciones_count }}
+                            </td>
+
+                            <td>
+                                {{ departamento.dominio }}%
+                            </td>
+
+                            <td>
+                                {{ departamento.estado }}
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- PROXIMAMENTE -->
+        <!-- ================================================= -->
+
+        <div class="seccion-dashboard">
+
+            <div class="tarjeta-dashboard">
+
+                <h2>
+                    🎯 Detección de necesidades
+                </h2>
+
+                <p>
+                    En la siguiente etapa el Dashboard
+                    identificará automáticamente las
+                    necesidades de capacitación más
+                    repetidas por departamento y área.
+                </p>
+
+                <p>
+                    También identificará las habilidades
+                    donde existe mayor especialización.
+                </p>
+
+                <p class="sin-datos">
+                    Módulo preparado para la siguiente etapa.
+                </p>
+
+            </div>
+
+        </div>
+
+
+    </main>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,242 @@
+﻿<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Habilidades - Matriz ILUO
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<div class="contenedor">
+
+
+    <aside class="menu">
+
+        <h2>
+            MATRIZ ILUO
+        </h2>
+
+
+        <a href="/">
+            🏠 Inicio
+        </a>
+
+
+        <a href="/puestos">
+            🏭 Puestos
+        </a>
+
+
+        <a href="/colaboradores">
+            👥 Empleados
+        </a>
+
+
+        <a href="/habilidades">
+            🛠️ Habilidades
+        </a>
+
+
+        <a href="/evaluaciones">`n            📝 Evaluaciones`n        </a>
+
+
+        <a href="/matriz">`n            📊 Matriz ILUO`n        </a>
+
+
+        <a href="/">`n            📈 Dashboard`n        </a>
+
+    </aside>
+
+
+
+    <main class="contenido">
+
+
+        <div class="encabezado">
+
+            <h1>
+                Habilidades
+            </h1>
+
+            <p>
+                Administra las habilidades
+                que serán evaluadas mediante ILUO.
+            </p>
+
+        </div>
+
+
+
+        <div class="tarjeta">
+
+            <h2>
+                Agregar habilidad
+            </h2>
+
+
+            <br>
+
+
+            <form
+                method="POST"
+                action="/habilidades/agregar"
+            >
+
+
+                <input
+                    type="text"
+                    name="nombre"
+                    placeholder="Ej. Manejo de montacargas"
+                    required
+                >
+
+
+                <button
+                    type="submit"
+                >
+
+                    Agregar habilidad
+
+                </button>
+
+
+            </form>
+
+        </div>
+
+
+
+        <br>
+
+
+
+        <div class="tarjeta">
+
+
+            <h2>
+                Habilidades registradas
+            </h2>
+
+
+            <br>
+
+
+            {% if habilidades %}
+
+
+            <table>
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            ID
+                        </th>
+
+                        <th>
+                            Habilidad
+                        </th>
+
+                        <th>
+                            Acción
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    {% for habilidad in habilidades %}
+
+
+                    <tr>
+
+
+                        <td>
+                            {{ habilidad.id }}
+                        </td>
+
+
+                        <td>
+                            {{ habilidad.nombre }}
+                        </td>
+
+
+                        <td>
+
+                            <a
+                                href="/habilidades/eliminar/{{ habilidad.id }}"
+                            >
+
+                                🗑️ Eliminar
+
+                            </a>
+
+                        </td>
+
+
+                    </tr>
+
+
+                    {% endfor %}
+
+
+                </tbody>
+
+
+            </table>
+
+
+            {% else %}
+
+
+            <p>
+                Todavía no hay habilidades registradas.
+            </p>
+
+
+            {% endif %}
+
+
+        </div>
+
+
+    </main>
+
+
+</div>
+
+
+
+{% include "_usuario_menu.html" %}
+</body>
+
+</html>
+
+
+
+

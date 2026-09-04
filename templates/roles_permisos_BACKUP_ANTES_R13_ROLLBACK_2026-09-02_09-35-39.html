@@ -1,0 +1,567 @@
+﻿<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Administración de permisos - MATRIZ ILUO
+    </title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f5f7fb;
+            color: #202124;
+        }
+
+        .contenedor {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .encabezado {
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        .subtitulo {
+            color: #666;
+        }
+
+        .tarjeta {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.07);
+            margin-bottom: 25px;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1100px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e6e8ec;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #f0f2f6;
+        }
+
+        select {
+            width: 100%;
+            padding: 9px 10px;
+            border: 1px solid #cfd4dc;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .puesto {
+            font-weight: bold;
+        }
+
+        .rol {
+            min-width: 190px;
+        }
+
+        .permiso {
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .permitido {
+            font-weight: bold;
+        }
+
+        .denegado {
+            color: #888;
+        }
+
+        .alcance {
+            margin-top: 6px;
+        }
+
+        .alcance select {
+            font-size: 12px;
+            padding: 6px;
+        }
+
+        .boton {
+            display: inline-block;
+            padding: 11px 18px;
+            border: 0;
+            border-radius: 9px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .boton-guardar {
+            background: #202124;
+            color: white;
+        }
+
+        .boton-disabled {
+            background: #d6d9df;
+            color: #777;
+            cursor: not-allowed;
+        }
+
+        .aviso {
+            padding: 14px 16px;
+            border-radius: 10px;
+            background: #fff8e1;
+            margin-bottom: 20px;
+        }
+
+        .leyenda {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .leyenda-item {
+            padding: 12px;
+            border-radius: 10px;
+            background: #f6f7f9;
+        }
+
+        .leyenda-item strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        @media (max-width: 900px) {
+
+            .contenedor {
+                padding: 15px;
+            }
+
+            .leyenda {
+                grid-template-columns: 1fr 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <div class="encabezado">
+
+        <h1>
+            🔐 Administración de permisos
+        </h1>
+
+        <p class="subtitulo">
+
+            Configuración de puestos,
+            roles, permisos y alcance organizacional.
+
+        </p>
+
+    </div>
+
+
+    {% if not es_admin %}
+
+        <div class="aviso">
+
+            <strong>
+                Modo consulta
+            </strong>
+
+            <br>
+
+            Solo el administrador puede modificar
+            la configuración de permisos.
+
+        </div>
+
+    {% endif %}
+
+
+    <div class="tarjeta">
+
+        <h2>
+            Puestos actuales
+        </h2>
+
+        <p>
+
+            Cada puesto tiene un rol base.
+            Los permisos se heredan desde ese rol.
+
+        </p>
+
+
+        <form
+            method="POST"
+            action="{{ url_for('roles_permisos') }}"
+        >
+
+
+            <div class="tabla-contenedor">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Puesto
+                            </th>
+
+                            <th>
+                                Área
+                            </th>
+
+                            <th>
+                                Departamento
+                            </th>
+
+                            <th>
+                                Rol
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for puesto in puestos %}
+
+                            <tr>
+
+                                <td class="puesto">
+
+                                    {{ puesto.nombre }}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if puesto.area %}
+
+                                        {{ puesto.area.nombre }}
+
+                                    {% elif
+                                        puesto.departamento
+                                        and
+                                        puesto.departamento.area
+                                    %}
+
+                                        {{
+                                            puesto.departamento.area.nombre
+                                        }}
+
+                                    {% else %}
+
+                                        Sin área
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if puesto.departamento %}
+
+                                        {{ puesto.departamento.nombre }}
+
+                                    {% else %}
+
+                                        Sin departamento
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td class="rol">
+
+                                    <select
+                                        name="puesto_rol_{{ puesto.id }}"
+                                        {% if not es_admin %}
+                                            disabled
+                                        {% endif %}
+                                    >
+
+                                        <option value="">
+                                            Seleccionar rol...
+                                        </option>
+
+                                        {% for rol in roles %}
+
+                                            <option
+                                                value="{{ rol.id }}"
+                                            >
+
+                                                {{ rol.nombre }}
+
+                                            </option>
+
+                                        {% endfor %}
+
+                                    </select>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <br>
+
+
+            {% if es_admin %}
+
+                <button
+                    type="submit"
+                    class="boton boton-guardar"
+                >
+                    💾 Guardar configuración
+                </button>
+
+            {% else %}
+
+                <button
+                    type="button"
+                    class="boton boton-disabled"
+                    disabled
+                >
+                    🔒 Solo administrador
+                </button>
+
+            {% endif %}
+
+        </form>
+
+    </div>
+
+
+    <div class="tarjeta">
+
+        <h2>
+            Matriz actual de permisos
+        </h2>
+
+        <p>
+
+            Los permisos se administran mediante los roles.
+            El alcance define hasta dónde aplica cada permiso.
+
+        </p>
+
+
+        <div class="tabla-contenedor">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Rol
+                        </th>
+
+                        {% for permiso in permisos %}
+
+                            <th class="permiso">
+
+                                {{ permiso.nombre }}
+
+                            </th>
+
+                        {% endfor %}
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for rol in roles %}
+
+                        <tr>
+
+                            <td class="puesto">
+
+                                {{ rol.nombre }}
+
+                            </td>
+
+
+                            {% for permiso in permisos %}
+
+                                {% set item =
+                                    matriz[rol.id][permiso.id]
+                                %}
+
+                                <td class="permiso">
+
+                                    {% if item.permitido %}
+
+                                        <div class="permitido">
+                                            ✓ PERMITIDO
+                                        </div>
+
+                                        <div class="alcance">
+
+                                            <select>
+
+                                                <option
+                                                    {% if item.alcance == "propio" %}
+                                                        selected
+                                                    {% endif %}
+                                                >
+                                                    Propio
+                                                </option>
+
+                                                <option
+                                                    {% if item.alcance == "departamento" %}
+                                                        selected
+                                                    {% endif %}
+                                                >
+                                                    Departamento
+                                                </option>
+
+                                                <option
+                                                    {% if item.alcance == "area" %}
+                                                        selected
+                                                    {% endif %}
+                                                >
+                                                    Área
+                                                </option>
+
+                                                <option
+                                                    {% if item.alcance == "empresa" %}
+                                                        selected
+                                                    {% endif %}
+                                                >
+                                                    Empresa
+                                                </option>
+
+                                            </select>
+
+                                        </div>
+
+                                    {% else %}
+
+                                        <div class="denegado">
+                                            ✗ DENEGADO
+                                        </div>
+
+                                    {% endif %}
+
+                                </td>
+
+                            {% endfor %}
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div class="leyenda">
+
+            <div class="leyenda-item">
+
+                <strong>
+                    Propio
+                </strong>
+
+                Solo información propia.
+
+            </div>
+
+
+            <div class="leyenda-item">
+
+                <strong>
+                    Departamento
+                </strong>
+
+                Información del departamento.
+
+            </div>
+
+
+            <div class="leyenda-item">
+
+                <strong>
+                    Área
+                </strong>
+
+                Información del área.
+
+            </div>
+
+
+            <div class="leyenda-item">
+
+                <strong>
+                    Empresa
+                </strong>
+
+                Toda la organización.
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

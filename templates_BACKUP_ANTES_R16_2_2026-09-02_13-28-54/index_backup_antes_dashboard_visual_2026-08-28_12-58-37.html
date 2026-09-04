@@ -1,0 +1,713 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - Matriz ILUO</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        .dashboard {
+            width: 100%;
+        }
+
+        .dashboard-header {
+            margin-bottom: 25px;
+        }
+
+        .dashboard-header h1 {
+            margin-bottom: 8px;
+        }
+
+        .dashboard-header p {
+            margin: 0;
+            color: #666;
+        }
+
+        .filtros-dashboard {
+
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+
+            background: white;
+
+            padding: 18px;
+
+            border-radius: 12px;
+
+            margin-bottom: 25px;
+
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .filtro-grupo {
+
+            display: flex;
+            flex-direction: column;
+
+            min-width: 220px;
+        }
+
+        .filtro-grupo label {
+
+            font-weight: 600;
+
+            margin-bottom: 6px;
+
+            color: #444;
+        }
+
+        .filtro-grupo select {
+
+            padding: 10px;
+
+            border-radius: 8px;
+
+            border: 1px solid #ccc;
+
+            font-size: 14px;
+        }
+
+        .tarjetas-resumen {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(210px, 1fr));
+
+            gap: 18px;
+
+            margin-bottom: 25px;
+        }
+
+        .tarjeta-dashboard {
+
+            background: white;
+
+            border-radius: 12px;
+
+            padding: 20px;
+
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .tarjeta-dashboard h3 {
+
+            margin-top: 0;
+
+            color: #555;
+
+            font-size: 15px;
+        }
+
+        .numero-dashboard {
+
+            font-size: 32px;
+
+            font-weight: bold;
+
+            margin: 8px 0;
+        }
+
+        .seccion-dashboard {
+
+            background: white;
+
+            border-radius: 12px;
+
+            padding: 25px;
+
+            margin-bottom: 25px;
+
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .seccion-dashboard h2 {
+
+            margin-top: 0;
+
+            margin-bottom: 20px;
+        }
+
+        .semaforo-container {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 30px;
+
+            flex-wrap: wrap;
+        }
+
+        .semaforo {
+
+            width: 180px;
+
+            height: 180px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            flex-direction: column;
+
+            color: white;
+
+            font-weight: bold;
+
+            box-shadow:
+                0 5px 15px rgba(0,0,0,0.20);
+        }
+
+        .semaforo.rojo {
+            background: #dc3545;
+        }
+
+        .semaforo.amarillo {
+            background: #f0ad00;
+        }
+
+        .semaforo.verde {
+            background: #198754;
+        }
+
+        .semaforo.gris {
+            background: #777;
+        }
+
+        .semaforo .porcentaje {
+
+            font-size: 38px;
+
+            line-height: 1;
+        }
+
+        .semaforo .estado {
+
+            margin-top: 8px;
+
+            font-size: 14px;
+
+            text-align: center;
+        }
+
+        .interpretacion {
+
+            flex: 1;
+
+            min-width: 250px;
+        }
+
+        .interpretacion h3 {
+
+            margin-top: 0;
+        }
+
+        .leyenda {
+
+            display: flex;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+
+            margin-top: 20px;
+        }
+
+        .leyenda-item {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            font-size: 14px;
+        }
+
+        .punto {
+
+            width: 14px;
+
+            height: 14px;
+
+            border-radius: 50%;
+
+            display: inline-block;
+        }
+
+        .punto.rojo {
+            background: #dc3545;
+        }
+
+        .punto.amarillo {
+            background: #f0ad00;
+        }
+
+        .punto.verde {
+            background: #198754;
+        }
+
+        .iluos {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 12px;
+        }
+
+        .iluo-item {
+
+            text-align: center;
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            background: #f5f5f5;
+        }
+
+        .iluo-letra {
+
+            font-size: 28px;
+
+            font-weight: bold;
+        }
+
+        .iluo-descripcion {
+
+            font-size: 13px;
+
+            color: #666;
+
+            margin-top: 5px;
+        }
+
+        .mensaje-vacio {
+
+            padding: 25px;
+
+            text-align: center;
+
+            color: #777;
+        }
+
+        @media (max-width: 700px) {
+
+            .iluos {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .semaforo {
+                width: 150px;
+                height: 150px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="contenedor">
+
+
+    <aside class="menu">
+
+        <h2>MATRIZ ILUO</h2>
+
+        <a href="/">🏠 Inicio</a>
+
+        <a href="/colaboradores">
+            👥 Empleados
+        </a>
+
+        <a href="/colaboradores/inactivos">
+            🔴 Inactivos
+        </a>
+
+        <a href="/habilidades">
+            🛠️ Habilidades
+        </a>
+
+        <a href="/evaluaciones">
+            📝 Evaluaciones
+        </a>
+
+        <a href="/matriz">
+            📊 Matriz ILUO
+        </a>
+
+        <a href="/cursos">
+            📚 Cursos
+        </a>
+
+        <a href="/">
+            📈 Dashboard
+        </a>
+
+    </aside>
+
+
+    <main class="contenido">
+
+
+        <div class="dashboard">
+
+
+            <div class="dashboard-header">
+
+                <h1>
+                    Dashboard de Operaciones
+                </h1>
+
+                <p>
+                    Indicadores generales de dominio
+                    de habilidades de los colaboradores.
+                </p>
+
+            </div>
+
+
+            <!-- FILTROS -->
+
+            <div class="filtros-dashboard">
+
+                <div class="filtro-grupo">
+
+                    <label for="filtroArea">
+                        Área
+                    </label>
+
+                    <select id="filtroArea">
+
+                        <option value="operaciones">
+                            OPERACIONES
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="filtro-grupo">
+
+                    <label for="filtroDepartamento">
+                        Departamento
+                    </label>
+
+                    <select id="filtroDepartamento">
+
+                        <option value="general">
+                            Todos los departamentos
+                        </option>
+
+                        <option value="materia-prima">
+                            Materia Prima
+                        </option>
+
+                        <option value="produccion">
+                            Producción
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- RESUMEN -->
+
+            <div class="tarjetas-resumen">
+
+
+                <div class="tarjeta-dashboard">
+
+                    <h3>
+                        👥 Colaboradores
+                    </h3>
+
+                    <div class="numero-dashboard">
+                        {{ colaboradores }}
+                    </div>
+
+                    <div>
+                        Colaboradores registrados
+                    </div>
+
+                </div>
+
+
+                <div class="tarjeta-dashboard">
+
+                    <h3>
+                        🛠️ Habilidades
+                    </h3>
+
+                    <div class="numero-dashboard">
+                        {{ habilidades }}
+                    </div>
+
+                    <div>
+                        Habilidades registradas
+                    </div>
+
+                </div>
+
+
+                <div class="tarjeta-dashboard">
+
+                    <h3>
+                        📝 Evaluaciones
+                    </h3>
+
+                    <div class="numero-dashboard">
+                        {{ evaluaciones }}
+                    </div>
+
+                    <div>
+                        Evaluaciones realizadas
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- DOMINIO -->
+
+            <div class="seccion-dashboard">
+
+                <h2>
+                    Nivel general de dominio
+                </h2>
+
+
+                <div class="semaforo-container">
+
+
+                    <div class="semaforo verde">
+
+                        <div class="porcentaje">
+                            —
+                        </div>
+
+                        <div class="estado">
+                            Calculando dominio
+                        </div>
+
+                    </div>
+
+
+                    <div class="interpretacion">
+
+                        <h3>
+                            Dashboard de Operaciones
+                        </h3>
+
+                        <p>
+                            El nivel de dominio representa
+                            el promedio de las evaluaciones
+                            ILUO registradas.
+                        </p>
+
+                        <p>
+                            <strong>
+                                I = 25%
+                            </strong>
+                            ·
+                            <strong>
+                                L = 50%
+                            </strong>
+                            ·
+                            <strong>
+                                U = 75%
+                            </strong>
+                            ·
+                            <strong>
+                                O = 100%
+                            </strong>
+                        </p>
+
+
+                        <div class="leyenda">
+
+
+                            <div class="leyenda-item">
+
+                                <span class="punto rojo"></span>
+
+                                <span>
+                                    <strong>
+                                        Rojo
+                                    </strong>
+                                    = Requiere Atención
+                                </span>
+
+                            </div>
+
+
+                            <div class="leyenda-item">
+
+                                <span class="punto amarillo"></span>
+
+                                <span>
+                                    <strong>
+                                        Amarillo
+                                    </strong>
+                                    = En desarrollo
+                                </span>
+
+                            </div>
+
+
+                            <div class="leyenda-item">
+
+                                <span class="punto verde"></span>
+
+                                <span>
+                                    <strong>
+                                        Verde
+                                    </strong>
+                                    = Buen dominio
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- DISTRIBUCION ILUO -->
+
+            <div class="seccion-dashboard">
+
+                <h2>
+                    Distribución del dominio ILUO
+                </h2>
+
+
+                <div class="iluos">
+
+
+                    <div class="iluo-item">
+
+                        <div class="iluo-letra">
+                            I
+                        </div>
+
+                        <div class="iluo-descripcion">
+                            Inicial / Aprendiz
+                        </div>
+
+                    </div>
+
+
+                    <div class="iluo-item">
+
+                        <div class="iluo-letra">
+                            L
+                        </div>
+
+                        <div class="iluo-descripcion">
+                            Local / Operario
+                        </div>
+
+                    </div>
+
+
+                    <div class="iluo-item">
+
+                        <div class="iluo-letra">
+                            U
+                        </div>
+
+                        <div class="iluo-descripcion">
+                            Útil / Autónomo
+                        </div>
+
+                    </div>
+
+
+                    <div class="iluo-item">
+
+                        <div class="iluo-letra">
+                            O
+                        </div>
+
+                        <div class="iluo-descripcion">
+                            Óptimo / Instructor
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- PROXIMO MODULO -->
+
+            <div class="seccion-dashboard">
+
+                <h2>
+                    Necesidades y fortalezas de capacitación
+                </h2>
+
+                <div class="mensaje-vacio">
+
+                    Este apartado será alimentado
+                    automáticamente con el análisis
+                    de las evaluaciones.
+
+                    <br><br>
+
+                    Se identificarán las habilidades
+                    que más requieren capacitación
+                    y aquellas en las que existe
+                    mayor especialización.
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+    </main>
+
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,157 @@
+﻿{% extends "base.html" %}
+
+{% block title %}
+Historial de modificaciones
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <div>
+
+            <h2>
+                Historial de modificaciones
+            </h2>
+
+            <div class="text-muted">
+
+                <strong>
+                    {{ colaborador.nombre }}
+                </strong>
+
+                · Empleado
+                {{ colaborador.numero_empleado }}
+
+            </div>
+
+        </div>
+
+
+        <a
+            href="{{ url_for('colaboradores') }}"
+            class="btn btn-secondary"
+        >
+            ← Regresar
+        </a>
+
+    </div>
+
+
+    {% if historial %}
+
+    <div class="table-responsive">
+
+        <table class="table table-bordered table-hover align-middle">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Fecha y hora
+                    </th>
+
+                    <th>
+                        Usuario
+                    </th>
+
+                    <th>
+                        Campo
+                    </th>
+
+                    <th>
+                        Valor anterior
+                    </th>
+
+                    <th>
+                        Valor nuevo
+                    </th>
+
+                    <th>
+                        Motivo
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for registro in historial %}
+
+                <tr>
+
+                    <td>
+                        {{ registro.fecha_hora.strftime('%d/%m/%Y %H:%M:%S') if registro.fecha_hora else '' }}
+                    </td>
+
+
+                    <td>
+
+                        {% set usuario = usuarios.get(registro.usuario_id) %}
+
+                        {% if usuario %}
+
+                            {{ usuario.username }}
+
+                            {% if usuario.rol %}
+                                · {{ usuario.rol }}
+                            {% endif %}
+
+                        {% else %}
+
+                            Usuario #{{ registro.usuario_id }}
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+                        <strong>
+                            {{ registro.campo }}
+                        </strong>
+                    </td>
+
+
+                    <td>
+                        {{ registro.valor_anterior }}
+                    </td>
+
+
+                    <td>
+                        {{ registro.valor_nuevo }}
+                    </td>
+
+
+                    <td>
+                        {{ registro.motivo }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+    <div class="alert alert-info">
+
+        Este colaborador no tiene modificaciones registradas.
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

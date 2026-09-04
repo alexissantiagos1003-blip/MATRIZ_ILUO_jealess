@@ -1,0 +1,834 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Editar colaborador - Matriz ILUO
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+
+        .editar-contenedor {
+
+            max-width: 820px;
+
+            margin: 30px auto;
+
+            padding: 30px;
+
+            background: #ffffff;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 8px 25px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.08
+                );
+        }
+
+
+        .editar-titulo {
+
+            margin-top: 0;
+
+            margin-bottom: 8px;
+        }
+
+
+        .editar-subtitulo {
+
+            margin-top: 0;
+
+            margin-bottom: 28px;
+
+            color: #667085;
+        }
+
+
+        .editar-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(
+                        0,
+                        1fr
+                    )
+                );
+
+            gap: 20px;
+        }
+
+
+        .editar-campo {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 8px;
+        }
+
+
+        .editar-campo-completo {
+
+            grid-column:
+                1 / -1;
+        }
+
+
+        .editar-campo label {
+
+            font-weight: 700;
+        }
+
+
+        .editar-campo input,
+        .editar-campo select,
+        .editar-campo textarea {
+
+            width: 100%;
+
+            box-sizing: border-box;
+
+            padding: 11px 12px;
+
+            border: 1px solid #d0d5dd;
+
+            border-radius: 10px;
+
+            font-size: 14px;
+
+            background: #ffffff;
+        }
+
+
+        .editar-campo textarea {
+
+            min-height: 120px;
+
+            resize: vertical;
+        }
+
+
+        .editar-ayuda {
+
+            font-size: 12px;
+
+            color: #667085;
+        }
+
+
+        .editar-acciones {
+
+            display: flex;
+
+            justify-content: flex-end;
+
+            gap: 12px;
+
+            margin-top: 28px;
+        }
+
+
+        .editar-boton {
+
+            border: 0;
+
+            border-radius: 10px;
+
+            padding: 11px 18px;
+
+            cursor: pointer;
+
+            font-weight: 700;
+        }
+
+
+        .editar-boton-principal {
+
+            background: #172033;
+
+            color: #ffffff;
+        }
+
+
+        .editar-boton-cancelar {
+
+            background: #eef1f5;
+
+            color: #172033;
+
+            text-decoration: none;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+        }
+
+
+        .editar-obligatorio {
+
+            color: #b42318;
+        }
+
+
+        @media (
+            max-width: 700px
+        ) {
+
+            .editar-grid {
+
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .editar-campo-completo {
+
+                grid-column:
+                    auto;
+            }
+
+
+            .editar-contenedor {
+
+                margin: 15px;
+
+                padding: 20px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    {% include "_usuario_menu.html" %}
+
+
+    <div class="editar-contenedor">
+
+        <h1 class="editar-titulo">
+            Editar colaborador
+        </h1>
+
+
+        <p class="editar-subtitulo">
+
+            Actualiza la información del colaborador.
+            El motivo de modificación es obligatorio.
+
+        </p>
+
+
+        <form
+            method="POST"
+            action="{{ url_for(
+                'editar_colaborador',
+                id=colaborador.id
+            ) }}"
+        >
+
+
+            <div class="editar-grid">
+
+
+                <!-- ========================================= -->
+                <!-- NUMERO -->
+                <!-- ========================================= -->
+
+                <div class="editar-campo">
+
+                    <label
+                        for="numero_empleado"
+                    >
+                        Número de empleado
+                    </label>
+
+                    <input
+                        type="text"
+                        id="numero_empleado"
+                        name="numero_empleado"
+                        value="{{ colaborador.numero_empleado }}"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- ========================================= -->
+                <!-- NOMBRE -->
+                <!-- ========================================= -->
+
+                <div class="editar-campo">
+
+                    <label
+                        for="nombre"
+                    >
+                        Nombre completo
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nombre"
+                        name="nombre"
+                        value="{{ colaborador.nombre }}"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- ========================================= -->
+                <!-- AREA -->
+                <!-- ========================================= -->
+
+                <div class="editar-campo">
+
+                    <label
+                        for="area_id"
+                    >
+                        Área
+                    </label>
+
+                    <select
+                        id="area_id"
+                        name="area_id"
+                        required
+                    >
+
+                        <option value="">
+                            Selecciona un área
+                        </option>
+
+
+                        {% for area in areas %}
+
+                            <option
+                                value="{{ area.id }}"
+                                {% if colaborador.departamento
+                                      and colaborador.departamento.area
+                                      and colaborador.departamento.area.id == area.id %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ area.nombre }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- ========================================= -->
+                <!-- DEPARTAMENTO -->
+                <!-- ========================================= -->
+
+                <div class="editar-campo">
+
+                    <label
+                        for="departamento_id"
+                    >
+                        Departamento
+                    </label>
+
+                    <select
+                        id="departamento_id"
+                        name="departamento_id"
+                        required
+                    >
+
+                        <option value="">
+                            Selecciona un departamento
+                        </option>
+
+
+                        {% for departamento in departamentos %}
+
+                            <option
+                                value="{{ departamento.id }}"
+                                data-area-id="{{ departamento.area_id }}"
+                                {% if colaborador.departamento
+                                      and colaborador.departamento.id == departamento.id %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ departamento.nombre }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- ========================================= -->
+                <!-- PUESTO -->
+                <!-- ========================================= -->
+
+                <div class="editar-campo">
+
+                    <label
+                        for="puesto_id"
+                    >
+                        Puesto
+                    </label>
+
+                    <select
+                        id="puesto_id"
+                        name="puesto_id"
+                        required
+                    >
+
+                        <option value="">
+                            Selecciona un puesto
+                        </option>
+
+
+                        {% for puesto in puestos %}
+
+                            <option
+                                value="{{ puesto.id }}"
+                                data-departamento-id="{{ puesto.departamento_id }}"
+                                {% if colaborador.puesto
+                                      and colaborador.puesto.id == puesto.id %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ puesto.nombre }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- ========================================= -->
+                <!-- MOTIVO -->
+                <!-- ========================================= -->
+
+                <div
+                    class="editar-campo
+                           editar-campo-completo"
+                >
+
+                    <label
+                        for="motivo_modificacion"
+                    >
+
+                        Motivo de la modificación
+
+                        <span
+                            class="editar-obligatorio"
+                        >
+                            *
+                        </span>
+
+                    </label>
+
+
+                    <textarea
+                        id="motivo_modificacion"
+                        name="motivo_modificacion"
+                        required
+                        minlength="5"
+                        placeholder="Describe por qué se realiza esta modificación..."
+                    ></textarea>
+
+
+                    <div class="editar-ayuda">
+
+                        Este campo es obligatorio
+                        y quedará registrado
+                        posteriormente en la bitácora.
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ============================================= -->
+            <!-- ACCIONES -->
+            <!-- ============================================= -->
+
+            <div class="editar-acciones">
+
+                <a
+                    href="{{ url_for('colaboradores') }}"
+                    class="editar-boton editar-boton-cancelar"
+                >
+                    Cancelar
+                </a>
+
+
+                <button
+                    type="submit"
+                    class="editar-boton editar-boton-principal"
+                >
+                    Guardar cambios
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                const areaSelect =
+                    document.getElementById(
+                        "area_id"
+                    );
+
+
+                const departamentoSelect =
+                    document.getElementById(
+                        "departamento_id"
+                    );
+
+
+                const puestoSelect =
+                    document.getElementById(
+                        "puesto_id"
+                    );
+
+
+                if (
+                    !areaSelect ||
+                    !departamentoSelect ||
+                    !puestoSelect
+                ) {
+
+                    return;
+
+                }
+
+
+                const departamentoInicial =
+                    departamentoSelect.value;
+
+
+                const puestoInicial =
+                    puestoSelect.value;
+
+
+                const departamentos =
+                    Array.from(
+                        departamentoSelect.options
+                    )
+                    .filter(
+                        function (option) {
+
+                            return (
+                                option.value !== ""
+                                &&
+                                option.dataset.areaId
+                            );
+
+                        }
+                    )
+                    .map(
+                        function (option) {
+
+                            return {
+
+                                value:
+                                    option.value,
+
+                                texto:
+                                    option.textContent.trim(),
+
+                                areaId:
+                                    option.dataset.areaId
+
+                            };
+
+                        }
+                    );
+
+
+                const puestos =
+                    Array.from(
+                        puestoSelect.options
+                    )
+                    .filter(
+                        function (option) {
+
+                            return (
+                                option.value !== ""
+                                &&
+                                option.dataset.departamentoId
+                            );
+
+                        }
+                    )
+                    .map(
+                        function (option) {
+
+                            return {
+
+                                value:
+                                    option.value,
+
+                                texto:
+                                    option.textContent.trim(),
+
+                                departamentoId:
+                                    option.dataset.departamentoId
+
+                            };
+
+                        }
+                    );
+
+
+                function cargarDepartamentos(
+                    valorInicial
+                ) {
+
+                    departamentoSelect.innerHTML =
+                        '<option value="">Selecciona un departamento</option>';
+
+
+                    const areaId =
+                        areaSelect.value;
+
+
+                    if (!areaId) {
+
+                        departamentoSelect.disabled =
+                            true;
+
+                        cargarPuestos("");
+
+                        return;
+
+                    }
+
+
+                    departamentos
+                        .filter(
+                            function (departamento) {
+
+                                return (
+                                    departamento.areaId
+                                    ===
+                                    areaId
+                                );
+
+                            }
+                        )
+                        .forEach(
+                            function (departamento) {
+
+                                const option =
+                                    document.createElement(
+                                        "option"
+                                    );
+
+
+                                option.value =
+                                    departamento.value;
+
+
+                                option.textContent =
+                                    departamento.texto;
+
+
+                                option.dataset.areaId =
+                                    departamento.areaId;
+
+
+                                if (
+                                    valorInicial
+                                    &&
+                                    departamento.value
+                                    ===
+                                    valorInicial
+                                ) {
+
+                                    option.selected =
+                                        true;
+
+                                }
+
+
+                                departamentoSelect
+                                    .appendChild(
+                                        option
+                                    );
+
+                            }
+                        );
+
+
+                    departamentoSelect.disabled =
+                        departamentoSelect.options.length <= 1;
+
+
+                    cargarPuestos(
+                        puestoInicial
+                    );
+
+                }
+
+
+                function cargarPuestos(
+                    valorInicial
+                ) {
+
+                    puestoSelect.innerHTML =
+                        '<option value="">Selecciona un puesto</option>';
+
+
+                    const departamentoId =
+                        departamentoSelect.value;
+
+
+                    if (!departamentoId) {
+
+                        puestoSelect.disabled =
+                            true;
+
+                        return;
+
+                    }
+
+
+                    puestos
+                        .filter(
+                            function (puesto) {
+
+                                return (
+                                    puesto.departamentoId
+                                    ===
+                                    departamentoId
+                                );
+
+                            }
+                        )
+                        .forEach(
+                            function (puesto) {
+
+                                const option =
+                                    document.createElement(
+                                        "option"
+                                    );
+
+
+                                option.value =
+                                    puesto.value;
+
+
+                                option.textContent =
+                                    puesto.texto;
+
+
+                                option.dataset.departamentoId =
+                                    puesto.departamentoId;
+
+
+                                if (
+                                    valorInicial
+                                    &&
+                                    puesto.value
+                                    ===
+                                    valorInicial
+                                ) {
+
+                                    option.selected =
+                                        true;
+
+                                }
+
+
+                                puestoSelect
+                                    .appendChild(
+                                        option
+                                    );
+
+                            }
+                        );
+
+
+                    puestoSelect.disabled =
+                        puestoSelect.options.length <= 1;
+
+                }
+
+
+                areaSelect.addEventListener(
+                    "change",
+                    function () {
+
+                        cargarDepartamentos("");
+
+                    }
+                );
+
+
+                departamentoSelect.addEventListener(
+                    "change",
+                    function () {
+
+                        cargarPuestos("");
+
+                    }
+                );
+
+
+                // Inicializar con los datos actuales
+
+                cargarDepartamentos(
+                    departamentoInicial
+                );
+
+            }
+
+        );
+
+    </script>
+
+</body>
+
+</html>

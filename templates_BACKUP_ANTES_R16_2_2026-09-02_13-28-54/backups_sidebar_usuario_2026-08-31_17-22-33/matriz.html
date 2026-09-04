@@ -1,0 +1,1186 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Matriz ILUO</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        /* =========================
+           CONTENEDOR DE LA MATRIZ
+           ========================= */
+
+        .matriz-contenedor {
+            overflow-x: auto;
+            overflow-y: auto;
+            margin-top: 20px;
+            max-height: 70vh;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .tabla-matriz {
+            border-collapse: separate;
+            border-spacing: 0;
+            min-width: max-content;
+            width: 100%;
+            background: white;
+        }
+
+        .tabla-matriz th,
+        .tabla-matriz td {
+            border-right: 1px solid #d1d5db;
+            border-bottom: 1px solid #d1d5db;
+            padding: 8px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        /* =========================
+           ENCABEZADOS
+           ========================= */
+
+        .tabla-matriz thead th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: #1f2937;
+            color: white;
+            font-weight: bold;
+            height: 70px;
+            vertical-align: middle;
+        }
+
+        .th-habilidad {
+            min-width: 110px;
+            max-width: 130px;
+            white-space: normal !important;
+            line-height: 1.2;
+        }
+
+        /* =========================
+           COLUMNAS FIJAS
+           ========================= */
+
+        .columna-fija {
+            position: sticky;
+            z-index: 8;
+            background: white;
+        }
+
+        .encabezado-fijo {
+            z-index: 20 !important;
+            background: #111827 !important;
+        }
+
+        .colaborador {
+            left: 0;
+            min-width: 180px;
+            max-width: 180px;
+            text-align: left !important;
+            font-weight: bold;
+        }
+
+        .departamento {
+            left: 180px;
+            min-width: 150px;
+            max-width: 150px;
+            text-align: left !important;
+        }
+
+        .puesto {
+            left: 330px;
+            min-width: 170px;
+            max-width: 170px;
+            text-align: left !important;
+        }
+
+        .porcentaje {
+            left: 500px;
+            min-width: 110px;
+            max-width: 110px;
+            font-size: 18px;
+            font-weight: bold;
+            background: white;
+        }
+
+        /* =========================
+           CELDAS ILUO
+           ========================= */
+
+        .celda-iluo {
+            min-width: 70px;
+            height: 48px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .nivel-I {
+            background: #fca5a5;
+            color: #7f1d1d;
+        }
+
+        .nivel-L {
+            background: #fde68a;
+            color: #78350f;
+        }
+
+        .nivel-U {
+            background: #60a5fa;
+            color: white;
+        }
+
+        .nivel-O {
+            background: #4ade80;
+            color: white;
+        }
+
+        .no-aplica {
+            background: #f3f4f6;
+            color: #9ca3af;
+            font-size: 16px;
+        }
+
+        .sin-evaluar {
+            background: #fff7ed;
+            color: #c2410c;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* =========================
+           BARRA DE DOMINIO
+           ========================= */
+
+        .barra-contenedor {
+            width: 90px;
+            height: 10px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 5px auto;
+        }
+
+        .barra {
+            height: 100%;
+            border-radius: 10px;
+        }
+
+        .barra-baja {
+            background: #ef4444;
+        }
+
+        .barra-media {
+            background: #f59e0b;
+        }
+
+        .barra-alta {
+            background: #3b82f6;
+        }
+
+        .barra-optima {
+            background: #22c55e;
+        }
+
+        /* =========================
+           LEYENDA
+           ========================= */
+
+        .leyenda {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .leyenda-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cuadro-leyenda {
+            width: 28px;
+            height: 28px;
+            border-radius: 5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* =========================
+           RESUMEN
+           ========================= */
+
+        .resumen {
+            margin-top: 20px;
+            padding: 18px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .contador-habilidades {
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+    
+        /* =========================================================
+           DISEÑO PROFESIONAL - FILTROS Y CONTROLES
+           ========================================================= */
+
+        .tarjeta {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        }
+
+
+        /* =========================
+           FILTROS
+           ========================= */
+
+        .tarjeta h2 {
+            color: #111827;
+            font-size: 22px;
+            margin-top: 0;
+            margin-bottom: 18px;
+        }
+
+
+        .filtros-matriz {
+            display: grid;
+            grid-template-columns:
+                minmax(170px, 1fr)
+                minmax(190px, 1.1fr)
+                minmax(190px, 1.1fr)
+                minmax(190px, 1.1fr)
+                auto;
+
+            gap: 16px;
+            align-items: end;
+        }
+
+
+        .filtro-item {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            min-width: 0;
+        }
+
+
+        .filtro-item label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #374151;
+            margin: 0;
+        }
+
+
+        .filtro-item select {
+            width: 100%;
+            min-height: 44px;
+            padding: 0 38px 0 13px;
+
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+
+            background-color: #ffffff;
+            color: #111827;
+
+            font-size: 14px;
+
+            cursor: pointer;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+
+        .filtro-item select:hover {
+            border-color: #9ca3af;
+        }
+
+
+        .filtro-item select:focus {
+            outline: none;
+            border-color: #4f46e5;
+
+            box-shadow:
+                0 0 0 3px rgba(79, 70, 229, 0.12);
+        }
+
+
+        /* =========================
+           BOTONES
+           ========================= */
+
+        .filtro-acciones {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 44px;
+            white-space: nowrap;
+        }
+
+
+        .filtro-acciones button {
+            min-height: 44px;
+
+            padding: 0 18px;
+
+            border: none;
+            border-radius: 7px;
+
+            background: #172033;
+            color: #ffffff;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease,
+                transform 0.15s ease;
+        }
+
+
+        .filtro-acciones button:hover {
+            background: #111827;
+        }
+
+
+        .filtro-acciones button:active {
+            transform: translateY(1px);
+        }
+
+
+        .filtro-acciones a {
+            color: #4f46e5;
+            font-size: 14px;
+            font-weight: 600;
+
+            text-decoration: none;
+
+            white-space: nowrap;
+        }
+
+
+        .filtro-acciones a:hover {
+            text-decoration: underline;
+        }
+
+
+        /* =========================
+           ENCABEZADO MATRIZ
+           ========================= */
+
+        .contador-habilidades {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 42px;
+
+            padding: 0 16px;
+
+            background: #f3f0ff;
+            color: #312e81;
+
+            border: 1px solid #e9e5ff;
+            border-radius: 8px;
+
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+
+        /* =========================
+           RUTA DEL ENCABEZADO
+           ========================= */
+
+        .ruta-matriz {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+
+            gap: 7px;
+
+            margin-top: 5px;
+
+            color: #6b7280;
+
+            font-size: 14px;
+        }
+
+
+        .ruta-matriz .ruta-elemento {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+
+            color: #4f46e5;
+            font-weight: 600;
+        }
+
+
+        .ruta-matriz .separador {
+            color: #9ca3af;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+           ========================= */
+
+        @media (max-width: 1200px) {
+
+            .filtros-matriz {
+                grid-template-columns:
+                    repeat(2, minmax(200px, 1fr));
+            }
+
+            .filtro-acciones {
+                grid-column: 1 / -1;
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .tarjeta {
+                padding: 16px;
+            }
+
+            .filtros-matriz {
+                grid-template-columns: 1fr;
+            }
+
+            .filtro-acciones {
+                grid-column: auto;
+                flex-wrap: wrap;
+            }
+
+        }
+
+</style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <aside class="menu">
+
+        <h2>MATRIZ ILUO</h2>
+
+        <a href="/">
+            🏠 Inicio
+        </a>
+
+        <a href="/colaboradores">
+            👥 Empleados
+        </a>
+
+        <a href="/habilidades">
+            🛠️ Habilidades
+        </a>
+
+        <a href="/puesto-habilidades">
+            🔗 Habilidades por puesto
+        </a>
+
+        <a href="/evaluaciones">
+            📝 Evaluaciones
+        </a>
+
+        <a href="/matriz">
+            📊 Matriz ILUO
+        </a>
+
+        <a href="/">
+            📈 Dashboard
+        </a>
+
+    </aside>
+
+
+    <main class="contenido">
+
+        <div class="encabezado">
+
+            <h1>Matriz ILUO</h1>
+
+            <p>
+                Matriz general de habilidades por área,
+                puesto y colaborador.
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             FILTROS
+             ========================= -->
+
+        <div class="tarjeta">
+
+    <h2>Filtros de la matriz</h2>
+
+    <form method="GET" action="/matriz">
+
+        <div class="filtros-matriz">
+
+            <!-- ÁREA -->
+
+            <div class="filtro-item">
+
+                <label>
+                    <strong>Área</strong>
+                </label>
+
+                <select name="area_id"
+                        onchange="this.form.submit()">
+
+                    <option value="">
+                        Todas las áreas
+                    </option>
+
+                    {% for area in areas %}
+
+                        <option value="{{ area.id }}"
+                            {% if area.id == area_seleccionada %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ area.nombre }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- DEPARTAMENTO -->
+
+            <div class="filtro-item">
+
+                <label>
+                    <strong>Departamento</strong>
+                </label>
+
+                <select name="departamento_id"
+                        onchange="this.form.submit()">
+
+                    <option value="">
+                        Todos los departamentos
+                    </option>
+
+                    {% for departamento in departamentos %}
+
+                        {% if not area_seleccionada
+                              or departamento.area_id == area_seleccionada %}
+
+                            <option value="{{ departamento.id }}"
+                                {% if departamento.id == departamento_seleccionado %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ departamento.nombre }}
+                            </option>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- PUESTO -->
+
+            <div class="filtro-item">
+
+                <label>
+                    <strong>Puesto</strong>
+                </label>
+
+                <select name="puesto_id"
+                        onchange="this.form.submit()">
+
+                    <option value="">
+                        Todos los puestos
+                    </option>
+
+                    {% for puesto in puestos %}
+
+                        {% if not departamento_seleccionado
+                              or puesto.departamento_id == departamento_seleccionado %}
+
+                            <option value="{{ puesto.id }}"
+                                {% if puesto.id == puesto_seleccionado %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ puesto.nombre }}
+                            </option>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- COLABORADOR -->
+
+            <div class="filtro-item">
+
+                <label>
+                    <strong>Colaborador</strong>
+                </label>
+
+                <select name="colaborador_id"
+                        onchange="this.form.submit()">
+
+                    <option value="">
+                        Todos los colaboradores
+                    </option>
+
+                    {% for colaborador in colaboradores %}
+
+                        {% if colaborador.activo
+                              and (not puesto_seleccionado
+                                   or colaborador.puesto_id == puesto_seleccionado)
+                              and (not departamento_seleccionado
+                                   or colaborador.departamento_id == departamento_seleccionado) %}
+
+                            <option value="{{ colaborador.id }}"
+                                {% if colaborador.id == colaborador_seleccionado %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ colaborador.nombre }}
+                            </option>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- ACCIONES -->
+
+            <div class="filtro-acciones">
+
+                <button type="submit">
+                    🔎 Filtrar
+                </button>
+
+                <a href="/matriz">
+                    ↻ Limpiar filtros
+                </a>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+<!-- =========================
+             MATRIZ GENERAL
+             ========================= -->
+
+        <div class="tarjeta">
+
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px;">
+
+    <div>
+
+        {% if puesto_seleccionado %}
+
+            {% for puesto in puestos %}
+
+                {% if puesto.id == puesto_seleccionado %}
+
+                    <h2 style="margin-bottom:8px; color:#1e3a8a; text-transform:uppercase;">
+                        MATRIZ DE HABILIDADES DE {{ puesto.nombre }}
+                    </h2>
+
+                {% endif %}
+
+            {% endfor %}
+
+        {% elif departamento_seleccionado %}
+
+            {% for departamento in departamentos %}
+
+                {% if departamento.id == departamento_seleccionado %}
+
+                    <h2 style="margin-bottom:8px; color:#1e3a8a; text-transform:uppercase;">
+                        MATRIZ DE HABILIDADES DE {{ departamento.nombre }}
+                    </h2>
+
+                {% endif %}
+
+            {% endfor %}
+
+        {% elif area_seleccionada %}
+
+            {% for area in areas %}
+
+                {% if area.id == area_seleccionada %}
+
+                    <h2 style="margin-bottom:8px; color:#1e3a8a; text-transform:uppercase;">
+                        MATRIZ DE HABILIDADES DE {{ area.nombre }}
+                    </h2>
+
+                {% endif %}
+
+            {% endfor %}
+
+        {% else %}
+
+            <h2 style="margin-bottom:8px; color:#1e3a8a; text-transform:uppercase;">
+                MATRIZ GENERAL DE HABILIDADES
+            </h2>
+
+        {% endif %}
+
+
+        <div style="font-size:16px; color:#6b7280;">
+
+            <strong>Área:</strong>
+
+            {% if area_seleccionada %}
+
+                {% for area in areas %}
+
+                    {% if area.id == area_seleccionada %}
+
+                        <span style="color:#1e3a8a; font-weight:600;">
+                            {{ area.nombre }}
+                        </span>
+
+                    {% endif %}
+
+                {% endfor %}
+
+            {% else %}
+
+                Todas
+
+            {% endif %}
+
+
+            {% if departamento_seleccionado %}
+
+                <span style="margin:0 8px; color:#9ca3af;">
+                    /
+                </span>
+
+                {% for departamento in departamentos %}
+
+                    {% if departamento.id == departamento_seleccionado %}
+
+                        <span style="color:#1e3a8a; font-weight:600;">
+                            {{ departamento.nombre }}
+                        </span>
+
+                    {% endif %}
+
+                {% endfor %}
+
+            {% endif %}
+
+
+            {% if puesto_seleccionado %}
+
+                <span style="margin:0 8px; color:#9ca3af;">
+                    /
+                </span>
+
+                {% for puesto in puestos %}
+
+                    {% if puesto.id == puesto_seleccionado %}
+
+                        <span style="color:#1e3a8a; font-weight:600;">
+                            {{ puesto.nombre }}
+                        </span>
+
+                    {% endif %}
+
+                {% endfor %}
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <div class="contador-habilidades">
+
+        {{ habilidades_area|length }}
+
+        {% if habilidades_area|length == 1 %}
+            habilidad considerada
+        {% else %}
+            habilidades consideradas
+        {% endif %}
+
+    </div>
+
+</div>
+
+<div class="matriz-contenedor">
+
+                {% if matriz and habilidades_area %}
+
+                <table class="tabla-matriz">
+
+                    <thead>
+
+                        <tr>
+
+                            <th class="columna-fija encabezado-fijo colaborador">
+                                Colaborador
+                            </th>
+
+                            <th class="columna-fija encabezado-fijo departamento">
+                                Departamento
+                            </th>
+
+                            <th class="columna-fija encabezado-fijo puesto">
+                                Puesto
+                            </th>
+
+                            <th class="columna-fija encabezado-fijo porcentaje">
+                                % Dominio
+                            </th>
+
+
+                            {% for habilidad in habilidades_area %}
+
+                                <th class="th-habilidad">
+                                    {{ habilidad.nombre }}
+                                </th>
+
+                            {% endfor %}
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    {% for fila in matriz %}
+
+                        <tr>
+
+                            <td class="columna-fija colaborador">
+
+                                {{ fila.colaborador.nombre }}
+
+                                <br>
+
+                                <small style="font-weight:normal; color:#6b7280;">
+                                    #{{ fila.colaborador.numero_empleado }}
+                                </small>
+
+                            </td>
+
+
+                            <td class="columna-fija departamento">
+
+                                {% if fila.colaborador.departamento %}
+
+                                    {{ fila.colaborador.departamento.nombre }}
+
+                                {% else %}
+
+                                    Sin departamento
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td class="columna-fija puesto">
+
+                                {{ fila.colaborador.puesto.nombre }}
+
+                            </td>
+
+
+                            <td class="columna-fija porcentaje">
+
+                                {{ fila.porcentaje }}%
+
+                                <div class="barra-contenedor">
+
+                                    {% if fila.porcentaje < 50 %}
+
+                                        <div
+                                            class="barra barra-baja"
+                                            style="width: {{ fila.porcentaje }}%;">
+                                        </div>
+
+                                    {% elif fila.porcentaje < 75 %}
+
+                                        <div
+                                            class="barra barra-media"
+                                            style="width: {{ fila.porcentaje }}%;">
+                                        </div>
+
+                                    {% elif fila.porcentaje < 90 %}
+
+                                        <div
+                                            class="barra barra-alta"
+                                            style="width: {{ fila.porcentaje }}%;">
+                                        </div>
+
+                                    {% else %}
+
+                                        <div
+                                            class="barra barra-optima"
+                                            style="width: {{ fila.porcentaje }}%;">
+                                        </div>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </td>
+
+
+                            {% for habilidad in fila.habilidades %}
+
+                                {% if not habilidad.aplica %}
+
+                                    <td class="celda-iluo no-aplica">
+                                        —
+                                    </td>
+
+                                {% elif habilidad.nivel == "I" %}
+
+                                    <td class="celda-iluo nivel-I">
+                                        I
+                                    </td>
+
+                                {% elif habilidad.nivel == "L" %}
+
+                                    <td class="celda-iluo nivel-L">
+                                        L
+                                    </td>
+
+                                {% elif habilidad.nivel == "U" %}
+
+                                    <td class="celda-iluo nivel-U">
+                                        U
+                                    </td>
+
+                                {% elif habilidad.nivel == "O" %}
+
+                                    <td class="celda-iluo nivel-O">
+                                        O
+                                    </td>
+
+                                {% else %}
+
+                                    <td class="celda-iluo sin-evaluar">
+                                        SIN EVALUAR
+                                    </td>
+
+                                {% endif %}
+
+                            {% endfor %}
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+                {% elif not habilidades_area %}
+
+                    <div style="padding:30px; text-align:center;">
+
+                        <h3>
+                            No hay habilidades registradas para esta área.
+                        </h3>
+
+                        <p>
+                            Primero asigna habilidades a los puestos del área.
+                        </p>
+
+                    </div>
+
+                {% else %}
+
+                    <div style="padding:30px; text-align:center;">
+
+                        <h3>
+                            No hay colaboradores para mostrar.
+                        </h3>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- =========================
+                 LEYENDA
+                 ========================= -->
+
+            <div class="leyenda">
+
+                <div class="leyenda-item">
+
+                    <span class="cuadro-leyenda nivel-I">
+                        I
+                    </span>
+
+                    Inicial / Aprendiz
+
+                </div>
+
+
+                <div class="leyenda-item">
+
+                    <span class="cuadro-leyenda nivel-L">
+                        L
+                    </span>
+
+                    Local / Operario
+
+                </div>
+
+
+                <div class="leyenda-item">
+
+                    <span class="cuadro-leyenda nivel-U">
+                        U
+                    </span>
+
+                    Útil / Autónomo
+
+                </div>
+
+
+                <div class="leyenda-item">
+
+                    <span class="cuadro-leyenda nivel-O">
+                        O
+                    </span>
+
+                    Óptimo / Instructor
+
+                </div>
+
+
+                <div class="leyenda-item">
+
+                    <span class="cuadro-leyenda no-aplica">
+                        —
+                    </span>
+
+                    No aplica al puesto
+
+                </div>
+
+
+                <div class="leyenda-item">
+
+                    <span class="cuadro-leyenda sin-evaluar">
+                        !
+                    </span>
+
+                    Sin evaluar
+
+                </div>
+
+            </div>
+
+
+            <div class="resumen">
+
+                <strong>
+                    Interpretación del % de dominio:
+                </strong>
+
+                <br><br>
+
+                🔴 Menos de 50% — Requiere capacitación
+
+                <br>
+
+                🟠 50% a 74% — En desarrollo
+
+                <br>
+
+                🔵 75% a 89% — Buen dominio
+
+                <br>
+
+                🟢 90% a 100% — Dominio óptimo
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+{% include "_usuario_menu.html" %}
+</body>
+
+</html>
+
+
+
+
+

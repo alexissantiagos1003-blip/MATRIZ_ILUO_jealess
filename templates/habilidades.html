@@ -1,0 +1,540 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Habilidades - Matriz ILUO</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+        .filtros {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .campo {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .campo label {
+            font-weight: 600;
+        }
+
+        .campo input,
+        .campo select {
+            padding: 10px;
+            border: 1px solid #dfe3e6;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .acciones-form {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-secundario {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            border: 1px solid #dfe3e6;
+            background: #fff;
+            color: #252a2d;
+        }
+
+        .btn-editar {
+            color: #252a2d;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .btn-eliminar {
+            color: #b42318;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .tabla-responsive {
+            overflow-x: auto;
+        }
+
+        @media (max-width: 900px) {
+            .filtros {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .filtros {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <aside class="menu">
+
+    {% include "_menu_principal.html" %}
+
+</aside>
+
+    <main class="contenido">
+
+        <div class="encabezado">
+
+            <h1>Habilidades</h1>
+
+            <p>
+                Administra las habilidades que serÃ¡n evaluadas mediante ILUO.
+            </p>
+
+        </div>
+
+        <!-- REGISTRAR -->
+
+        <div class="tarjeta">
+
+            <h2>Registrar habilidad</h2>
+
+            <br>
+
+            <form method="POST" action="/habilidades/agregar">
+
+                <div class="filtros">
+
+                    <div class="campo">
+                        <label>Nombre de la habilidad</label>
+                        <input
+                            type="text"
+                            name="nombre"
+                            placeholder="Ej. Manejo de montacargas"
+                            required
+                        >
+                    </div>
+
+                    <div class="campo">
+                        <label>Alcance</label>
+
+                        <select
+                            name="alcance"
+                            id="alcance"
+                            required
+                        >
+
+                            <option value="">
+                                Seleccionar
+                            </option>
+
+                            <option value="empresa">
+                                Empresa
+                            </option>
+
+                            <option value="area">
+                                Ãrea
+                            </option>
+
+                            <option value="departamento">
+                                Departamento
+                            </option>
+
+                        </select>
+                    </div>
+
+                    <div class="campo">
+
+                        <label>Ãrea</label>
+
+                        <select
+                            name="area_id"
+                            id="area_id"
+                        >
+
+                            <option value="">
+                                Seleccionar Ã¡rea
+                            </option>
+
+                            {% for area in areas %}
+
+                            <option value="{{ area.id }}">
+                                {{ area.nombre }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="campo">
+
+                        <label>Departamento</label>
+
+                        <select
+                            name="departamento_id"
+                            id="departamento_id"
+                        >
+
+                            <option value="">
+                                Seleccionar departamento
+                            </option>
+
+                            {% for departamento in departamentos %}
+
+                            <option
+                                value="{{ departamento.id }}"
+                                data-area="{{ departamento.area_id }}"
+                            >
+                                {{ departamento.nombre }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <button type="submit">
+                    Registrar habilidad
+                </button>
+
+            </form>
+
+        </div>
+
+        <br>
+
+        <!-- FILTROS -->
+
+        <div class="tarjeta">
+
+            <h2>Filtrar habilidades</h2>
+
+            <br>
+
+            <form method="GET" action="/habilidades">
+
+                <div class="filtros">
+
+                    <div class="campo">
+
+                        <label>Ãrea</label>
+
+                        <select name="area_id">
+
+                            <option value="">
+                                Todas las Ã¡reas
+                            </option>
+
+                            {% for area in areas %}
+
+                            <option
+                                value="{{ area.id }}"
+                                {% if area_seleccionada == area.id %}
+                                selected
+                                {% endif %}
+                            >
+                                {{ area.nombre }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="campo">
+
+                        <label>Departamento</label>
+
+                        <select name="departamento_id">
+
+                            <option value="">
+                                Todos los departamentos
+                            </option>
+
+                            {% for departamento in departamentos %}
+
+                            <option
+                                value="{{ departamento.id }}"
+                                {% if departamento_seleccionado == departamento.id %}
+                                selected
+                                {% endif %}
+                            >
+                                {{ departamento.nombre }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="campo">
+
+                        <label>Alcance</label>
+
+                        <select name="alcance">
+
+                            <option value="">
+                                Todos
+                            </option>
+
+                            <option
+                                value="empresa"
+                                {% if alcance_seleccionado == "empresa" %}
+                                selected
+                                {% endif %}
+                            >
+                                Empresa
+                            </option>
+
+                            <option
+                                value="area"
+                                {% if alcance_seleccionado == "area" %}
+                                selected
+                                {% endif %}
+                            >
+                                Ãrea
+                            </option>
+
+                            <option
+                                value="departamento"
+                                {% if alcance_seleccionado == "departamento" %}
+                                selected
+                                {% endif %}
+                            >
+                                Departamento
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="acciones-form">
+
+                        <button type="submit">
+                            ðŸ”Ž Filtrar
+                        </button>
+
+                        <a
+                            href="/habilidades"
+                            class="btn-secundario"
+                        >
+                            Limpiar
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+        <br>
+
+        <!-- LISTADO -->
+
+        <div class="tarjeta">
+
+            <h2>Habilidades registradas</h2>
+
+            <br>
+
+            {% if habilidades %}
+
+            <div class="tabla-responsive">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Habilidad</th>
+
+                            <th>Alcance</th>
+
+                            <th>Ãrea</th>
+
+                            <th>Departamento</th>
+
+                            <th>AcciÃ³n</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for habilidad in habilidades %}
+
+                        <tr>
+
+                            <td>
+                                {{ habilidad.id }}
+                            </td>
+
+                            <td>
+                                {{ habilidad.nombre }}
+                            </td>
+
+                            <td>
+
+                                {% if habilidad.alcance == "empresa" %}
+                                    Empresa
+                                {% elif habilidad.alcance == "area" %}
+                                    Ãrea
+                                {% elif habilidad.alcance == "departamento" %}
+                                    Departamento
+                                {% else %}
+                                    Sin clasificar
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                {% if habilidad.area %}
+                                    {{ habilidad.area.nombre }}
+                                {% else %}
+                                    â€”
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if habilidad.departamento %}
+                                    {{ habilidad.departamento.nombre }}
+                                {% else %}
+                                    â€”
+                                {% endif %}
+                            </td>
+
+                            <td>
+
+                                <div class="acciones">
+
+                                    <a
+                                        href="/habilidades/editar/{{ habilidad.id }}"
+                                        class="btn-editar"
+                                    >
+                                        âœï¸ Editar
+                                    </a>
+
+                                    <a
+                                        href="/habilidades/eliminar/{{ habilidad.id }}"
+                                        class="btn-eliminar"
+                                        onclick="return confirm('Â¿Eliminar esta habilidad?');"
+                                    >
+                                        ðŸ—‘ï¸ Eliminar
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <p>
+                No hay habilidades que coincidan con los filtros.
+            </p>
+
+            {% endif %}
+
+        </div>
+
+    </main>
+
+</div>
+
+<script>
+
+    function actualizarCampos() {
+
+        const alcance = document.getElementById("alcance");
+        const area = document.getElementById("area_id");
+        const departamento = document.getElementById("departamento_id");
+
+        if (!alcance || !area || !departamento) {
+            return;
+        }
+
+        const tipo = alcance.value;
+
+        area.disabled = tipo === "empresa";
+        departamento.disabled =
+            tipo === "empresa" || tipo === "area";
+
+        if (tipo === "empresa") {
+            area.value = "";
+            departamento.value = "";
+        }
+
+        if (tipo === "area") {
+            departamento.value = "";
+        }
+
+        const areaSeleccionada = area.value;
+
+        for (const opcion of departamento.options) {
+
+            if (!opcion.value) {
+                continue;
+            }
+
+            opcion.hidden =
+                !areaSeleccionada ||
+                opcion.dataset.area !== areaSeleccionada;
+        }
+    }
+
+    document
+        .getElementById("alcance")
+        ?.addEventListener("change", actualizarCampos);
+
+    document
+        .getElementById("area_id")
+        ?.addEventListener("change", actualizarCampos);
+
+    actualizarCampos();
+
+</script>
+
+</body>
+</html>
+

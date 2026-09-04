@@ -1,0 +1,338 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Matriz ILUO</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        .matriz-contenedor {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .tabla-matriz {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 900px;
+            background: white;
+        }
+
+        .tabla-matriz th,
+        .tabla-matriz td {
+            border: 1px solid #d1d5db;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .tabla-matriz th {
+            background: #1f2937;
+            color: white;
+        }
+
+        .colaborador {
+            text-align: left !important;
+            font-weight: bold;
+            min-width: 180px;
+        }
+
+        .puesto {
+            text-align: left !important;
+            min-width: 150px;
+        }
+
+        .celda-iluo {
+            font-weight: bold;
+            font-size: 18px;
+            border-radius: 6px;
+        }
+
+        .nivel-I {
+            background: #fca5a5;
+            color: #7f1d1d;
+        }
+
+        .nivel-L {
+            background: #fde68a;
+            color: #78350f;
+        }
+
+        .nivel-U {
+            background: #60a5fa;
+            color: white;
+        }
+
+        .nivel-O {
+            background: #4ade80;
+            color: white;
+        }
+
+        .sin-evaluar {
+            background: #f3f4f6;
+            color: #9ca3af;
+        }
+
+        .leyenda {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .leyenda-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cuadro-leyenda {
+            width: 25px;
+            height: 25px;
+            border-radius: 5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="contenedor">
+
+    <aside class="menu">
+
+        <h2>MATRIZ ILUO</h2>
+
+        <a href="/">
+            🏠 Inicio
+        </a>
+
+        <a href="/colaboradores">
+            👥 Empleados
+        </a>
+
+        <a href="/habilidades">
+            🛠️ Habilidades
+        </a>
+
+        <a href="/puesto-habilidades">
+            🔗 Habilidades por puesto
+        </a>
+
+        <a href="/evaluaciones">
+            📝 Evaluaciones
+        </a>
+
+        <a href="/matriz">
+            📊 Matriz ILUO
+        </a>
+
+        <a href="#">
+            📈 Dashboard
+        </a>
+
+    </aside>
+
+
+    <main class="contenido">
+
+        <div class="encabezado">
+
+            <h1>Matriz ILUO</h1>
+
+            <p>
+                Visualización general del nivel de habilidades
+                de los colaboradores.
+            </p>
+
+        </div>
+
+
+        <div class="tarjeta">
+
+            <h2>Matriz de habilidades</h2>
+
+            <div class="matriz-contenedor">
+
+                {% if matriz %}
+
+                <table class="tabla-matriz">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Colaborador
+                            </th>
+
+                            <th>
+                                Puesto
+                            </th>
+
+                            {% if matriz[0].habilidades %}
+
+                                {% for habilidad in matriz[0].habilidades %}
+
+                                    <th>
+                                        {{ habilidad.nombre }}
+                                    </th>
+
+                                {% endfor %}
+
+                            {% endif %}
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    {% for fila in matriz %}
+
+                        <tr>
+
+                            <td class="colaborador">
+
+                                {{ fila.colaborador.nombre }}
+
+                            </td>
+
+
+                            <td class="puesto">
+
+                                {{ fila.colaborador.puesto.nombre }}
+
+                            </td>
+
+
+                            {% for habilidad in fila.habilidades %}
+
+                                {% if habilidad.nivel == "I" %}
+
+                                    <td class="celda-iluo nivel-I">
+                                        I
+                                    </td>
+
+                                {% elif habilidad.nivel == "L" %}
+
+                                    <td class="celda-iluo nivel-L">
+                                        L
+                                    </td>
+
+                                {% elif habilidad.nivel == "U" %}
+
+                                    <td class="celda-iluo nivel-U">
+                                        U
+                                    </td>
+
+                                {% elif habilidad.nivel == "O" %}
+
+                                    <td class="celda-iluo nivel-O">
+                                        O
+                                    </td>
+
+                                {% else %}
+
+                                    <td class="celda-iluo sin-evaluar">
+                                        —
+                                    </td>
+
+                                {% endif %}
+
+                            {% endfor %}
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+                {% else %}
+
+                    <p>
+                        Todavía no hay colaboradores registrados.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="leyenda">
+
+                <div class="leyenda-item">
+
+                    <span class="cuadro-leyenda nivel-I">
+                        I
+                    </span>
+
+                    Inicial / Aprendiz
+
+                </div>
+
+
+                <div class="leyenda-item">
+
+                    <span class="cuadro-leyenda nivel-L">
+                        L
+                    </span>
+
+                    Local / Operario
+
+                </div>
+
+
+                <div class="leyenda-item">
+
+                    <span class="cuadro-leyenda nivel-U">
+                        U
+                    </span>
+
+                    Útil / Autónomo
+
+                </div>
+
+
+                <div class="leyenda-item">
+
+                    <span class="cuadro-leyenda nivel-O">
+                        O
+                    </span>
+
+                    Óptimo / Instructor
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>

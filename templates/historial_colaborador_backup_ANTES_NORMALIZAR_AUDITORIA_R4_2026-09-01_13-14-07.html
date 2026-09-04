@@ -1,0 +1,590 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Historial de modificaciones
+    </title>
+
+
+    <style>
+
+        body {
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            margin: 0;
+
+            padding: 0;
+
+            background: #f4f6f8;
+
+            color: #1f2937;
+        }
+
+
+        .contenedor {
+
+            max-width: 1400px;
+
+            margin: 36px auto;
+
+            padding: 0 22px;
+        }
+
+
+        /* ==================================================
+           ENCABEZADO
+           ================================================== */
+
+        .encabezado {
+
+            background: white;
+
+            border-radius: 12px;
+
+            padding: 24px 28px;
+
+            margin-bottom: 22px;
+
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.08);
+        }
+
+
+        .encabezado h1 {
+
+            margin: 0 0 8px 0;
+
+            font-size: 32px;
+
+            color: #16324f;
+        }
+
+
+        .subtitulo {
+
+            color: #64748b;
+
+            font-size: 16px;
+        }
+
+
+        .subtitulo strong {
+
+            color: #334155;
+        }
+
+
+        .acciones {
+
+            margin-top: 18px;
+        }
+
+
+        .btn-regresar {
+
+            display: inline-block;
+
+            padding: 9px 15px;
+
+            border-radius: 7px;
+
+            background: #6b7280;
+
+            color: white;
+
+            text-decoration: none;
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+
+        .btn-regresar:hover {
+
+            background: #4b5563;
+
+            color: white;
+        }
+
+
+        /* ==================================================
+           MOVIMIENTO
+           ================================================== */
+
+        .movimiento {
+
+            background: white;
+
+            border-radius: 12px;
+
+            margin-bottom: 18px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.07);
+
+            border: 1px solid #e5e7eb;
+        }
+
+
+        .movimiento-encabezado {
+
+            padding: 16px 20px;
+
+            background: #f8fafc;
+
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+
+        .movimiento-fecha {
+
+            font-size: 17px;
+
+            font-weight: 700;
+
+            color: #16324f;
+        }
+
+
+        .movimiento-usuario {
+
+            margin-top: 5px;
+
+            font-size: 14px;
+
+            color: #475569;
+        }
+
+
+        .movimiento-motivo {
+
+            margin-top: 10px;
+
+            padding: 9px 12px;
+
+            border-radius: 7px;
+
+            background: #f5f3ff;
+
+            color: #5b21b6;
+
+            font-size: 14px;
+        }
+
+
+        .movimiento-motivo strong {
+
+            color: #4c1d95;
+        }
+
+
+        .movimiento-contenido {
+
+            padding: 0;
+        }
+
+
+        /* ==================================================
+           TABLA DE CAMBIOS
+           ================================================== */
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+        }
+
+
+        th {
+
+            background: #ffffff;
+
+            color: #334155;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            text-align: left;
+
+            padding: 12px 16px;
+
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+
+        td {
+
+            padding: 12px 16px;
+
+            border-bottom: 1px solid #edf0f2;
+
+            vertical-align: top;
+
+            font-size: 14px;
+        }
+
+
+        tr:last-child td {
+
+            border-bottom: none;
+        }
+
+
+        .campo {
+
+            width: 22%;
+
+            font-weight: 700;
+
+            color: #334155;
+        }
+
+
+        .anterior {
+
+            width: 30%;
+
+            color: #b91c1c;
+        }
+
+
+        .flecha {
+
+            width: 6%;
+
+            text-align: center;
+
+            color: #94a3b8;
+
+            font-size: 18px;
+
+            font-weight: 700;
+        }
+
+
+        .nuevo {
+
+            width: 42%;
+
+            color: #15803d;
+
+            font-weight: 600;
+        }
+
+
+        .sin-registros {
+
+            padding: 24px;
+
+            background: #eff6ff;
+
+            border-radius: 10px;
+
+            color: #1e40af;
+
+            border: 1px solid #bfdbfe;
+
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.05);
+        }
+
+
+        /* ==================================================
+           RESPONSIVE
+           ================================================== */
+
+        @media (max-width: 800px) {
+
+            .contenedor {
+
+                margin: 20px auto;
+
+                padding: 0 12px;
+            }
+
+
+            .encabezado h1 {
+
+                font-size: 25px;
+            }
+
+
+            .movimiento-contenido {
+
+                overflow-x: auto;
+            }
+
+
+            table {
+
+                min-width: 700px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="contenedor">
+
+
+    <!-- ==================================================
+         ENCABEZADO
+         ================================================== -->
+
+    <div class="encabezado">
+
+        <h1>
+            Historial de modificaciones
+        </h1>
+
+
+        <div class="subtitulo">
+
+            <strong>
+                {{ colaborador.nombre }}
+            </strong>
+
+            · No. de empleado
+
+            <strong>
+                {{ colaborador.numero_empleado }}
+            </strong>
+
+        </div>
+
+
+        <div class="acciones">
+
+            <a
+                href="{{ url_for('colaboradores') }}"
+                class="btn-regresar"
+            >
+                ← Regresar a colaboradores
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         MOVIMIENTOS
+         ================================================== -->
+
+    {% if movimientos %}
+
+
+        {% for movimiento in movimientos %}
+
+
+        <div class="movimiento">
+
+
+            <!-- ==========================================
+                 ENCABEZADO DEL MOVIMIENTO
+                 ========================================== -->
+
+            <div class="movimiento-encabezado">
+
+
+                <div class="movimiento-fecha">
+
+                    {% if movimiento.fecha_hora %}
+
+                        {{ movimiento.fecha_hora.strftime('%d/%m/%Y %H:%M:%S') }}
+
+                    {% else %}
+
+                        Fecha no disponible
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="movimiento-usuario">
+
+                    {% set usuario = usuarios.get(movimiento.usuario_id) %}
+
+                    <strong>
+                        Usuario:
+                    </strong>
+
+                    {% if usuario %}
+
+                        {{ usuario.username }}
+
+                        {% if usuario.rol %}
+
+                            · {{ usuario.rol }}
+
+                        {% endif %}
+
+                    {% else %}
+
+                        Usuario #{{ movimiento.usuario_id }}
+
+                    {% endif %}
+
+                </div>
+
+
+                {% if movimiento.motivo %}
+
+                <div class="movimiento-motivo">
+
+                    <strong>
+                        Motivo:
+                    </strong>
+
+                    {{ movimiento.motivo }}
+
+                </div>
+
+                {% endif %}
+
+
+            </div>
+
+
+            <!-- ==========================================
+                 CAMBIOS REALES
+                 ========================================== -->
+
+            <div class="movimiento-contenido">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th class="campo">
+                                Campo
+                            </th>
+
+                            <th class="anterior">
+                                Valor anterior
+                            </th>
+
+                            <th class="flecha">
+                            </th>
+
+                            <th class="nuevo">
+                                Valor nuevo
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for cambio in movimiento.cambios %}
+
+                        <tr>
+
+                            <td class="campo">
+
+                                {{ cambio.campo }}
+
+                            </td>
+
+
+                            <td class="anterior">
+
+                                {% if cambio.valor_anterior %}
+
+                                    {{ cambio.valor_anterior }}
+
+                                {% else %}
+
+                                    <span>
+                                        Sin valor
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td class="flecha">
+                                →
+                            </td>
+
+
+                            <td class="nuevo">
+
+                                {% if cambio.valor_nuevo %}
+
+                                    {{ cambio.valor_nuevo }}
+
+                                {% else %}
+
+                                    <span>
+                                        Sin valor
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        </div>
+
+
+        {% endfor %}
+
+
+    {% else %}
+
+
+        <div class="sin-registros">
+
+            Este colaborador no tiene cambios reales registrados.
+
+        </div>
+
+
+    {% endif %}
+
+
+</div>
+
+</body>
+
+</html>

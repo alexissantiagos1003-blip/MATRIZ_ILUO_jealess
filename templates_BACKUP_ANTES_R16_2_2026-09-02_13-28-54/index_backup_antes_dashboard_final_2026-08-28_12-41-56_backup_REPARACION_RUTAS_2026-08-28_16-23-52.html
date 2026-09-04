@@ -1,0 +1,576 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Dashboard ILUO
+    </title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        .dashboard-header {
+            margin-bottom: 25px;
+        }
+
+        .dashboard-header h1 {
+            margin-bottom: 6px;
+        }
+
+        .dashboard-header p {
+            color: #666;
+            margin: 0;
+        }
+
+        .filtros-dashboard {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .filtro-dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .filtro-dashboard label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .filtro-dashboard select {
+            min-width: 220px;
+            padding: 9px 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background: white;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .dashboard-card h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .dominio-principal {
+            text-align: center;
+        }
+
+        .dominio-porcentaje {
+            font-size: 58px;
+            font-weight: 700;
+            margin: 15px 0;
+        }
+
+        .dominio-estado {
+            display: inline-block;
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-weight: 700;
+        }
+
+        .semaforo {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .semaforo span {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .semaforo-rojo {
+            background: #dc3545;
+        }
+
+        .semaforo-amarillo {
+            background: #ffc107;
+        }
+
+        .semaforo-verde {
+            background: #198754;
+        }
+
+        .leyenda-semaforo {
+            margin-top: 20px;
+            text-align: left;
+            line-height: 1.8;
+        }
+
+        .leyenda-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .leyenda-circulo {
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .distribucion {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .nivel-iluo {
+            text-align: center;
+            padding: 18px 8px;
+            border-radius: 10px;
+            background: #f5f5f5;
+        }
+
+        .nivel-letra {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .nivel-descripcion {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .nivel-cantidad {
+            font-size: 22px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        .dashboard-resumen {
+            margin-top: 20px;
+        }
+
+        @media (max-width: 900px) {
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="contenedor">
+
+    <aside class="menu">
+
+        <h2>MATRIZ ILUO</h2>
+
+        <a href="/">🏠 Dashboard</a>
+
+        <a href="/colaboradores">
+            👥 Empleados
+        </a>
+
+        <a href="/colaboradores/inactivos">
+            🔴 Inactivos
+        </a>
+
+        <a href="/habilidades">
+            🛠️ Habilidades
+        </a>
+
+        <a href="/evaluaciones">
+            📝 Evaluaciones
+        </a>
+
+        <a href="/matriz">
+            📊 Matriz ILUO
+        </a>
+
+        <a href="/cursos">
+            📚 Cursos
+        </a>
+
+    </aside>
+
+
+    <main class="contenido">
+
+        <div class="dashboard-header">
+
+            <h1>
+                Dashboard de
+                {{ area_actual.nombre if area_actual else "OPERACIONES" }}
+            </h1>
+
+            <p>
+                Vista general del dominio de habilidades
+                del área seleccionada.
+            </p>
+
+        </div>
+
+
+        <!-- ============================================= -->
+        <!-- FILTROS -->
+        <!-- ============================================= -->
+
+        <form method="get"
+              class="filtros-dashboard">
+
+            <div class="filtro-dashboard">
+
+                <label>
+                    Área
+                </label>
+
+                <select
+                    name="area_id"
+                    onchange="this.form.submit()">
+
+                    {% for area in areas %}
+
+                        <option
+                            value="{{ area.id }}"
+                            {% if area_actual and area.id == area_actual.id %}
+                                selected
+                            {% endif %}
+                        >
+
+                            {{ area.nombre }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <div class="filtro-dashboard">
+
+                <label>
+                    Departamento
+                </label>
+
+                <select
+                    name="departamento_id"
+                    onchange="this.form.submit()">
+
+                    <option value="">
+                        Todos los departamentos
+                    </option>
+
+                    {% for departamento in departamentos %}
+
+                        <option
+                            value="{{ departamento.id }}"
+                            {% if departamento_actual and departamento.id == departamento_actual.id %}
+                                selected
+                            {% endif %}
+                        >
+
+                            {{ departamento.nombre }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+        </form>
+
+
+        <!-- ============================================= -->
+        <!-- TARJETAS GENERALES -->
+        <!-- ============================================= -->
+
+        <div class="tarjetas">
+
+            <div class="tarjeta">
+
+                <h3>
+                    👥 Empleados
+                </h3>
+
+                <div class="numero">
+                    {{ colaboradores }}
+                </div>
+
+                <p>
+                    Colaboradores evaluados
+                </p>
+
+            </div>
+
+
+            <div class="tarjeta">
+
+                <h3>
+                    🛠️ Habilidades
+                </h3>
+
+                <div class="numero">
+                    {{ habilidades }}
+                </div>
+
+                <p>
+                    Habilidades registradas
+                </p>
+
+            </div>
+
+
+            <div class="tarjeta">
+
+                <h3>
+                    📝 Evaluaciones
+                </h3>
+
+                <div class="numero">
+                    {{ evaluaciones }}
+                </div>
+
+                <p>
+                    Evaluaciones consideradas
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ============================================= -->
+        <!-- DASHBOARD -->
+        <!-- ============================================= -->
+
+        <div class="dashboard-grid">
+
+
+            <!-- DOMINIO -->
+
+            <div class="dashboard-card dominio-principal">
+
+                <h2>
+                    Dominio general
+                </h2>
+
+                {% if dominio.total > 0 %}
+
+                    <div class="dominio-porcentaje">
+
+                        {{ dominio.porcentaje }}%
+
+                    </div>
+
+                    <div class="dominio-estado">
+
+                        {{ dominio.estado }}
+
+                    </div>
+
+                    <div class="semaforo">
+
+                        <span class="semaforo-rojo"></span>
+
+                        <span class="semaforo-amarillo"></span>
+
+                        <span class="semaforo-verde"></span>
+
+                    </div>
+
+                    <div class="leyenda-semaforo">
+
+                        <div class="leyenda-item">
+
+                            <span
+                                class="leyenda-circulo semaforo-rojo">
+                            </span>
+
+                            <strong>
+                                ROJO
+                            </strong>
+
+                            — Requiere Atención
+
+                        </div>
+
+
+                        <div class="leyenda-item">
+
+                            <span
+                                class="leyenda-circulo semaforo-amarillo">
+                            </span>
+
+                            <strong>
+                                AMARILLO
+                            </strong>
+
+                            — En desarrollo
+
+                        </div>
+
+
+                        <div class="leyenda-item">
+
+                            <span
+                                class="leyenda-circulo semaforo-verde">
+                            </span>
+
+                            <strong>
+                                VERDE
+                            </strong>
+
+                            — Buen dominio
+
+                        </div>
+
+                    </div>
+
+                {% else %}
+
+                    <div class="dominio-porcentaje">
+                        —
+                    </div>
+
+                    <div class="dominio-estado">
+                        Sin evaluaciones
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- DISTRIBUCION ILUO -->
+
+            <div class="dashboard-card">
+
+                <h2>
+                    Distribución ILUO
+                </h2>
+
+                <div class="distribucion">
+
+
+                    <div class="nivel-iluo">
+
+                        <div class="nivel-letra">
+                            I
+                        </div>
+
+                        <div class="nivel-descripcion">
+                            Inicial / Aprendiz
+                        </div>
+
+                        <div class="nivel-cantidad">
+                            {{ dominio.niveles.I }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="nivel-iluo">
+
+                        <div class="nivel-letra">
+                            L
+                        </div>
+
+                        <div class="nivel-descripcion">
+                            Local / Operario
+                        </div>
+
+                        <div class="nivel-cantidad">
+                            {{ dominio.niveles.L }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="nivel-iluo">
+
+                        <div class="nivel-letra">
+                            U
+                        </div>
+
+                        <div class="nivel-descripcion">
+                            Útil / Autónomo
+                        </div>
+
+                        <div class="nivel-cantidad">
+                            {{ dominio.niveles.U }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="nivel-iluo">
+
+                        <div class="nivel-letra">
+                            O
+                        </div>
+
+                        <div class="nivel-descripcion">
+                            Óptimo / Instructor
+                        </div>
+
+                        <div class="nivel-cantidad">
+                            {{ dominio.niveles.O }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="dashboard-resumen">
+
+                    <p>
+                        Esta distribución muestra cómo se
+                        encuentran actualmente las evaluaciones
+                        consideradas para la vista seleccionada.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>

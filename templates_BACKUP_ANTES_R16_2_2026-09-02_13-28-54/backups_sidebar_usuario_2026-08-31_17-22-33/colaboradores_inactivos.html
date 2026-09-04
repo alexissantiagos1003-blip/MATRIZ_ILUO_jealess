@@ -1,0 +1,201 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Colaboradores Inactivos - Matriz ILUO</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <aside class="menu">
+
+        <h2>MATRIZ ILUO</h2>
+
+        <a href="/">
+            🏠 Inicio
+        </a>
+
+        <a href="/colaboradores">
+            👥 Colaboradores
+        </a>
+
+        <a href="/habilidades">
+            🛠️ Habilidades
+        </a>
+
+        <a href="/puesto-habilidades">
+            🔗 Habilidades por puesto
+        </a>
+
+        <a href="/evaluaciones">
+            📝 Evaluaciones
+        </a>
+
+        <a href="/matriz">
+            📊 Matriz ILUO
+        </a>
+
+        <a href="/colaboradores/inactivos">
+            🔴 Inactivos
+        </a>
+
+    </aside>
+
+
+    <main class="contenido">
+
+        <div class="encabezado">
+
+            <h1>Colaboradores inactivos</h1>
+
+            <p>
+                Colaboradores que han sido dados de baja.
+            </p>
+
+        </div>
+
+
+        <div class="tarjeta">
+
+            <h2>Personal dado de baja</h2>
+
+            <br>
+
+            {% if colaboradores %}
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Número de empleado
+                        </th>
+
+                        <th>
+                            Nombre
+                        </th>
+
+                        <th>
+                            Departamento
+                        </th>
+
+                        <th>
+                            Puesto
+                        </th>
+
+                        <th>
+                            Estado
+                        </th>
+
+                        <th>
+                            Acción
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for colaborador in colaboradores %}
+
+                    <tr>
+
+                        <td>
+                            {{ colaborador.numero_empleado }}
+                        </td>
+
+                        <td>
+                            {{ colaborador.nombre }}
+                        </td>
+
+                        <td>
+
+                            {% if colaborador.departamento %}
+
+                                {{ colaborador.departamento.nombre }}
+
+                            {% else %}
+
+                                Sin departamento
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if colaborador.puesto %}
+
+                                {{ colaborador.puesto.nombre }}
+
+                            {% else %}
+
+                                Sin puesto
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            🔴 Inactivo
+                        </td>
+
+                        <td>
+
+                            <a href="/colaboradores/reactivar/{{ colaborador.id }}">
+                                🟢 Reactivar
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% else %}
+
+            <p>
+                No hay colaboradores inactivos.
+            </p>
+
+            {% endif %}
+
+            <br>
+
+            <a href="/colaboradores">
+                ← Volver a colaboradores activos
+            </a>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+{% include "_usuario_menu.html" %}
+</body>
+
+</html>
+
+

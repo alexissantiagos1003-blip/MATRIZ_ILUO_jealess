@@ -1,0 +1,2516 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Evaluación ILUO</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+
+        /* =========================================
+           VARIABLES
+        ========================================= */
+
+        :root {
+            --iluo-rojo: #dc2626;
+            --iluo-amarillo: #eab308;
+            --iluo-azul: #2563eb;
+            --iluo-verde: #16a34a;
+
+            --fondo: #f3f4f6;
+            --texto: #1f2937;
+            --texto-suave: #6b7280;
+            --borde: #d1d5db;
+            --blanco: #ffffff;
+        }
+
+
+        /* =========================================
+           CONTENEDOR PRINCIPAL
+        ========================================= */
+
+        .evaluacion-pagina {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+
+        /* =========================================
+           ENCABEZADO
+        ========================================= */
+
+        .evaluacion-encabezado {
+            margin-bottom: 20px;
+        }
+
+        .evaluacion-encabezado h1 {
+            margin-bottom: 6px;
+        }
+
+        .evaluacion-encabezado p {
+            color: var(--texto-suave);
+            margin: 0;
+        }
+
+
+        /* =========================================
+           TARJETAS
+        ========================================= */
+
+        .tarjeta-evaluacion {
+            background: var(--blanco);
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            border: 1px solid #e5e7eb;
+        }
+
+        .tarjeta-evaluacion h2 {
+            margin-top: 0;
+            margin-bottom: 18px;
+            color: var(--texto);
+        }
+
+
+        /* =========================================
+           SELECT
+        ========================================= */
+
+        .campo {
+            margin-bottom: 16px;
+        }
+
+        .campo label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 7px;
+            color: var(--texto);
+        }
+
+        .campo input,
+        .campo select,
+        .campo textarea {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid var(--borde);
+            border-radius: 9px;
+            padding: 13px;
+            font-size: 16px;
+            background: white;
+        }
+
+        .campo textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+
+        /* =========================================
+           DATOS DEL COLABORADOR
+        ========================================= */
+
+        .datos-colaborador {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .dato {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 14px;
+        }
+
+        .dato-etiqueta {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--texto-suave);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .dato-valor {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--texto);
+        }
+
+
+        /* =========================================
+           DATOS EVALUADOR
+        ========================================= */
+
+        .datos-evaluador {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 15px;
+        }
+
+
+        /* =========================================
+           GUÍA DE EVALUACIÓN ILUO
+        ========================================= */
+
+        .guia-evaluacion {
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+        }
+
+        .guia-evaluacion-titulo {
+            background: #f8fafc;
+            padding: 16px 20px;
+            border-bottom: 1px solid #d1d5db;
+            font-size: 19px;
+            font-weight: 800;
+            color: #1f2937;
+        }
+
+        .guia-evaluacion-subtitulo {
+            padding: 12px 20px;
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.45;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .guia-tabla {
+            width: 100%;
+        }
+
+        .guia-fila {
+            display: grid;
+            grid-template-columns: 90px 190px 1fr;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .guia-fila:last-child {
+            border-bottom: none;
+        }
+
+        .guia-encabezado {
+            background: #f3f4f6;
+            font-size: 12px;
+            font-weight: 800;
+            color: #4b5563;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .guia-celda {
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            line-height: 1.45;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .guia-fila:not(.guia-encabezado) .guia-celda {
+            min-height: 72px;
+        }
+
+        .guia-nivel {
+            justify-content: center;
+            font-size: 27px;
+            font-weight: 900;
+        }
+
+        .guia-nivel-i {
+            color: #dc2626;
+        }
+
+        .guia-nivel-l {
+            color: #ca8a04;
+        }
+
+        .guia-nivel-u {
+            color: #2563eb;
+        }
+
+        .guia-nivel-o {
+            color: #16a34a;
+        }
+
+        .guia-descripcion {
+            font-weight: 800;
+            color: #1f2937;
+        }
+
+        .guia-criterio {
+            color: #4b5563;
+        }
+
+        @media (max-width: 700px) {
+
+            .guia-evaluacion-titulo {
+                padding: 15px;
+                font-size: 18px;
+            }
+
+            .guia-evaluacion-subtitulo {
+                padding: 12px 15px;
+            }
+
+            .guia-fila {
+                grid-template-columns: 58px 1fr;
+            }
+
+            .guia-encabezado {
+                display: none;
+            }
+
+            .guia-celda {
+                padding: 12px;
+            }
+
+            .guia-fila:not(.guia-encabezado) .guia-celda {
+                min-height: 0;
+            }
+
+            .guia-fila .guia-criterio {
+                grid-column: 1 / -1;
+                padding: 0 14px 14px 70px;
+                font-size: 13px;
+            }
+
+            .guia-fila .guia-descripcion {
+                font-size: 14px;
+            }
+
+            .guia-fila .guia-nivel {
+                grid-row: span 2;
+            }
+        }
+
+        /* =========================================
+           HABILIDADES
+        ========================================= */        /* =========================================
+           HABILIDADES
+        ========================================= */        /* =========================================
+           HABILIDADES
+        ========================================= */
+
+        .habilidades-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .habilidad-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            background: #ffffff;
+        }
+
+        .habilidad-nombre {
+            font-weight: 700;
+            font-size: 16px;
+            line-height: 1.4;
+            margin-bottom: 14px;
+            color: var(--texto);
+        }
+
+
+        /* =========================================
+           CONTROLES ILUO
+        ========================================= */
+
+        .iluo-opciones {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .iluo-opcion {
+            position: relative;
+        }
+
+        .iluo-opcion input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .iluo-opcion label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 58px;
+            border: 2px solid #d1d5db;
+            border-radius: 10px;
+            cursor: pointer;
+            user-select: none;
+            font-weight: 800;
+            font-size: 22px;
+            transition: all 0.15s ease;
+            background: white;
+        }
+
+        .iluo-opcion label span {
+            display: block;
+            text-align: center;
+        }
+
+        .iluo-opcion label small {
+            display: block;
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+
+        /* I */
+
+        .iluo-i input:checked + label {
+            background: var(--iluo-rojo);
+            border-color: var(--iluo-rojo);
+            color: white;
+        }
+
+
+        /* L */
+
+        .iluo-l input:checked + label {
+            background: var(--iluo-amarillo);
+            border-color: var(--iluo-amarillo);
+            color: #111827;
+        }
+
+
+        /* U */
+
+        .iluo-u input:checked + label {
+            background: var(--iluo-azul);
+            border-color: var(--iluo-azul);
+            color: white;
+        }
+
+
+        /* O */
+
+        .iluo-o input:checked + label {
+            background: var(--iluo-verde);
+            border-color: var(--iluo-verde);
+            color: white;
+        }
+
+
+        /* =========================================
+           LEYENDA
+        ========================================= */
+
+        .leyenda-iluo {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .leyenda-item {
+            padding: 12px;
+            border-radius: 9px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .leyenda-i {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .leyenda-l {
+            background: #fef3c7;
+            color: #854d0e;
+        }
+
+        .leyenda-u {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .leyenda-o {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+
+        /* =========================================
+           COMENTARIOS
+        ========================================= */
+
+        .comentarios-ayuda {
+            color: var(--texto-suave);
+            font-size: 13px;
+            margin-top: -8px;
+            margin-bottom: 10px;
+        }
+
+
+        /* =========================================
+           FIRMA
+        ========================================= */
+
+        .firma-introduccion {
+            color: var(--texto-suave);
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+
+        .firma-contenedor {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .firma-canvas-wrapper {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            border: 2px dashed #9ca3af;
+            border-radius: 12px;
+            background: #ffffff;
+            overflow: hidden;
+        }
+
+        #firmaCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            touch-action: none;
+            cursor: crosshair;
+        }
+
+        .firma-placeholder {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            text-align: center;
+            color: #9ca3af;
+            font-size: 16px;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .firma-linea {
+            position: absolute;
+            left: 8%;
+            right: 8%;
+            bottom: 45px;
+            border-bottom: 1px solid #d1d5db;
+            pointer-events: none;
+        }
+
+        .firma-linea-texto {
+            position: absolute;
+            left: 8%;
+            bottom: 20px;
+            font-size: 11px;
+            color: #9ca3af;
+            pointer-events: none;
+        }
+
+        .boton-limpiar-firma {
+            margin-top: 10px;
+            border: 1px solid #d1d5db;
+            background: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .boton-limpiar-firma:hover {
+            background: #f3f4f6;
+        }
+
+
+        /* =========================================
+           CONFIRMACIÓN
+        ========================================= */
+
+        .confirmacion {
+            margin-top: 18px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+        }
+
+        .confirmacion-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            line-height: 1.5;
+        }
+
+        .confirmacion input {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+
+        /* =========================================
+           BOTÓN GUARDAR
+        ========================================= */
+
+        .boton-guardar-evaluacion {
+            width: 100%;
+            min-height: 58px;
+            border: none;
+            border-radius: 12px;
+            background: #1f2937;
+            color: white;
+            font-size: 17px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .boton-guardar-evaluacion:hover {
+            background: #111827;
+        }
+
+        .boton-guardar-evaluacion:active {
+            transform: scale(0.99);
+        }
+
+
+        /* =========================================
+           MENSAJE DE ERROR
+        ========================================= */
+
+        .mensaje-error {
+            display: none;
+            padding: 14px;
+            border-radius: 10px;
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+
+        /* =========================================
+           RESPONSIVE TABLET
+        ========================================= */
+
+        @media (max-width: 900px) {
+
+            .datos-colaborador {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .datos-evaluador {
+                grid-template-columns: 1fr 1fr;
+            }
+
+        }
+
+
+        /* =========================================
+           RESPONSIVE CELULAR
+        ========================================= */
+
+        @media (max-width: 600px) {
+
+            .evaluacion-pagina {
+                width: 100%;
+            }
+
+            .tarjeta-evaluacion {
+                padding: 16px;
+                border-radius: 12px;
+            }
+
+            .datos-colaborador {
+                grid-template-columns: 1fr;
+            }
+
+            .datos-evaluador {
+                grid-template-columns: 1fr;
+            }
+
+            .iluo-opciones {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .iluo-opcion label {
+                min-height: 64px;
+            }
+
+            .leyenda-iluo {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .firma-canvas-wrapper {
+                height: 240px;
+            }
+
+            .boton-guardar-evaluacion {
+                position: sticky;
+                bottom: 10px;
+                z-index: 20;
+                box-shadow: 0 6px 20px rgba(0,0,0,0.20);
+            }
+
+        }
+
+
+        /* =========================================
+           PANTALLAS MUY PEQUEÑAS
+        ========================================= */
+
+        @media (max-width: 380px) {
+
+            .iluo-opcion label {
+                font-size: 20px;
+            }
+
+            .iluo-opcion label small {
+                font-size: 9px;
+            }
+
+        }
+
+    
+        .boton-limpiar-firma {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+            min-height: 44px;
+            padding: 10px 18px;
+            border: 1px solid #9ca3af;
+            border-radius: 9px;
+            background: #ffffff;
+            color: #1f2937;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .boton-limpiar-firma:hover {
+            background: #f3f4f6;
+        }
+
+        .boton-limpiar-firma:active {
+            transform: scale(0.98);
+        }
+
+        @media (max-width: 600px) {
+
+            .boton-limpiar-firma {
+                width: 100%;
+                min-height: 48px;
+                font-size: 15px;
+            }
+
+        }
+
+        /* =================================================
+           BRECHAS ILUO
+           ================================================= */
+
+        .seccion-brechas-iluo {
+
+            margin-top: 22px;
+
+            padding: 20px;
+
+            border-radius: 16px;
+
+            background: #ffffff;
+
+            border:
+                1px solid #e4e7ec;
+
+            box-shadow:
+                0 6px 18px
+                rgba(
+                    15,
+                    23,
+                    42,
+                    .05
+                );
+
+        }
+
+
+        .brechas-encabezado {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 16px;
+
+        }
+
+
+        .brechas-titulo {
+
+            margin: 0;
+
+            font-size: 19px;
+
+            font-weight: 800;
+
+            color: #172033;
+
+        }
+
+
+        .brechas-subtitulo {
+
+            margin-top: 4px;
+
+            font-size: 12px;
+
+            color: #667085;
+
+        }
+
+
+        .cumplimiento-badge {
+
+            flex-shrink: 0;
+
+            padding: 8px 13px;
+
+            border-radius: 999px;
+
+            font-size: 13px;
+
+            font-weight: 900;
+
+        }
+
+
+        .cumplimiento-rojo {
+
+            background: #fef3f2;
+
+            color: #b42318;
+
+        }
+
+
+        .cumplimiento-amarillo {
+
+            background: #fff4cc;
+
+            color: #8a5a00;
+
+        }
+
+
+        .cumplimiento-verde {
+
+            background: #ecfdf3;
+
+            color: #027a48;
+
+        }
+
+
+        .brechas-resumen {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    3,
+                    minmax(
+                        0,
+                        1fr
+                    )
+                );
+
+            gap: 10px;
+
+            margin-bottom: 17px;
+
+        }
+
+
+        .brecha-resumen-card {
+
+            padding: 12px;
+
+            border-radius: 12px;
+
+            background: #f8fafc;
+
+            border:
+                1px solid #eaecf0;
+
+        }
+
+
+        .brecha-resumen-label {
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+
+            letter-spacing: .04em;
+
+            color: #667085;
+
+            font-weight: 800;
+
+        }
+
+
+        .brecha-resumen-numero {
+
+            margin-top: 4px;
+
+            font-size: 22px;
+
+            font-weight: 900;
+
+            color: #172033;
+
+        }
+
+
+        .brecha-item {
+
+            padding: 14px;
+
+            border-radius: 13px;
+
+            margin-top: 10px;
+
+            background: #fef3f2;
+
+            border:
+                1px solid #fecdca;
+
+        }
+
+
+        .brecha-item-pendiente {
+
+            background: #fffaf0;
+
+            border-color: #f3d58a;
+
+        }
+
+
+        .brecha-item-sin {
+
+            background: #ecfdf3;
+
+            border-color: #abefc6;
+
+        }
+
+
+        .brecha-habilidad {
+
+            font-size: 14px;
+
+            font-weight: 800;
+
+            color: #172033;
+
+        }
+
+
+        .brecha-datos {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 7px;
+
+            margin-top: 9px;
+
+        }
+
+
+        .brecha-dato {
+
+            padding: 5px 9px;
+
+            border-radius: 999px;
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            background: #ffffff;
+
+            border:
+                1px solid #e4e7ec;
+
+            color: #475467;
+
+        }
+
+
+        .brecha-diferencia {
+
+            color: #b42318;
+
+            border-color: #fecdca;
+
+        }
+
+
+        .brecha-pendiente {
+
+            color: #8a5a00;
+
+            border-color: #f3d58a;
+
+        }
+
+
+        .brecha-ok {
+
+            color: #027a48;
+
+            border-color: #abefc6;
+
+        }
+
+
+        .sin-brechas {
+
+            padding: 18px;
+
+            border-radius: 13px;
+
+            background: #ecfdf3;
+
+            border:
+                1px solid #abefc6;
+
+            color: #027a48;
+
+            font-weight: 800;
+
+            text-align: center;
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .brechas-encabezado {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+            }
+
+            .brechas-resumen {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+</style>
+
+</head>
+
+
+<body>
+
+<div class="contenedor">
+
+
+    <!-- =========================================
+         MENÚ
+    ========================================= -->
+
+    <aside class="menu">
+
+        <h2>MATRIZ ILUO</h2>
+
+        <a href="/">🏠 Inicio</a>
+
+        <a href="/colaboradores">
+            👥 Empleados
+        </a>
+
+        <a href="/habilidades">
+            🛠️ Habilidades
+        </a>
+
+        <a href="/puesto-habilidades">
+            🔗 Habilidades por puesto
+        </a>
+
+        <a href="/evaluaciones">
+            📝 Evaluaciones
+        </a>
+
+        <a href="/historial-evaluaciones">
+            📋 Historial de evaluaciones
+        </a>
+
+        <a href="/matriz">
+            📊 Matriz ILUO
+        </a>
+
+        <a href="/">
+            📈 Dashboard
+        </a>
+
+    </aside>
+
+
+    <!-- =========================================
+         CONTENIDO
+    ========================================= -->
+
+    <main class="contenido">
+
+        <div class="evaluacion-pagina">
+
+
+            <!-- =====================================
+                 ENCABEZADO
+            ====================================== -->
+
+            <div class="evaluacion-encabezado">
+
+                <h1>
+                    Evaluación ILUO
+                </h1>
+
+                <p>
+                    Evaluación de habilidades del colaborador.
+                </p>
+
+            </div>
+
+
+            <!-- =====================================
+                 SELECCIÓN COLABORADOR
+            ====================================== -->
+
+            <div class="tarjeta-evaluacion">
+
+                <h2>
+                    👤 Seleccionar colaborador
+                </h2>
+
+                <form
+                    method="GET"
+                    action="/evaluaciones"
+                >
+
+                    <div class="campo">
+
+                        <label for="colaborador_id">
+                            Colaborador
+                        </label>
+
+                        <select
+                            id="colaborador_id"
+                            name="colaborador_id"
+                            onchange="this.form.submit()"
+                        >
+
+                            <option value="">
+                                Selecciona un colaborador
+                            </option>
+
+                            {% for colaborador in colaboradores %}
+
+                            <option
+                                value="{{ colaborador.id }}"
+                                {% if colaborador_seleccionado == colaborador.id %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {{ colaborador.numero_empleado }}
+                                -
+                                {{ colaborador.nombre }}
+                                -
+                                {{ colaborador.puesto.nombre }}
+
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            {% if colaborador_actual %}
+
+
+            <!-- =====================================
+                 DATOS COLABORADOR
+            ====================================== -->
+
+            <div class="tarjeta-evaluacion">
+
+                <h2>
+                    👤 Datos del colaborador
+                </h2>
+
+                <div class="datos-colaborador">
+
+                    <div class="dato">
+
+                        <div class="dato-etiqueta">
+                            Nombre
+                        </div>
+
+                        <div class="dato-valor">
+                            {{ colaborador_actual.nombre }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="dato">
+
+                        <div class="dato-etiqueta">
+                            Número de trabajador
+                        </div>
+
+                        <div class="dato-valor">
+                            {{ colaborador_actual.numero_empleado }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="dato">
+
+                        <div class="dato-etiqueta">
+                            Puesto
+                        </div>
+
+                        <div class="dato-valor">
+                            {{ colaborador_actual.puesto.nombre }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================
+                 FORMULARIO PRINCIPAL
+            ====================================== -->
+
+            <form
+                id="formEvaluacion"
+                method="POST"
+                action="/evaluaciones/guardar"
+            >
+
+                <input
+                    type="hidden"
+                    name="colaborador_id"
+                    value="{{ colaborador_actual.id }}"
+                >
+
+
+                <!-- =================================
+                     DATOS EVALUADOR
+                ================================== -->
+
+                <div class="tarjeta-evaluacion">
+
+                    <h2>
+                        🧑‍💼 Datos de la evaluación
+                    </h2>
+
+                    <div class="datos-evaluador">
+
+                        <div class="campo">
+
+                            <label for="evaluador">
+                                Evaluador
+                            </label>
+
+                            <input
+                                type="text"
+                                id="evaluador"
+                                name="evaluador"
+                                placeholder="Nombre del evaluador"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label for="rol_evaluador">
+                                Rol
+                            </label>
+
+                            <select
+                                id="rol_evaluador"
+                                name="rol_evaluador"
+                                required
+                            >
+
+                                <option value="">
+                                    Selecciona
+                                </option>
+
+                                <option value="Supervisor">
+                                    Supervisor
+                                </option>
+
+                                <option value="Gerente de Operaciones">
+                                    Gerente de Operaciones
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="campo">
+
+                            <label for="fecha_evaluacion">
+                                Fecha
+                            </label>
+
+                            <input
+                                type="date"
+                                id="fecha_evaluacion"
+                                name="fecha_evaluacion"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================
+                     HABILIDADES
+                ================================== -->
+
+                <!-- =================================
+                     GUÍA DE EVALUACIÓN
+                ================================== -->
+
+                <div class="guia-evaluacion">
+
+                    <div class="guia-evaluacion-titulo">
+                        📘 GUÍA DE EVALUACIÓN ILUO
+                    </div>
+
+                    <div class="guia-evaluacion-subtitulo">
+                        Utiliza estas definiciones como referencia antes
+                        de seleccionar el nivel correspondiente a cada habilidad.
+                    </div>
+
+                    <div class="guia-tabla">
+
+                        <div class="guia-fila guia-encabezado">
+
+                            <div class="guia-celda">
+                                Nivel
+                            </div>
+
+                            <div class="guia-celda">
+                                Descripción
+                            </div>
+
+                            <div class="guia-celda">
+                                Criterio específico del desempeño
+                            </div>
+
+                        </div>
+
+
+                        <!-- I -->
+
+                        <div class="guia-fila">
+
+                            <div class="guia-celda guia-nivel guia-nivel-i">
+                                I
+                            </div>
+
+                            <div class="guia-celda guia-descripcion">
+                                Inicial / Aprendiz
+                            </div>
+
+                            <div class="guia-celda guia-criterio">
+                                El colaborador se encuentra en capacitación
+                                y ejecuta las actividades fundamentales del
+                                puesto bajo supervisión constante y directa.
+                            </div>
+
+                        </div>
+
+
+                        <!-- L -->
+
+                        <div class="guia-fila">
+
+                            <div class="guia-celda guia-nivel guia-nivel-l">
+                                L
+                            </div>
+
+                            <div class="guia-celda guia-descripcion">
+                                Local / Operario
+                            </div>
+
+                            <div class="guia-celda guia-criterio">
+                                El colaborador ejecuta de forma localizada
+                                actividades operativas con menor dependencia.
+                                Requiere orientación o supervisión ocasional.
+                            </div>
+
+                        </div>
+
+
+                        <!-- U -->
+
+                        <div class="guia-fila">
+
+                            <div class="guia-celda guia-nivel guia-nivel-u">
+                                U
+                            </div>
+
+                            <div class="guia-celda guia-descripcion">
+                                Útil / Autónomo
+                            </div>
+
+                            <div class="guia-celda guia-criterio">
+                                El colaborador domina el puesto de forma
+                                independiente, garantizando el cumplimiento
+                                de los estándares de seguridad, velocidad y calidad.
+                            </div>
+
+                        </div>
+
+
+                        <!-- O -->
+
+                        <div class="guia-fila">
+
+                            <div class="guia-celda guia-nivel guia-nivel-o">
+                                O
+                            </div>
+
+                            <div class="guia-celda guia-descripcion">
+                                Óptimo / Instructor
+                            </div>
+
+                            <div class="guia-celda guia-criterio">
+                                El colaborador ejecuta el trabajo de manera
+                                óptima, promueve la mejora continua y es capaz
+                                de entrenar y evaluar a otro colaborador.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="tarjeta-evaluacion">
+
+                    <h2>
+                        🎯 Evaluación de habilidades
+                    </h2>
+
+                    <p class="firma-introduccion">
+                        Selecciona el nivel ILUO que corresponde
+                        al desempeño actual del colaborador en
+                        cada habilidad.
+                    </p>
+
+
+                    <div class="habilidades-lista">
+
+                        {% for habilidad in habilidades %}
+
+                        <div class="habilidad-card">
+
+                            <div class="habilidad-nombre">
+
+                                {{ loop.index }}.
+                                {{ habilidad.nombre }}
+
+                            </div>
+
+
+                            <div class="iluo-opciones">
+
+
+                                <!-- I -->
+
+                                <div class="iluo-opcion iluo-i">
+
+                                    <input
+                                        type="radio"
+                                        id="nivel_{{ habilidad.id }}_I"
+                                        name="nivel_{{ habilidad.id }}"
+                                        value="I"
+
+                                        required
+                                    >
+
+                                    <label
+                                        for="nivel_{{ habilidad.id }}_I"
+                                    >
+
+                                        <span>
+                                            I
+                                            <small>
+                                                Inicial / Aprendiz
+                                            </small>
+                                        </span>
+
+                                    </label>
+
+                                </div>
+
+
+                                <!-- L -->
+
+                                <div class="iluo-opcion iluo-l">
+
+                                    <input
+                                        type="radio"
+                                        id="nivel_{{ habilidad.id }}_L"
+                                        name="nivel_{{ habilidad.id }}"
+                                        value="L"
+                                    >
+
+                                    <label
+                                        for="nivel_{{ habilidad.id }}_L"
+                                    >
+
+                                        <span>
+                                            L
+                                            <small>
+                                                Local / Operario
+                                            </small>
+                                        </span>
+
+                                    </label>
+
+                                </div>
+
+
+                                <!-- U -->
+
+                                <div class="iluo-opcion iluo-u">
+
+                                    <input
+                                        type="radio"
+                                        id="nivel_{{ habilidad.id }}_U"
+                                        name="nivel_{{ habilidad.id }}"
+                                        value="U"
+                                    >
+
+                                    <label
+                                        for="nivel_{{ habilidad.id }}_U"
+                                    >
+
+                                        <span>
+                                            U
+                                            <small>
+                                                Útil / Autónomo
+                                            </small>
+                                        </span>
+
+                                    </label>
+
+                                </div>
+
+
+                                <!-- O -->
+
+                                <div class="iluo-opcion iluo-o">
+
+                                    <input
+                                        type="radio"
+                                        id="nivel_{{ habilidad.id }}_O"
+                                        name="nivel_{{ habilidad.id }}"
+                                        value="O"
+                                    >
+
+                                    <label
+                                        for="nivel_{{ habilidad.id }}_O"
+                                    >
+
+                                        <span>
+                                            O
+                                            <small>
+                                                Óptimo / Instructor
+                                            </small>
+                                        </span>
+
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- =================================
+                         LEYENDA
+                    ================================== -->
+
+                    <div class="leyenda-iluo">
+
+                        <div class="leyenda-item leyenda-i">
+                            I · Inicial / Aprendiz
+                        </div>
+
+                        <div class="leyenda-item leyenda-l">
+                            L · Local / Operario
+                        </div>
+
+                        <div class="leyenda-item leyenda-u">
+                            U · Útil / Autónomo
+                        </div>
+
+                        <div class="leyenda-item leyenda-o">
+                            O · Óptimo / Instructor
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================
+                     COMENTARIOS
+                ================================== -->
+
+                <div class="tarjeta-evaluacion">
+
+                    <h2>
+                        📝 Comentarios
+                    </h2>
+
+                    <p class="comentarios-ayuda">
+                        Registra observaciones, fortalezas
+                        o áreas de oportunidad identificadas
+                        durante la evaluación.
+                    </p>
+
+                    <div class="campo">
+
+                        <textarea
+                            name="comentario"
+                            id="comentario"
+                            placeholder="Escribe aquí tus comentarios..."
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================
+                     FIRMA
+                ================================== -->
+
+                <div class="tarjeta-evaluacion">
+
+                    <h2>
+                        ✍️ Firma de conformidad
+                    </h2>
+
+                    <p class="firma-introduccion">
+
+                        El colaborador confirma que recibió
+                        y conoció el resultado de su evaluación.
+
+                    </p>
+
+
+                    <div class="firma-contenedor">
+
+                        <div class="firma-canvas-wrapper">
+
+                            <canvas
+                                id="firmaCanvas"
+                            ></canvas>
+
+                            <div
+                                id="firmaPlaceholder"
+                                class="firma-placeholder"
+                            >
+                                Firme aquí con el dedo o stylus
+                            </div>
+
+                            <div class="firma-linea"></div>
+
+                            <div class="firma-linea-texto">
+                                Firma del colaborador
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            id="limpiarFirma"
+                            class="boton-limpiar-firma"
+                        >
+                            ↻ Limpiar firma
+                        </button>
+
+
+                        <input
+                            type="hidden"
+                            name="firma_data"
+                            id="firma_data"
+                        >
+
+
+                        <div class="confirmacion">
+
+                            <label class="confirmacion-label">
+
+                                <input
+                                    type="checkbox"
+                                    name="confirmacion_colaborador"
+                                    value="1"
+                                    id="confirmacion_colaborador"
+                                    required
+                                >
+
+                                <span>
+
+                                    Confirmo que fui evaluado
+                                    y conozco los resultados
+                                    de mi evaluación.
+
+                                </span>
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================
+                     ERROR
+                ================================== -->
+
+                <div
+                    id="mensajeError"
+                    class="mensaje-error"
+                >
+                </div>
+
+
+                <!-- =================================
+                     GUARDAR
+                ================================== -->
+
+                <button
+                    type="submit"
+                    class="boton-guardar-evaluacion"
+                >
+
+                    💾 Guardar evaluación
+
+                </button>
+
+
+            </form>
+
+            {% endif %}
+
+        </div>
+
+    
+        <!-- =================================================
+             SECCION-BRECHAS-ILUO
+             ================================================= -->
+
+        {% if colaborador_actual and brechas %}
+
+            <section class="seccion-brechas-iluo">
+
+
+                <div class="brechas-encabezado">
+
+                    <div>
+
+                        <h2 class="brechas-titulo">
+
+                            🔎 Análisis de brechas ILUO
+
+                        </h2>
+
+                        <div class="brechas-subtitulo">
+
+                            Comparación entre el nivel requerido
+                            del puesto y el nivel actual.
+
+                        </div>
+
+                    </div>
+
+
+                    {% if
+                        brechas.porcentaje_cumplimiento >= 100
+                    %}
+
+                        <div
+                            class="
+                                cumplimiento-badge
+                                cumplimiento-verde
+                            "
+                        >
+
+                            {{ brechas.porcentaje_cumplimiento }}%
+                            cumplimiento
+
+                        </div>
+
+                    {% elif
+                        brechas.porcentaje_cumplimiento >= 50
+                    %}
+
+                        <div
+                            class="
+                                cumplimiento-badge
+                                cumplimiento-amarillo
+                            "
+                        >
+
+                            {{ brechas.porcentaje_cumplimiento }}%
+                            cumplimiento
+
+                        </div>
+
+                    {% else %}
+
+                        <div
+                            class="
+                                cumplimiento-badge
+                                cumplimiento-rojo
+                            "
+                        >
+
+                            {{ brechas.porcentaje_cumplimiento }}%
+                            cumplimiento
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="brechas-resumen">
+
+
+                    <div class="brecha-resumen-card">
+
+                        <div class="brecha-resumen-label">
+
+                            Habilidades
+
+                        </div>
+
+                        <div class="brecha-resumen-numero">
+
+                            {{ brechas.total_habilidades }}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="brecha-resumen-card">
+
+                        <div class="brecha-resumen-label">
+
+                            Brechas
+
+                        </div>
+
+                        <div
+                            class="brecha-resumen-numero"
+                        >
+
+                            {{ brechas.brechas }}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="brecha-resumen-card">
+
+                        <div class="brecha-resumen-label">
+
+                            Pendientes
+
+                        </div>
+
+                        <div
+                            class="brecha-resumen-numero"
+                        >
+
+                            {{ brechas.pendientes }}
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                {% if brechas.detalle %}
+
+
+                    {% for detalle in brechas.detalle %}
+
+
+                        {% if detalle.estado == "brecha" %}
+
+                            <div
+                                class="brecha-item"
+                            >
+
+                                <div
+                                    class="brecha-habilidad"
+                                >
+
+                                    🔴
+                                    {{ detalle.habilidad.nombre }}
+
+                                </div>
+
+
+                                <div
+                                    class="brecha-datos"
+                                >
+
+                                    <span
+                                        class="brecha-dato"
+                                    >
+
+                                        Actual:
+                                        {{ detalle.nivel_actual }}
+
+                                    </span>
+
+
+                                    <span
+                                        class="brecha-dato"
+                                    >
+
+                                        Requerido:
+                                        {{ detalle.nivel_requerido }}
+
+                                    </span>
+
+
+                                    <span
+                                        class="
+                                            brecha-dato
+                                            brecha-diferencia
+                                        "
+                                    >
+
+                                        Brecha:
+                                        {{ detalle.diferencia }}
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                        {% elif
+                            detalle.estado == "pendiente"
+                        %}
+
+
+                            <div
+                                class="
+                                    brecha-item
+                                    brecha-item-pendiente
+                                "
+                            >
+
+                                <div
+                                    class="brecha-habilidad"
+                                >
+
+                                    🟡
+                                    {{ detalle.habilidad.nombre }}
+
+                                </div>
+
+
+                                <div
+                                    class="brecha-datos"
+                                >
+
+                                    <span
+                                        class="
+                                            brecha-dato
+                                            brecha-pendiente
+                                        "
+                                    >
+
+                                        Sin evaluación
+
+                                    </span>
+
+
+                                    <span
+                                        class="brecha-dato"
+                                    >
+
+                                        Requerido:
+                                        {{ detalle.nivel_requerido }}
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                        {% else %}
+
+
+                            <div
+                                class="
+                                    brecha-item
+                                    brecha-item-sin
+                                "
+                            >
+
+                                <div
+                                    class="brecha-habilidad"
+                                >
+
+                                    ✅
+                                    {{ detalle.habilidad.nombre }}
+
+                                </div>
+
+
+                                <div
+                                    class="brecha-datos"
+                                >
+
+                                    <span
+                                        class="
+                                            brecha-dato
+                                            brecha-ok
+                                        "
+                                    >
+
+                                        Actual:
+                                        {{ detalle.nivel_actual }}
+
+                                    </span>
+
+
+                                    <span
+                                        class="
+                                            brecha-dato
+                                            brecha-ok
+                                        "
+                                    >
+
+                                        Requerido:
+                                        {{ detalle.nivel_requerido }}
+
+                                    </span>
+
+
+                                    <span
+                                        class="
+                                            brecha-dato
+                                            brecha-ok
+                                        "
+                                    >
+
+                                        Sin brecha
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                        {% endif %}
+
+
+                    {% endfor %}
+
+
+                {% else %}
+
+
+                    <div class="sin-brechas">
+
+                        Este puesto no tiene habilidades
+                        requeridas configuradas.
+
+                    </div>
+
+
+                {% endif %}
+
+
+            </section>
+
+        {% endif %}
+
+</main>
+
+</div>
+
+
+<!-- =============================================
+     JAVASCRIPT FIRMA
+============================================= -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const canvas =
+            document.getElementById(
+                "firmaCanvas"
+            );
+
+        const formulario =
+            document.getElementById(
+                "formEvaluacion"
+            );
+
+        const campoFirma =
+            document.getElementById(
+                "firma_data"
+            );
+
+        const limpiar =
+            document.getElementById(
+                "limpiarFirma"
+            );
+
+        const placeholder =
+            document.getElementById(
+                "firmaPlaceholder"
+            );
+
+        const mensajeError =
+            document.getElementById(
+                "mensajeError"
+            );
+
+
+        if (
+            !canvas ||
+            !formulario ||
+            !campoFirma
+        ) {
+            return;
+        }
+
+
+        const contexto =
+            canvas.getContext(
+                "2d"
+            );
+
+
+        let dibujando = false;
+
+        let tieneFirma = false;
+
+
+        /* =========================================
+           CONFIGURAR CANVAS
+        ========================================= */
+
+        function configurarCanvas() {
+
+            const rect =
+                canvas.getBoundingClientRect();
+
+            const escala =
+                window.devicePixelRatio || 1;
+
+            canvas.width =
+                rect.width * escala;
+
+            canvas.height =
+                rect.height * escala;
+
+            contexto.setTransform(
+                escala,
+                0,
+                0,
+                escala,
+                0,
+                0
+            );
+
+            contexto.lineWidth = 2.5;
+
+            contexto.lineCap =
+                "round";
+
+            contexto.lineJoin =
+                "round";
+
+            contexto.strokeStyle =
+                "#111827";
+
+        }
+
+
+        configurarCanvas();
+
+
+        window.addEventListener(
+            "resize",
+            configurarCanvas
+        );
+
+
+        /* =========================================
+           OBTENER POSICIÓN
+        ========================================= */
+
+        function obtenerPosicion(
+            evento
+        ) {
+
+            const rect =
+                canvas.getBoundingClientRect();
+
+            return {
+
+                x:
+                    evento.clientX -
+                    rect.left,
+
+                y:
+                    evento.clientY -
+                    rect.top
+
+            };
+
+        }
+
+
+        /* =========================================
+           INICIAR TRAZO
+        ========================================= */
+
+        canvas.addEventListener(
+            "pointerdown",
+            function (evento) {
+
+                evento.preventDefault();
+
+                dibujando = true;
+
+                tieneFirma = true;
+
+                placeholder.style.opacity =
+                    "0";
+
+                const posicion =
+                    obtenerPosicion(
+                        evento
+                    );
+
+                contexto.beginPath();
+
+                contexto.moveTo(
+                    posicion.x,
+                    posicion.y
+                );
+
+                canvas.setPointerCapture(
+                    evento.pointerId
+                );
+
+            }
+        );
+
+
+        /* =========================================
+           DIBUJAR
+        ========================================= */
+
+        canvas.addEventListener(
+            "pointermove",
+            function (evento) {
+
+                if (!dibujando) {
+                    return;
+                }
+
+                evento.preventDefault();
+
+                const posicion =
+                    obtenerPosicion(
+                        evento
+                    );
+
+                contexto.lineTo(
+                    posicion.x,
+                    posicion.y
+                );
+
+                contexto.stroke();
+
+            }
+        );
+
+
+        /* =========================================
+           TERMINAR TRAZO
+        ========================================= */
+
+        function terminarTrazo() {
+
+            dibujando = false;
+
+            contexto.closePath();
+
+        }
+
+
+        canvas.addEventListener(
+            "pointerup",
+            terminarTrazo
+        );
+
+        canvas.addEventListener(
+            "pointercancel",
+            terminarTrazo
+        );
+
+        canvas.addEventListener(
+            "pointerleave",
+            function () {
+
+                if (dibujando) {
+                    dibujando = false;
+                }
+
+            }
+        );
+
+
+        /* =========================================
+           LIMPIAR
+        ========================================= */
+
+        limpiar.addEventListener(
+            "click",
+            function () {
+
+                contexto.clearRect(
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
+
+                tieneFirma = false;
+
+                campoFirma.value =
+                    "";
+
+                placeholder.style.opacity =
+                    "1";
+
+            }
+        );
+
+
+        /* =========================================
+           ENVIAR FORMULARIO
+        ========================================= */
+
+        formulario.addEventListener(
+            "submit",
+            function (evento) {
+
+                mensajeError.style.display =
+                    "none";
+
+                mensajeError.textContent =
+                    "";
+
+
+                /* ================================
+                   VALIDAR FIRMA
+                ================================= */
+
+                if (!tieneFirma) {
+
+                    evento.preventDefault();
+
+                    mensajeError.textContent =
+                        "Debes capturar la firma del colaborador antes de guardar la evaluación.";
+
+                    mensajeError.style.display =
+                        "block";
+
+                    document
+                        .getElementById(
+                            "firmaCanvas"
+                        )
+                        .scrollIntoView({
+                            behavior: "smooth",
+                            block: "center"
+                        });
+
+                    return;
+
+                }
+
+
+                /* ================================
+                   CONVERTIR FIRMA A PNG
+                ================================= */
+
+                campoFirma.value =
+                    canvas.toDataURL(
+                        "image/png"
+                    );
+
+
+                /* ================================
+                   VALIDAR CONFIRMACIÓN
+                ================================= */
+
+                const confirmacion =
+                    document.getElementById(
+                        "confirmacion_colaborador"
+                    );
+
+
+                if (
+                    !confirmacion.checked
+                ) {
+
+                    evento.preventDefault();
+
+                    mensajeError.textContent =
+                        "El colaborador debe confirmar que fue evaluado y conoce los resultados.";
+
+                    mensajeError.style.display =
+                        "block";
+
+                    confirmacion.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center"
+                    });
+
+                    return;
+
+                }
+
+            }
+        );
+
+    }
+);
+
+</script>
+
+
+{% include "_usuario_menu.html" %}
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+

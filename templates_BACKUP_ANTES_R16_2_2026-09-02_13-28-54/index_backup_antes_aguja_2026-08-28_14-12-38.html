@@ -1,0 +1,1478 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Dashboard ILUO
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+
+        /* =====================================================
+           DASHBOARD
+           ===================================================== */
+
+        .dashboard-page {
+
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+
+        .dashboard-header {
+
+            margin-bottom: 25px;
+        }
+
+
+        .dashboard-header h1 {
+
+            margin: 0;
+            font-size: 34px;
+            color: #172033;
+        }
+
+
+        .dashboard-header p {
+
+            margin-top: 8px;
+            color: #667085;
+            font-size: 16px;
+        }
+
+
+        /* =====================================================
+           FILTROS
+           ===================================================== */
+
+        .dashboard-filtros {
+
+            background: white;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+
+            display: flex;
+            align-items: end;
+            gap: 25px;
+
+            box-shadow:
+                0 4px 18px rgba(0,0,0,.07);
+        }
+
+
+        .filtro {
+
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+
+        .filtro label {
+
+            font-size: 13px;
+            font-weight: 700;
+            color: #344054;
+        }
+
+
+        .filtro select {
+
+            min-width: 240px;
+            padding: 11px 14px;
+
+            border: 1px solid #d0d5dd;
+            border-radius: 9px;
+
+            background: white;
+            font-size: 15px;
+        }
+
+
+        .filtro button {
+
+            padding: 12px 22px;
+
+            border: none;
+            border-radius: 9px;
+
+            background: #172033;
+            color: white;
+
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+
+        /* =====================================================
+           CARD PRINCIPAL
+           ===================================================== */
+
+        .dashboard-card {
+
+            background: white;
+            border-radius: 18px;
+
+            padding: 28px;
+
+            margin-bottom: 24px;
+
+            box-shadow:
+                0 5px 20px rgba(0,0,0,.07);
+        }
+
+
+        .dashboard-card-header {
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 20px;
+        }
+
+
+        .dashboard-card-header h2 {
+
+            margin: 0;
+            color: #172033;
+        }
+
+
+        .dashboard-card-header p {
+
+            margin: 5px 0 0;
+            color: #667085;
+        }
+
+
+        /* =====================================================
+           VELOCIMETRO
+           ===================================================== */
+
+        .dominio-layout {
+
+            display: grid;
+            grid-template-columns: 1.4fr .8fr;
+
+            gap: 40px;
+            align-items: center;
+        }
+
+
+        .gauge-container {
+
+            text-align: center;
+        }
+
+
+        .gauge {
+
+            width: 390px;
+            height: 205px;
+
+            margin: 10px auto 0;
+
+            position: relative;
+            overflow: hidden;
+        }
+
+
+        .gauge-arc {
+
+            position: absolute;
+
+            width: 390px;
+            height: 390px;
+
+            left: 0;
+            top: 0;
+
+            border-radius: 50%;
+
+            background:
+
+                conic-gradient(
+
+                    from 270deg,
+
+                    #dc2626 0deg 126deg,
+
+                    #f2c94c 126deg 153deg,
+
+                    #16a34a 153deg 180deg,
+
+                    transparent 180deg 360deg
+                );
+        }
+
+
+        .gauge-arc::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 275px;
+            height: 275px;
+
+            left: 57px;
+            top: 57px;
+
+            background: white;
+            border-radius: 50%;
+        }
+
+
+        .gauge-center {
+
+            position: absolute;
+
+            left: 50%;
+            bottom: 0;
+
+            transform:
+                translateX(-50%);
+
+            width: 145px;
+            height: 78px;
+
+            background: white;
+
+            border-radius:
+                145px 145px 0 0;
+
+            z-index: 3;
+        }
+
+
+        .gauge-value {
+
+            position: absolute;
+
+            bottom: 5px;
+            left: 0;
+            right: 0;
+
+            z-index: 5;
+
+            font-size: 40px;
+            font-weight: 800;
+
+            color: #172033;
+        }
+
+
+        .gauge-label {
+
+            margin-top: 8px;
+
+            color: #667085;
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           AGUJA
+           ===================================================== */
+
+        .needle {
+
+            position: absolute;
+
+            width: 150px;
+            height: 5px;
+
+            left: 50%;
+            bottom: 28px;
+
+            transform-origin:
+                0% 50%;
+
+            transform:
+                rotate(
+                    {{ ((porcentaje|default(0)|float) * 1.8) - 90 }}deg
+                );
+
+            background: #172033;
+
+            border-radius: 5px;
+
+            z-index: 6;
+        }
+
+
+        .needle::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 17px;
+            height: 17px;
+
+            right: -8px;
+            top: -6px;
+
+            background: #172033;
+
+            border-radius: 50%;
+        }
+
+
+        /* =====================================================
+           LEYENDA
+           ===================================================== */
+
+        .semaforo-leyenda {
+
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+
+        .semaforo-item {
+
+            padding: 17px 20px;
+
+            border-radius: 12px;
+
+            border: 1px solid #eaecf0;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+
+        .semaforo-dot {
+
+            width: 15px;
+            height: 15px;
+
+            border-radius: 50%;
+
+            flex-shrink: 0;
+        }
+
+
+        .rojo {
+            background: #dc2626;
+        }
+
+
+        .amarillo {
+            background: #f2c94c;
+        }
+
+
+        .verde {
+            background: #16a34a;
+        }
+
+
+        .semaforo-item strong {
+
+            display: block;
+            color: #172033;
+        }
+
+
+        .semaforo-item span {
+
+            font-size: 13px;
+            color: #667085;
+        }
+
+
+        /* =====================================================
+           INDICADORES
+           ===================================================== */
+
+        .metricas {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 18px;
+        }
+
+
+        .metrica {
+
+            padding: 22px;
+
+            border-radius: 14px;
+
+            background: #f8fafc;
+
+            border: 1px solid #eaecf0;
+        }
+
+
+        .metrica-titulo {
+
+            color: #667085;
+            font-size: 14px;
+        }
+
+
+        .metrica-numero {
+
+            font-size: 30px;
+            font-weight: 800;
+
+            margin-top: 7px;
+
+            color: #172033;
+        }
+
+
+        /* =====================================================
+           ILUO
+           ===================================================== */
+
+        .iluos {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 14px;
+        }
+
+
+        .iluo-item {
+
+            border-radius: 12px;
+
+            padding: 18px;
+
+            background: #f8fafc;
+
+            border: 1px solid #eaecf0;
+        }
+
+
+        .iluo-letra {
+
+            font-size: 28px;
+            font-weight: 800;
+
+            color: #172033;
+        }
+
+
+        .iluo-nombre {
+
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+
+        .iluo-numero {
+
+            font-size: 24px;
+            font-weight: 800;
+
+            margin-top: 10px;
+        }
+
+
+        .barra {
+
+            height: 8px;
+
+            background: #e5e7eb;
+
+            border-radius: 10px;
+
+            margin-top: 12px;
+
+            overflow: hidden;
+        }
+
+
+        .barra span {
+
+            display: block;
+
+            height: 100%;
+
+            background: #172033;
+
+            border-radius: 10px;
+        }
+
+
+        /* =====================================================
+           NECESIDADES
+           ===================================================== */
+
+        .diagnostico-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 22px;
+        }
+
+
+        .diagnostico-card {
+
+            border-radius: 15px;
+
+            padding: 23px;
+
+            border: 1px solid #eaecf0;
+
+            background: #fff;
+        }
+
+
+        .diagnostico-card h3 {
+
+            margin-top: 0;
+        }
+
+
+        .diagnostico-card.capacitacion {
+
+            border-left:
+                5px solid #dc2626;
+        }
+
+
+        .diagnostico-card.fortaleza {
+
+            border-left:
+                5px solid #16a34a;
+        }
+
+
+        .necesidad {
+
+            padding: 13px 0;
+
+            border-bottom:
+                1px solid #eaecf0;
+        }
+
+
+        .necesidad:last-child {
+
+            border-bottom: none;
+        }
+
+
+        .necesidad-nombre {
+
+            font-weight: 700;
+            color: #172033;
+        }
+
+
+        .necesidad-meta {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            margin-top: 5px;
+
+            font-size: 13px;
+
+            color: #667085;
+        }
+
+
+        .badge {
+
+            display: inline-block;
+
+            padding: 4px 9px;
+
+            border-radius: 20px;
+
+            background: #f2f4f7;
+
+            font-weight: 700;
+        }
+
+
+        /* =====================================================
+           RESPONSIVO
+           ===================================================== */
+
+        @media(max-width: 950px) {
+
+            .dominio-layout,
+            .diagnostico-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+            .metricas,
+            .iluos {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+        }
+
+
+        @media(max-width: 650px) {
+
+            .dashboard-page {
+
+                padding: 15px;
+            }
+
+            .dashboard-filtros {
+
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filtro select {
+
+                width: 100%;
+            }
+
+            .gauge {
+
+                transform:
+                    scale(.82);
+
+                transform-origin:
+                    top center;
+
+                margin-bottom: -35px;
+            }
+
+            .metricas,
+            .iluos {
+
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="contenedor">
+
+    <aside class="menu">
+
+        <h2>MATRIZ ILUO</h2>
+
+        <a href="/">🏠 Inicio</a>
+
+        <a href="/colaboradores">
+            👥 Empleados
+        </a>
+
+        <a href="/colaboradores/inactivos">
+            🔴 Inactivos
+        </a>
+
+        <a href="/habilidades">
+            🛠️ Habilidades
+        </a>
+
+        <a href="/evaluaciones">
+            📝 Evaluaciones
+        </a>
+
+        <a href="/matriz">
+            📊 Matriz ILUO
+        </a>
+
+        <a href="/cursos">
+            📚 Cursos
+        </a>
+
+        <a href="/">
+            📈 Dashboard
+        </a>
+
+    </aside>
+
+
+    <main class="contenido">
+
+        <div class="dashboard-page">
+
+            <!-- =================================================
+                 ENCABEZADO
+                 ================================================= -->
+
+            <div class="dashboard-header">
+
+                <h1>
+                    Dashboard de
+                    {{ area_seleccionada.nombre if area_seleccionada else "Operaciones" }}
+                </h1>
+
+                <p>
+                    Indicadores generales de dominio,
+                    desarrollo de habilidades y necesidades
+                    de capacitación.
+                </p>
+
+            </div>
+
+
+            <!-- =================================================
+                 FILTROS
+                 ================================================= -->
+
+            <form
+                method="GET"
+                action="/"
+                class="dashboard-filtros"
+            >
+
+                <div class="filtro">
+
+                    <label>
+                        Área
+                    </label>
+
+                    <select
+                        name="area_id"
+                        onchange="this.form.submit()"
+                    >
+
+                        {% for area in areas %}
+
+                            <option
+                                value="{{ area.id }}"
+                                {% if area_seleccionada and area.id == area_seleccionada.id %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {{ area.nombre }}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="filtro">
+
+                    <label>
+                        Departamento
+                    </label>
+
+                    <select
+                        name="departamento_id"
+                    >
+
+                        <option value="">
+                            Todos los departamentos
+                        </option>
+
+                        {% for departamento in departamentos %}
+
+                            <option
+                                value="{{ departamento.id }}"
+                                {% if departamento_seleccionado and departamento.id == departamento_seleccionado.id %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {{ departamento.nombre }}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="filtro">
+
+                    <button type="submit">
+                        Actualizar dashboard
+                    </button>
+
+                </div>
+
+            </form>
+
+
+            <!-- =================================================
+                 DOMINIO
+                 ================================================= -->
+
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <div>
+
+                        <h2>
+                            Dominio general
+                        </h2>
+
+                        <p>
+                            Nivel general de dominio
+                            de la vista seleccionada
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="dominio-layout">
+
+
+                    <div class="gauge-container">
+
+                        <div class="gauge">
+
+                            <div class="gauge-arc"></div>
+
+                            <div class="needle"></div>
+
+                            <div class="gauge-center"></div>
+
+                            <div class="gauge-value">
+
+                                {{ porcentaje|default(0) }}%
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="gauge-label">
+
+                            {{ estado|default("Sin evaluaciones") }}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="semaforo-leyenda">
+
+                        <div class="semaforo-item">
+
+                            <span class="semaforo-dot rojo"></span>
+
+                            <div>
+
+                                <strong>
+                                    Requiere Atención
+                                </strong>
+
+                                <span>
+                                    0% — menos de 70%
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="semaforo-item">
+
+                            <span class="semaforo-dot amarillo"></span>
+
+                            <div>
+
+                                <strong>
+                                    En desarrollo
+                                </strong>
+
+                                <span>
+                                    70% — menos de 85%
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="semaforo-item">
+
+                            <span class="semaforo-dot verde"></span>
+
+                            <div>
+
+                                <strong>
+                                    Buen dominio
+                                </strong>
+
+                                <span>
+                                    85% — 100%
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 METRICAS
+                 ================================================= -->
+
+            <div class="dashboard-card">
+
+                <div class="metricas">
+
+                    <div class="metrica">
+
+                        <div class="metrica-titulo">
+                            Colaboradores activos
+                        </div>
+
+                        <div class="metrica-numero">
+                            {{ colaboradores|length }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="metrica">
+
+                        <div class="metrica-titulo">
+                            Habilidades evaluadas
+                        </div>
+
+                        <div class="metrica-numero">
+                            {{ habilidades|length }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="metrica">
+
+                        <div class="metrica-titulo">
+                            Evaluaciones
+                        </div>
+
+                        <div class="metrica-numero">
+                            {{ evaluaciones }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 DISTRIBUCION ILUO
+                 ================================================= -->
+
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <div>
+
+                        <h2>
+                            Distribución ILUO
+                        </h2>
+
+                        <p>
+                            Composición de las evaluaciones
+                            consideradas en esta vista.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="iluos">
+
+                    <div class="iluo-item">
+
+                        <div class="iluo-letra">
+                            I
+                        </div>
+
+                        <div class="iluo-nombre">
+                            Inicial / Aprendiz
+                        </div>
+
+                        <div class="iluo-numero">
+                            {{ niveles.I|default(0) }}
+                        </div>
+
+                        <div class="barra">
+
+                            <span
+                                style="width: {{ niveles_porcentaje.I|default(0) }}%;"
+                            ></span>
+
+                        </div>
+
+                        <small>
+                            {{ niveles_porcentaje.I|default(0) }}%
+                        </small>
+
+                    </div>
+
+
+                    <div class="iluo-item">
+
+                        <div class="iluo-letra">
+                            L
+                        </div>
+
+                        <div class="iluo-nombre">
+                            Local / Operario
+                        </div>
+
+                        <div class="iluo-numero">
+                            {{ niveles.L|default(0) }}
+                        </div>
+
+                        <div class="barra">
+
+                            <span
+                                style="width: {{ niveles_porcentaje.L|default(0) }}%;"
+                            ></span>
+
+                        </div>
+
+                        <small>
+                            {{ niveles_porcentaje.L|default(0) }}%
+                        </small>
+
+                    </div>
+
+
+                    <div class="iluo-item">
+
+                        <div class="iluo-letra">
+                            U
+                        </div>
+
+                        <div class="iluo-nombre">
+                            Útil / Autónomo
+                        </div>
+
+                        <div class="iluo-numero">
+                            {{ niveles.U|default(0) }}
+                        </div>
+
+                        <div class="barra">
+
+                            <span
+                                style="width: {{ niveles_porcentaje.U|default(0) }}%;"
+                            ></span>
+
+                        </div>
+
+                        <small>
+                            {{ niveles_porcentaje.U|default(0) }}%
+                        </small>
+
+                    </div>
+
+
+                    <div class="iluo-item">
+
+                        <div class="iluo-letra">
+                            O
+                        </div>
+
+                        <div class="iluo-nombre">
+                            Óptimo / Instructor
+                        </div>
+
+                        <div class="iluo-numero">
+                            {{ niveles.O|default(0) }}
+                        </div>
+
+                        <div class="barra">
+
+                            <span
+                                style="width: {{ niveles_porcentaje.O|default(0) }}%;"
+                            ></span>
+
+                        </div>
+
+                        <small>
+                            {{ niveles_porcentaje.O|default(0) }}%
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 DIAGNOSTICO
+                 ================================================= -->
+
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <div>
+
+                        <h2>
+                            Diagnóstico de talento
+                        </h2>
+
+                        <p>
+                            Identificación automática de
+                            oportunidades de capacitación
+                            y fortalezas.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="diagnostico-grid">
+
+
+                    <!-- CAPACITACION -->
+
+                    <div class="diagnostico-card capacitacion">
+
+                        <h3>
+                            🎯 Necesidades de capacitación
+                        </h3>
+
+                        {% if necesidades %}
+
+                            {% for necesidad in necesidades[:5] %}
+
+                                <div class="necesidad">
+
+                                    <div class="necesidad-nombre">
+
+                                        {{ necesidad.nombre }}
+
+                                    </div>
+
+                                    <div class="necesidad-meta">
+
+                                        <span>
+
+                                            {{ necesidad.total }}
+                                            evaluación(es) I/L
+
+                                        </span>
+
+                                        <span class="badge">
+
+                                            {{ necesidad.departamentos|join(", ") }}
+
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            {% endfor %}
+
+                        {% else %}
+
+                            <p>
+                                No se detectaron necesidades
+                                de capacitación con las
+                                evaluaciones actuales.
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- FORTALEZAS -->
+
+                    <div class="diagnostico-card fortaleza">
+
+                        <h3>
+                            ⭐ Fortalezas y especialización
+                        </h3>
+
+                        {% if fortalezas %}
+
+                            {% for fortaleza in fortalezas[:5] %}
+
+                                <div class="necesidad">
+
+                                    <div class="necesidad-nombre">
+
+                                        {{ fortaleza.nombre }}
+
+                                    </div>
+
+                                    <div class="necesidad-meta">
+
+                                        <span>
+
+                                            {{ fortaleza.total }}
+                                            evaluación(es) U/O
+
+                                        </span>
+
+                                        <span class="badge">
+
+                                            {{ fortaleza.departamentos|join(", ") }}
+
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            {% endfor %}
+
+                        {% else %}
+
+                            <p>
+                                Aún no hay suficientes evaluaciones
+                                U/O para identificar fortalezas.
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 NECESIDADES POR DEPARTAMENTO
+                 ================================================= -->
+
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <div>
+
+                        <h2>
+                            Enfoque de capacitación por departamento
+                        </h2>
+
+                        <p>
+                            Habilidades que concentran
+                            mayor cantidad de niveles I y L.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="diagnostico-grid">
+
+                    {% for departamento in departamentos %}
+
+                        <div class="diagnostico-card">
+
+                            <h3>
+                                {{ departamento.nombre }}
+                            </h3>
+
+                            {% set lista =
+                                necesidades_departamentos.get(
+                                    departamento.id,
+                                    []
+                                )
+                            %}
+
+                            {% if lista %}
+
+                                {% for item in lista[:3] %}
+
+                                    <div class="necesidad">
+
+                                        <div class="necesidad-nombre">
+
+                                            {{ item.nombre }}
+
+                                        </div>
+
+                                        <div class="necesidad-meta">
+
+                                            <span>
+                                                Necesidad detectada
+                                            </span>
+
+                                            <span class="badge">
+                                                {{ item.total }}
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                {% endfor %}
+
+                            {% else %}
+
+                                <p>
+                                    Sin necesidades detectadas.
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 LEYENDA
+                 ================================================= -->
+
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <div>
+
+                        <h2>
+                            Leyenda del Dashboard de
+                            {{ area_seleccionada.nombre
+                               if area_seleccionada
+                               else "Operaciones" }}
+                        </h2>
+
+                        <p>
+                            Criterios utilizados para
+                            interpretar el nivel de dominio.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="semaforo-leyenda">
+
+                    <div class="semaforo-item">
+
+                        <span class="semaforo-dot rojo"></span>
+
+                        <div>
+
+                            <strong>
+                                Requiere Atención
+                            </strong>
+
+                            <span>
+                                Dominio inferior al 70%.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="semaforo-item">
+
+                        <span class="semaforo-dot amarillo"></span>
+
+                        <div>
+
+                            <strong>
+                                En desarrollo
+                            </strong>
+
+                            <span>
+                                Dominio de 70% a menos de 85%.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="semaforo-item">
+
+                        <span class="semaforo-dot verde"></span>
+
+                        <div>
+
+                            <strong>
+                                Buen dominio
+                            </strong>
+
+                            <span>
+                                Dominio de 85% a 100%.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>

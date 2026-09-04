@@ -1,0 +1,344 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Historial de modificaciones
+    </title>
+
+    <style>
+
+        body {
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            margin: 0;
+            padding: 0;
+
+            background: #f4f6f8;
+            color: #1f2937;
+        }
+
+
+        .contenedor {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+
+        .encabezado {
+            background: white;
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+
+        .encabezado h1 {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+
+
+        .subtitulo {
+            color: #6b7280;
+        }
+
+
+        .acciones {
+            margin-top: 20px;
+        }
+
+
+        .btn {
+            display: inline-block;
+            padding: 9px 14px;
+            border-radius: 7px;
+            text-decoration: none;
+            font-size: 14px;
+            border: none;
+        }
+
+
+        .btn-regresar {
+            background: #6b7280;
+            color: white;
+        }
+
+
+        .btn-regresar:hover {
+            background: #4b5563;
+            color: white;
+        }
+
+
+        .panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+
+        .tabla-contenedor {
+            overflow-x: auto;
+        }
+
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+
+        th {
+            background: #f3f4f6;
+            text-align: left;
+            padding: 12px;
+            border-bottom: 2px solid #d1d5db;
+            white-space: nowrap;
+        }
+
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: top;
+        }
+
+
+        tr:hover {
+            background: #f9fafb;
+        }
+
+
+        .campo {
+            font-weight: bold;
+        }
+
+
+        .valor-anterior {
+            color: #991b1b;
+        }
+
+
+        .valor-nuevo {
+            color: #166534;
+        }
+
+
+        .motivo {
+            min-width: 240px;
+        }
+
+
+        .sin-registros {
+            padding: 20px;
+            border-radius: 8px;
+            background: #eff6ff;
+            color: #1e40af;
+        }
+
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="contenedor">
+
+
+    <div class="encabezado">
+
+        <h1>
+            Historial de modificaciones
+        </h1>
+
+
+        <div class="subtitulo">
+
+            <strong>
+                {{ colaborador.nombre }}
+            </strong>
+
+            · No. de empleado
+
+            <strong>
+                {{ colaborador.numero_empleado }}
+            </strong>
+
+        </div>
+
+
+        <div class="acciones">
+
+            <a
+                href="{{ url_for('colaboradores') }}"
+                class="btn btn-regresar"
+            >
+                ← Regresar a colaboradores
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="panel">
+
+
+        {% if historial %}
+
+            <div class="tabla-contenedor">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Fecha y hora
+                            </th>
+
+                            <th>
+                                Usuario
+                            </th>
+
+                            <th>
+                                Campo
+                            </th>
+
+                            <th>
+                                Valor anterior
+                            </th>
+
+                            <th>
+                                Valor nuevo
+                            </th>
+
+                            <th>
+                                Motivo
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for registro in historial %}
+
+                        <tr>
+
+                            <td>
+
+                                {% if registro.fecha_hora %}
+
+                                    {{ registro.fecha_hora.strftime('%d/%m/%Y %H:%M:%S') }}
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                {% set usuario = usuarios.get(registro.usuario_id) %}
+
+                                {% if usuario %}
+
+                                    <strong>
+                                        {{ usuario.username }}
+                                    </strong>
+
+                                    {% if usuario.rol %}
+
+                                        <br>
+
+                                        <span>
+                                            {{ usuario.rol }}
+                                        </span>
+
+                                    {% endif %}
+
+                                {% else %}
+
+                                    Usuario #{{ registro.usuario_id }}
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td class="campo">
+
+                                {{ registro.campo }}
+
+                            </td>
+
+
+                            <td class="valor-anterior">
+
+                                {{ registro.valor_anterior }}
+
+                            </td>
+
+
+                            <td class="valor-nuevo">
+
+                                {{ registro.valor_nuevo }}
+
+                            </td>
+
+
+                            <td class="motivo">
+
+                                {{ registro.motivo }}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        {% else %}
+
+            <div class="sin-registros">
+
+                Este colaborador no tiene modificaciones registradas.
+
+            </div>
+
+        {% endif %}
+
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

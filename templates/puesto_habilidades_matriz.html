@@ -1,0 +1,39 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Matriz de Asignación: Puestos vs Habilidades</h2>
+    <p class="text-muted">Marca las casillas para asignar las habilidades correspondientes a cada puesto de trabajo.</p>
+    
+    <form method="POST">
+        <div class="table-responsive" style="max-height: 70vh; overflow-y: auto;">
+            <table class="table table-bordered table-hover align-middle text-center">
+                <thead class="table-dark style="position: sticky; top: 0; z-index: 2;">
+                    <tr>
+                        <th class="text-start" style="min-width: 200px; position: sticky; left: 0; background: #212529; z-index: 3;">PUESTO</th>
+                        {% for hab in habilidades %}
+                            <th style="min-width: 140px; font-size: 0.85rem;">{{ hab.nombre }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for puesto in puestos %}
+                    <tr>
+                        <td class="fw-bold text-start" style="position: sticky; left: 0; background: #f8f9fa; z-index: 1;">{{ puesto.nombre }}</td>
+                        {% for hab in habilidades %}
+                            {% set asignado = (puesto.id, hab.id) in mapa_asignaciones %}
+                            <td>
+                                <input type="checkbox" name="ph_{{ puesto.id }}_{{ hab.id }}" class="form-check-input" {% if asignado %}checked{% endif %}>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-3">
+            <button type="submit" class="btn btn-success">Guardar Matriz de Habilidades</button>
+            <a href="/matriz" class="btn btn-secondary">Ver Matriz ILUO</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

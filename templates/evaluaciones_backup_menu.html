@@ -1,0 +1,347 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Evaluaciones ILUO</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        .tabla-iluo {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+        }
+
+        .tabla-iluo th,
+        .tabla-iluo td {
+            border: 1px solid #ddd;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .tabla-iluo th {
+            background: #1f2937;
+            color: white;
+        }
+
+        .tabla-iluo td:first-child {
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .nivel-iluo {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+        }
+
+        .descripcion-iluo {
+            margin-top: 20px;
+            padding: 18px;
+            background: #f4f6f8;
+            border-radius: 8px;
+        }
+
+        .boton-guardar {
+            margin-top: 25px;
+            padding: 12px 25px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <aside class="menu">
+
+        <h2>MATRIZ ILUO</h2>
+
+        <a href="/">🏠 Inicio</a>
+
+        <a href="/colaboradores">
+            👥 Empleados
+        </a>
+
+        <a href="/habilidades">
+            🛠️ Habilidades
+        </a>
+
+        <a href="/puesto-habilidades">
+            🔗 Habilidades por puesto
+        </a>
+
+        <a href="/evaluaciones">
+            📝 Evaluaciones
+        </a>
+
+        <a href="/matriz">`n            📊 Matriz ILUO`n        </a>
+
+        <a href="/">`n            📈 Dashboard`n        </a>
+
+    </aside>
+
+
+    <main class="contenido">
+
+        <div class="encabezado">
+
+            <h1>Evaluación ILUO</h1>
+
+            <p>
+                Selecciona un colaborador para realizar su evaluación.
+            </p>
+
+        </div>
+
+
+        <div class="tarjeta">
+
+            <h2>Seleccionar colaborador</h2>
+
+            <br>
+
+            <form method="GET"
+                  action="/evaluaciones">
+
+                <select name="colaborador_id"
+                        onchange="this.form.submit()">
+
+                    <option value="">
+                        Selecciona un colaborador
+                    </option>
+
+                    {% for colaborador in colaboradores %}
+
+                    <option value="{{ colaborador.id }}"
+                        {% if colaborador_seleccionado == colaborador.id %}
+                            selected
+                        {% endif %}
+                    >
+
+                        {{ colaborador.numero_empleado }}
+                        -
+                        {{ colaborador.nombre }}
+                        -
+                        {{ colaborador.puesto.nombre }}
+
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </form>
+
+        </div>
+
+
+        {% if colaborador_actual %}
+
+        <div class="tarjeta">
+
+            <h2>
+                Evaluación de:
+                {{ colaborador_actual.nombre }}
+            </h2>
+
+            <p>
+                Puesto:
+                <strong>
+                    {{ colaborador_actual.puesto.nombre }}
+                </strong>
+            </p>
+
+
+            <form method="POST"
+                  action="/evaluaciones/guardar">
+
+                <input
+                    type="hidden"
+                    name="colaborador_id"
+                    value="{{ colaborador_actual.id }}"
+                >
+
+
+                <table class="tabla-iluo">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Habilidad
+                            </th>
+
+                            <th>
+                                I
+                            </th>
+
+                            <th>
+                                L
+                            </th>
+
+                            <th>
+                                U
+                            </th>
+
+                            <th>
+                                O
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    {% for habilidad in habilidades %}
+
+                    <tr>
+
+                        <td>
+                            {{ habilidad.nombre }}
+                        </td>
+
+
+                        <td>
+
+                            <input
+                                class="nivel-iluo"
+                                type="radio"
+                                name="nivel_{{ habilidad.id }}"
+                                value="I"
+
+                                {% if evaluaciones.get(habilidad.id) == "I" %}
+                                    checked
+                                {% endif %}
+
+                                required
+                            >
+
+                        </td>
+
+
+                        <td>
+
+                            <input
+                                class="nivel-iluo"
+                                type="radio"
+                                name="nivel_{{ habilidad.id }}"
+                                value="L"
+
+                                {% if evaluaciones.get(habilidad.id) == "L" %}
+                                    checked
+                                {% endif %}
+                            >
+
+                        </td>
+
+
+                        <td>
+
+                            <input
+                                class="nivel-iluo"
+                                type="radio"
+                                name="nivel_{{ habilidad.id }}"
+                                value="U"
+
+                                {% if evaluaciones.get(habilidad.id) == "U" %}
+                                    checked
+                                {% endif %}
+                            >
+
+                        </td>
+
+
+                        <td>
+
+                            <input
+                                class="nivel-iluo"
+                                type="radio"
+                                name="nivel_{{ habilidad.id }}"
+                                value="O"
+
+                                {% if evaluaciones.get(habilidad.id) == "O" %}
+                                    checked
+                                {% endif %}
+                            >
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+
+                <div class="descripcion-iluo">
+
+                    <strong>I — Inicial/Aprendiz:</strong>
+
+                    El colaborador se encuentra en capacitación y ejecuta las actividades fundamentales del puesto bajo supervisión constante y directa.
+
+                    <br><br>
+
+                    <strong>L — Local/Operario:</strong>
+
+                    El colaborador ejecuta de forma localizada actividades operativas con menor dependencia. Requiere orientación o supervisión ocasional.
+
+                    <br><br>
+
+                    <strong>U — Útil/Autónomo:</strong>
+
+                    El colaborador domina el puesto de forma independiente, garantizando el cumplimiento de los estándares de seguridad, velocidad y calidad.
+
+                    <br><br>
+
+                    <strong>O — Óptimo/Instructor:</strong>
+
+                    El colaborador ejecuta el trabajo de manera óptima, promueve la mejora continua y es capaz de entrenar y evaluar a otro colaborador.
+
+                </div>
+
+
+                <button
+                    class="boton-guardar"
+                    type="submit"
+                >
+
+                    💾 Guardar evaluación
+
+                </button>
+
+            </form>
+
+        </div>
+
+        {% endif %}
+
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
+
+

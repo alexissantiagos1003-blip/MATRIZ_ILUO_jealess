@@ -1,0 +1,153 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Asignar habilidades</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <aside class="menu">
+
+        <h2>MATRIZ ILUO</h2>
+
+        <a href="/">🏠 Inicio</a>
+
+        <a href="/colaboradores">👥 Empleados</a>
+
+        <a href="/habilidades">🛠️ Habilidades</a>
+
+        <a href="/puesto-habilidades">
+            🔗 Habilidades por puesto
+        </a>
+
+        <a href="/evaluaciones">📝 Evaluaciones</a>
+
+        <a href="/matriz">📊 Matriz ILUO</a>
+
+        <a href="/">📈 Dashboard</a>
+
+    </aside>
+
+
+    <main class="contenido">
+
+        <div class="encabezado">
+
+            <h1>Habilidades por puesto</h1>
+
+            <p>
+                Selecciona un puesto y asigna las habilidades
+                que corresponden a ese puesto.
+            </p>
+
+        </div>
+
+
+        <div class="tarjeta">
+
+            <h2>Seleccionar puesto</h2>
+
+            <form method="GET"
+                  action="/puesto-habilidades">
+
+                <select name="puesto_id"
+                        onchange="this.form.submit()">
+
+                    <option value="">
+                        Selecciona un puesto
+                    </option>
+
+                    {% for puesto in puestos %}
+
+                        <option value="{{ puesto.id }}"
+                            {% if puesto.id == puesto_seleccionado %}
+                                selected
+                            {% endif %}
+                        >
+
+                            {{ puesto.nombre }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </form>
+
+        </div>
+
+
+        {% if puesto_seleccionado %}
+
+        <div class="tarjeta">
+
+            <h2>Habilidades</h2>
+
+            <form method="POST"
+                  action="/puesto-habilidades">
+
+                <input type="hidden"
+                       name="puesto_id"
+                       value="{{ puesto_seleccionado }}">
+
+
+                {% for habilidad in habilidades %}
+
+                <div style="margin: 12px 0;">
+
+                    <label>
+
+                        <input
+                            type="checkbox"
+                            name="habilidades"
+                            value="{{ habilidad.id }}"
+
+                            {% if habilidad.id in habilidades_asignadas %}
+                                checked
+                            {% endif %}
+                        >
+
+                        {{ habilidad.nombre }}
+
+                    </label>
+
+                </div>
+
+                {% endfor %}
+
+
+                <br>
+
+                <button type="submit">
+                    Guardar habilidades
+                </button>
+
+            </form>
+
+        </div>
+
+        {% endif %}
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
+
+

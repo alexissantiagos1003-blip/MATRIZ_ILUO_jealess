@@ -1,0 +1,252 @@
+﻿<style>
+
+.menu-principal-iluo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.menu-principal-iluo h2 {
+    margin: 0 0 12px 0;
+}
+
+.menu-item-iluo {
+    display: block;
+}
+
+.menu-enlace-iluo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 12px;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.menu-enlace-iluo:hover {
+    background: rgba(255,255,255,0.12);
+}
+
+.menu-enlace-iluo.activo {
+    background: rgba(230,59,25,0.95);
+}
+
+.menu-flecha-iluo {
+    font-size: 11px;
+    opacity: 0.8;
+}
+
+.submenu-iluo {
+    display: none;
+    flex-direction: column;
+    gap: 3px;
+    margin: 2px 0 5px 14px;
+    padding-left: 10px;
+    border-left: 1px solid rgba(255,255,255,0.18);
+}
+
+.menu-item-iluo.abierto .submenu-iluo {
+    display: flex;
+}
+
+.submenu-enlace-iluo {
+    display: block;
+    padding: 8px 10px;
+    border-radius: 7px;
+    color: rgba(255,255,255,0.78);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.submenu-enlace-iluo:hover,
+.submenu-enlace-iluo.activo {
+    background: rgba(255,255,255,0.09);
+    color: white;
+}
+
+</style>
+
+<div class="menu-principal-iluo">
+
+    <div class="marca-menu">
+
+        <div class="marca-menu-fondo">
+
+            <img
+                src="{{ url_for('static', filename='img/LOGO OFICIAL EMBBA.png') }}"
+                alt="EMBBA"
+                class="marca-menu-logo-original"
+            >
+
+        </div>
+
+        <div class="marca-menu-titulo">
+            MATRIZ ILUO
+        </div>
+
+    </div>
+
+
+    <div class="menu-item-iluo">
+
+        <a
+            href="/"
+            class="menu-enlace-iluo {% if request.path == '/' %}activo{% endif %}"
+        >
+            <span>🏠 Inicio</span>
+        </a>
+
+    </div>
+
+
+    <div class="menu-item-iluo {% if request.path.startswith('/colaboradores') %}abierto{% endif %}">
+
+        <a
+            href="/colaboradores"
+            class="menu-enlace-iluo {% if request.path.startswith('/colaboradores') %}activo{% endif %}"
+        >
+            <span>👥 Colaboradores</span>
+            <span class="menu-flecha-iluo">◆</span>
+        </a>
+
+        <div class="submenu-iluo">
+
+            <a
+                href="/colaboradores/inactivos"
+                class="submenu-enlace-iluo {% if request.path.startswith('/colaboradores/inactivos') %}activo{% endif %}"
+            >
+                ↳ Colaboradores inactivos
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="menu-item-iluo">
+
+        <a
+            href="/puestos"
+            class="menu-enlace-iluo {% if request.path.startswith('/puestos') %}activo{% endif %}"
+        >
+            <span>🏭 Puestos</span>
+        </a>
+
+    </div>
+
+
+    <div class="menu-item-iluo {% if request.path.startswith('/habilidades') or request.path.startswith('/puesto-habilidades') %}abierto{% endif %}">
+
+        <a
+            href="/habilidades"
+            class="menu-enlace-iluo {% if request.path.startswith('/habilidades') or request.path.startswith('/puesto-habilidades') %}activo{% endif %}"
+        >
+            <span>🛠️ Habilidades</span>
+            <span class="menu-flecha-iluo">◆</span>
+        </a>
+
+        <div class="submenu-iluo">
+
+            <a
+                href="/puesto-habilidades"
+                class="submenu-enlace-iluo {% if request.path.startswith('/puesto-habilidades') %}activo{% endif %}"
+            >
+                ↳ Habilidades por puesto
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="menu-item-iluo {% if request.path.startswith('/evaluaciones') or request.path.startswith('/historial-evaluaciones') %}abierto{% endif %}">
+
+        <a
+            href="/evaluaciones"
+            class="menu-enlace-iluo {% if request.path.startswith('/evaluaciones') or request.path.startswith('/historial-evaluaciones') %}activo{% endif %}"
+        >
+            <span>📝 Evaluaciones</span>
+            <span class="menu-flecha-iluo">◆</span>
+        </a>
+
+        <div class="submenu-iluo">
+
+            <a
+                href="/historial-evaluaciones"
+                class="submenu-enlace-iluo {% if request.path.startswith('/historial-evaluaciones') %}activo{% endif %}"
+            >
+                ↳ Historial de evaluaciones
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="menu-item-iluo">
+
+        <a
+            href="/matriz"
+            class="menu-enlace-iluo {% if request.path.startswith('/matriz') %}activo{% endif %}"
+        >
+            <span>📊 Matriz ILUO</span>
+        </a>
+
+    </div>
+
+
+    <div class="menu-item-iluo {% if request.path.startswith('/dominio-brechas') or request.path.startswith('/seguimiento') %}abierto{% endif %}">
+
+        <a
+            href="/dominio-brechas"
+            class="menu-enlace-iluo {% if request.path.startswith('/dominio-brechas') or request.path.startswith('/seguimiento') %}activo{% endif %}"
+        >
+            <span>📈 Brechas y dominio</span>
+            <span class="menu-flecha-iluo">◆</span>
+        </a>
+
+        <div class="submenu-iluo">
+
+            <a
+                href="/seguimiento"
+                class="submenu-enlace-iluo {% if request.path.startswith('/seguimiento') %}activo{% endif %}"
+            >
+                ↳ Seguimiento
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="menu-item-iluo">
+
+        <a
+            href="/cursos"
+            class="menu-enlace-iluo {% if request.path.startswith('/cursos') %}activo{% endif %}"
+        >
+            <span>📚 Cursos</span>
+        </a>
+
+    </div>
+
+
+    <div class="menu-item-iluo">
+
+        <a
+            href="/dashboard"
+            class="menu-enlace-iluo {% if request.path.startswith('/dashboard') %}activo{% endif %}"
+        >
+            <span>📊 Dashboard</span>
+        </a>
+
+    </div>
+
+</div>
+
+{% include "_usuario_menu.html" %}

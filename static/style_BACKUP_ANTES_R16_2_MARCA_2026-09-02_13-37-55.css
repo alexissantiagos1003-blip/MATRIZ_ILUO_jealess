@@ -1,0 +1,792 @@
+﻿* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    color: #222;
+}
+
+.contenedor {
+    display: flex;
+    min-height: 100vh;
+}
+
+.menu {
+    width: 240px;
+    background: #1f2937;
+    color: white;
+    padding: 25px 15px;
+}
+
+.menu h2 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.menu a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+}
+
+.menu a:hover {
+    background: #374151;
+}
+
+.contenido {
+    flex: 1;
+    padding: 40px;
+}
+
+.encabezado {
+    margin-bottom: 30px;
+}
+
+.encabezado h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.tarjetas {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.tarjeta {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.tarjeta h3 {
+    margin-bottom: 10px;
+}
+
+.numero {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+input {
+    padding: 12px;
+    width: 300px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    background: #1f2937;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background: #374151;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background: #f4f6f8;
+}
+
+td a {
+    color: #c0392b;
+    text-decoration: none;
+}
+
+@media (max-width: 800px) {
+
+    .menu {
+        width: 190px;
+    }
+
+    .tarjetas {
+        grid-template-columns: 1fr;
+    }
+
+    input {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+}
+select {
+    padding: 12px;
+    width: 250px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+
+/* ============================================================
+   MATRIZ ILUO - MENU LATERAL FIJO
+   Aplicado globalmente a todas las pantallas.
+   ============================================================ */
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.contenedor {
+    min-height: 100vh;
+}
+
+/* Sidebar fijo */
+.menu {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+
+    width: 280px !important;
+    height: 100vh !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+
+    box-sizing: border-box !important;
+
+    z-index: 1000 !important;
+
+    scrollbar-width: thin;
+}
+
+/* Contenido separado del sidebar */
+.contenedor > .contenido {
+    margin-left: 280px !important;
+    min-height: 100vh !important;
+    width: calc(100% - 280px) !important;
+    box-sizing: border-box !important;
+}
+
+/* Cuando el contenido no es hijo directo */
+main.contenido {
+    margin-left: 280px !important;
+    min-height: 100vh !important;
+    box-sizing: border-box !important;
+}
+
+/* ============================================================
+   ADMINISTRACION EN PERFIL
+   ============================================================ */
+
+.admin-accesos {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    margin-top: 14px !important;
+}
+
+.admin-acceso {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    width: auto !important;
+    min-width: 0 !important;
+
+    padding: 9px 14px !important;
+
+    border-radius: 8px !important;
+
+    font-size: 13px !important;
+    font-weight: 700 !important;
+
+    text-decoration: none !important;
+
+    transition:
+        transform .15s ease,
+        box-shadow .15s ease,
+        background .15s ease !important;
+}
+
+.admin-acceso:hover {
+    transform: translateY(-1px);
+}
+
+.admin-acceso-usuarios {
+    background: #172033 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(23,32,51,.18) !important;
+}
+
+.admin-acceso-usuarios:hover {
+    background: #26344d !important;
+}
+
+.admin-acceso-roles {
+    background: #f1f5f9 !important;
+    color: #172033 !important;
+    border: 1px solid #cbd5e1 !important;
+}
+
+.admin-acceso-roles:hover {
+    background: #e2e8f0 !important;
+}
+
+/* Enlaces normales del final del perfil */
+.perfil .enlace-retorno-admin {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    margin-top: 12px !important;
+    padding: 8px 13px !important;
+
+    border-radius: 8px !important;
+
+    background: #f1f5f9 !important;
+    color: #172033 !important;
+
+    text-decoration: none !important;
+
+    font-size: 13px !important;
+    font-weight: 700 !important;
+}
+
+/* ============================================================
+   VERSION MOVIL
+   ============================================================ */
+
+@media (max-width: 900px) {
+
+    .menu {
+        width: 230px !important;
+    }
+
+    .contenedor > .contenido,
+    main.contenido {
+        margin-left: 230px !important;
+        width: calc(100% - 230px) !important;
+    }
+
+}
+
+@media (max-width: 650px) {
+
+    .menu {
+        width: 210px !important;
+    }
+
+    .contenedor > .contenido,
+    main.contenido {
+        margin-left: 210px !important;
+        width: calc(100% - 210px) !important;
+    }
+
+    .admin-accesos {
+        gap: 7px !important;
+    }
+
+    .admin-acceso {
+        padding: 8px 11px !important;
+        font-size: 12px !important;
+    }
+
+}
+
+/* ============================================================
+   MATRIZ ILUO - IDENTIDAD VISUAL EMBBA
+   R16.1
+   ============================================================ */
+
+
+/* ============================================================
+   MATRIZ ILUO - IDENTIDAD VISUAL EMBBA
+   R16.1
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   PALETA CORPORATIVA
+   ------------------------------------------------------------ */
+
+:root {
+
+    --embba-rojo:
+        #ef3b1f;
+
+    --embba-naranja:
+        #ff5a2f;
+
+    --embba-naranja-claro:
+        #ff8a3d;
+
+    --embba-oscuro:
+        #252a2d;
+
+    --embba-gris-oscuro:
+        #3a4044;
+
+    --embba-gris:
+        #687078;
+
+    --embba-gris-claro:
+        #eef1f3;
+
+    --embba-fondo:
+        #f5f6f7;
+
+    --embba-blanco:
+        #ffffff;
+
+    --embba-borde:
+        #dfe3e6;
+}
+
+
+/* ------------------------------------------------------------
+   FONDO GENERAL
+   ------------------------------------------------------------ */
+
+body {
+
+    background:
+        var(--embba-fondo);
+
+    color:
+        var(--embba-oscuro);
+}
+
+
+/* ------------------------------------------------------------
+   SIDEBAR
+   ------------------------------------------------------------ */
+
+.menu {
+
+    background:
+        linear-gradient(
+            180deg,
+            #252a2d 0%,
+            #1f2326 100%
+        ) !important;
+
+    color:
+        var(--embba-blanco) !important;
+
+    box-shadow:
+        3px 0 18px
+        rgba(0, 0, 0, .12) !important;
+
+    border-right:
+        1px solid
+        rgba(255,255,255,.04) !important;
+}
+
+
+/* ------------------------------------------------------------
+   IDENTIDAD DEL TITULO DEL MENU
+   ------------------------------------------------------------ */
+
+.menu h2 {
+
+    color:
+        var(--embba-blanco) !important;
+
+    position:
+        relative;
+
+    padding-bottom:
+        14px;
+
+    margin-bottom:
+        22px !important;
+}
+
+.menu h2::after {
+
+    content:
+        "";
+
+    display:
+        block;
+
+    width:
+        58px;
+
+    height:
+        4px;
+
+    border-radius:
+        999px;
+
+    margin:
+        10px auto 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--embba-rojo),
+            var(--embba-naranja)
+        );
+}
+
+
+/* ------------------------------------------------------------
+   ENLACES DEL MENU
+   ------------------------------------------------------------ */
+
+.menu a {
+
+    color:
+        var(--embba-blanco) !important;
+
+    border-radius:
+        8px !important;
+
+    transition:
+        background .15s ease,
+        transform .15s ease,
+        padding-left .15s ease !important;
+}
+
+.menu a:hover {
+
+    background:
+        rgba(255, 90, 47, .16) !important;
+
+    transform:
+        translateX(2px);
+
+    padding-left:
+        18px;
+}
+
+
+/* ------------------------------------------------------------
+   ENLACE ACTIVO
+   ------------------------------------------------------------ */
+
+.menu a.activo {
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--embba-rojo),
+            var(--embba-naranja)
+        ) !important;
+
+    color:
+        white !important;
+
+    font-weight:
+        700 !important;
+
+    box-shadow:
+        0 5px 14px
+        rgba(239, 59, 31, .22) !important;
+}
+
+
+/* ------------------------------------------------------------
+   CONTENIDO
+   ------------------------------------------------------------ */
+
+.contenido {
+
+    background:
+        transparent;
+
+    color:
+        var(--embba-oscuro);
+}
+
+
+/* ------------------------------------------------------------
+   ENCABEZADOS
+   ------------------------------------------------------------ */
+
+.encabezado h1 {
+
+    color:
+        var(--embba-oscuro) !important;
+
+    letter-spacing:
+        -.3px;
+}
+
+.encabezado p {
+
+    color:
+        var(--embba-gris) !important;
+}
+
+
+/* ------------------------------------------------------------
+   TARJETAS
+   ------------------------------------------------------------ */
+
+.tarjeta {
+
+    background:
+        var(--embba-blanco) !important;
+
+    border:
+        1px solid
+        rgba(223,227,230,.65);
+
+    border-radius:
+        12px !important;
+
+    box-shadow:
+        0 4px 16px
+        rgba(37,42,45,.07) !important;
+}
+
+.tarjeta h3 {
+
+    color:
+        var(--embba-oscuro) !important;
+}
+
+
+/* ------------------------------------------------------------
+   NUMEROS DESTACADOS
+   ------------------------------------------------------------ */
+
+.numero {
+
+    color:
+        var(--embba-rojo);
+}
+
+
+/* ------------------------------------------------------------
+   BOTONES GENERALES
+   ------------------------------------------------------------ */
+
+button {
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--embba-rojo),
+            var(--embba-naranja)
+        ) !important;
+
+    color:
+        white !important;
+
+    border:
+        none !important;
+
+    border-radius:
+        8px !important;
+
+    font-weight:
+        700 !important;
+
+    box-shadow:
+        0 4px 12px
+        rgba(239,59,31,.18);
+
+    transition:
+        transform .15s ease,
+        box-shadow .15s ease,
+        filter .15s ease !important;
+}
+
+button:hover {
+
+    background:
+        linear-gradient(
+            135deg,
+            #d93219,
+            #f04d25
+        ) !important;
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 6px 16px
+        rgba(239,59,31,.24);
+}
+
+
+/* ------------------------------------------------------------
+   CAMPOS
+   ------------------------------------------------------------ */
+
+input,
+select,
+textarea {
+
+    background:
+        white !important;
+
+    color:
+        var(--embba-oscuro) !important;
+
+    border:
+        1px solid
+        #cfd5d9 !important;
+
+    border-radius:
+        8px !important;
+
+    outline:
+        none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+
+    border-color:
+        var(--embba-naranja) !important;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(255,90,47,.12) !important;
+}
+
+
+/* ------------------------------------------------------------
+   TABLAS
+   ------------------------------------------------------------ */
+
+th {
+
+    background:
+        var(--embba-oscuro) !important;
+
+    color:
+        white !important;
+}
+
+td {
+
+    border-bottom:
+        1px solid
+        var(--embba-borde) !important;
+}
+
+td a {
+
+    color:
+        var(--embba-rojo) !important;
+
+    font-weight:
+        700;
+}
+
+td a:hover {
+
+    color:
+        var(--embba-naranja) !important;
+}
+
+
+/* ------------------------------------------------------------
+   TARJETAS / PANELES CON HOVER
+   ------------------------------------------------------------ */
+
+.tarjeta,
+.panel-dashboard,
+.seguimiento-card,
+.detalle-resumen-card,
+.detalle-tarjeta {
+
+    transition:
+        box-shadow .18s ease,
+        transform .18s ease;
+}
+
+.tarjeta:hover,
+.panel-dashboard:hover {
+
+    box-shadow:
+        0 7px 20px
+        rgba(37,42,45,.09);
+}
+
+
+/* ------------------------------------------------------------
+   COLORES DE ESTADO
+   ------------------------------------------------------------ */
+
+.estado-ok,
+.estado-cumple,
+.cumplimiento-verde {
+
+    color:
+        #16803c;
+}
+
+.estado-alerta,
+.estado-brecha,
+.cumplimiento-amarillo {
+
+    color:
+        #b56800;
+}
+
+.estado-error,
+.estado-pendiente,
+.cumplimiento-rojo {
+
+    color:
+        #c62828;
+}
+
+
+/* ------------------------------------------------------------
+   MARCA DE IDENTIDAD EN LINEAS / DETALLES
+   ------------------------------------------------------------ */
+
+a:hover {
+
+    transition:
+        color .15s ease,
+        background .15s ease;
+}
+
+
+/* ------------------------------------------------------------
+   RESPONSIVO
+   ------------------------------------------------------------ */
+
+@media (max-width: 800px) {
+
+    .menu a {
+
+        border-radius:
+            7px !important;
+    }
+
+}
+

@@ -1,0 +1,35 @@
+﻿# =========================
+# NECESIDADES DE CAPACITACIÓN
+# =========================
+
+@app.route("/capacitacion")
+def capacitacion():
+
+    evaluaciones = Evaluacion.query.filter(
+        Evaluacion.nivel.in_(["I", "L"])
+    ).all()
+
+    necesidades = []
+
+    for evaluacion in evaluaciones:
+
+        colaborador = evaluacion.colaborador
+        habilidad = evaluacion.habilidad
+
+        curso = Curso.query.filter_by(
+            habilidad_id=habilidad.id
+        ).first()
+
+        necesidades.append({
+            "colaborador": colaborador.nombre,
+            "puesto": colaborador.puesto.nombre,
+            "habilidad": habilidad.nombre,
+            "nivel": evaluacion.nivel,
+            "curso": curso
+        })
+
+    return render_template(
+        "capacitacion.html",
+        necesidades=necesidades
+    )
+

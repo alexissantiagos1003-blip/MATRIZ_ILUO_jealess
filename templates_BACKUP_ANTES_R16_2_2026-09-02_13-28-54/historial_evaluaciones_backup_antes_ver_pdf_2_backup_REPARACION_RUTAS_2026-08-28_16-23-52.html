@@ -1,0 +1,524 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Historial de evaluaciones</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+
+        .historial-pagina {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .historial-encabezado {
+            margin-bottom: 20px;
+        }
+
+        .historial-encabezado h1 {
+            margin-bottom: 6px;
+        }
+
+        .historial-encabezado p {
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .tarjeta {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .filtros {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .campo label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .campo select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            font-size: 15px;
+            background: #ffffff;
+        }
+
+        .botones {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .boton {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 0 16px;
+            border-radius: 9px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .boton-principal {
+            background: #2563eb;
+            color: white;
+        }
+
+        .boton-secundario {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 13px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #f9fafb;
+            font-size: 13px;
+            text-transform: uppercase;
+            color: #6b7280;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        .estado {
+            display: inline-flex;
+            padding: 5px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .estado-firmada {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .estado-pendiente {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .acciones {
+            white-space: nowrap;
+        }
+
+        .vacio {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+
+        @media (max-width: 900px) {
+
+            .filtros {
+                grid-template-columns: 1fr 1fr;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .filtros {
+                grid-template-columns: 1fr;
+            }
+
+            .botones {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .boton {
+                width: 100%;
+            }
+
+            .tarjeta {
+                padding: 15px;
+            }
+
+            th,
+            td {
+                padding: 10px 8px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="historial-pagina">
+
+    <div class="historial-encabezado">
+
+        <h1>
+            📋 Historial de evaluaciones
+        </h1>
+
+        <p>
+            Consulta las evaluaciones realizadas y sus evidencias.
+        </p>
+
+    </div>
+
+
+    <!-- FILTROS -->
+
+    <div class="tarjeta">
+
+        <form
+            method="GET"
+            action="{{ url_for('historial_evaluaciones') }}"
+        >
+
+            <div class="filtros">
+
+                <div class="campo">
+
+                    <label>
+                        Colaborador
+                    </label>
+
+                    <select name="colaborador_id">
+
+                        <option value="">
+                            Todos los colaboradores
+                        </option>
+
+                        {% for colaborador in colaboradores %}
+
+                        <option
+                            value="{{ colaborador.id }}"
+                            {% if request.args.get('colaborador_id') == colaborador.id %}
+                            selected
+                            {% endif %}
+                        >
+
+                            {{ colaborador.nombre }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label>
+                        Área
+                    </label>
+
+                    <select name="area_id">
+
+                        <option value="">
+                            Todas las áreas
+                        </option>
+
+                        {% for area in areas %}
+
+                        <option
+                            value="{{ area.id }}"
+                            {% if request.args.get('area_id') == area.id %}
+                            selected
+                            {% endif %}
+                        >
+
+                            {{ area.nombre }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label>
+                        Departamento
+                    </label>
+
+                    <select name="departamento_id">
+
+                        <option value="">
+                            Todos
+                        </option>
+
+                        {% for departamento in departamentos %}
+
+                        <option
+                            value="{{ departamento.id }}"
+                            {% if request.args.get('departamento_id') == departamento.id %}
+                            selected
+                            {% endif %}
+                        >
+
+                            {{ departamento.nombre }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label>
+                        Puesto
+                    </label>
+
+                    <select name="puesto_id">
+
+                        <option value="">
+                            Todos
+                        </option>
+
+                        {% for puesto in puestos %}
+
+                        <option
+                            value="{{ puesto.id }}"
+                            {% if request.args.get('puesto_id') == puesto.id %}
+                            selected
+                            {% endif %}
+                        >
+
+                            {{ puesto.nombre }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="botones">
+
+                <button
+                    type="submit"
+                    class="boton boton-principal"
+                >
+                    🔎 Filtrar
+                </button>
+
+                <a
+                    href="{{ url_for('historial_evaluaciones') }}"
+                    class="boton boton-secundario"
+                >
+                    Limpiar filtros
+                </a>
+
+                <a
+                    href="{{ url_for('evaluaciones') }}"
+                    class="boton boton-secundario"
+                >
+                    📝 Nueva evaluación
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- TABLA -->
+
+    <div class="tarjeta">
+
+        <div class="tabla-contenedor">
+
+            {% if evaluaciones %}
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Colaborador
+                        </th>
+
+                        <th>
+                            Habilidad
+                        </th>
+
+                        <th>
+                            Nivel
+                        </th>
+
+                        <th>
+                            Fecha
+                        </th>
+
+                        <th>
+                            Evaluador
+                        </th>
+
+                        <th>
+                            Firma
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for evaluacion in evaluaciones %}
+
+                    <tr>
+
+                        <td>
+                            {{ evaluacion.colaborador.nombre }}
+                        </td>
+
+                        <td>
+                            {{ evaluacion.habilidad.nombre }}
+                        </td>
+
+                        <td>
+                            <strong>
+                                {{ evaluacion.nivel }}
+                            </strong>
+                        </td>
+
+                        <td>
+
+                            {% if evaluacion.fecha_evaluacion %}
+
+                                {{ evaluacion.fecha_evaluacion }}
+
+                            {% else %}
+
+                                —
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if evaluacion.evaluador %}
+
+                                {{ evaluacion.evaluador }}
+
+                            {% else %}
+
+                                —
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if evaluacion.firma_archivo %}
+
+                                <span class="estado estado-firmada">
+                                    ✓ Firmada
+                                </span>
+
+                            {% else %}
+
+                                <span class="estado estado-pendiente">
+                                    Pendiente
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% else %}
+
+            <div class="vacio">
+
+                <h3>
+                    No hay evaluaciones registradas
+                </h3>
+
+                <p>
+                    Cuando se guarde una evaluación aparecerá aquí.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
+

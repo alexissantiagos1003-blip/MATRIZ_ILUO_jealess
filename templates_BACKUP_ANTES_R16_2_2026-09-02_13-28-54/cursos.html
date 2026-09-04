@@ -1,0 +1,489 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Cursos | Matriz ILUO</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        .formulario-curso {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .campo-completo {
+            grid-column: 1 / -1;
+        }
+
+        .formulario-curso input,
+        .formulario-curso textarea,
+        .formulario-curso select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .formulario-curso textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .boton-guardar {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 11px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .tabla-cursos {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .tabla-cursos th,
+        .tabla-cursos td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+        }
+
+        .tabla-cursos th {
+            background: #1f2937;
+            color: white;
+        }
+
+        /* =========================================
+           BOTONES DE CURSOS
+        ========================================= */
+
+        .boton-abrir,
+        .boton-pdf {
+            display: inline-block;
+            width: 190px;
+            box-sizing: border-box;
+            padding: 9px 14px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 700;
+            text-align: center;
+            font-size: 15px;
+            line-height: 20px;
+        }
+
+        .boton-abrir {
+            background: #16a34a;
+            color: white;
+        }
+
+        .boton-abrir:hover {
+            background: #15803d;
+        }
+
+        .boton-pdf {
+            background: #dc2626;
+            color: white;
+        }
+
+        .boton-pdf:hover {
+            background: #b91c1c;
+        }
+
+        .sin-cursos {
+            padding: 30px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="contenedor">
+
+    <aside class="menu">
+
+        <h2>MATRIZ ILUO</h2>
+
+        <a href="/">
+            🏠 Inicio
+        </a>
+
+        <a href="/colaboradores">
+            👥 Empleados
+        </a>
+
+        <a href="/habilidades">
+            🛠️ Habilidades
+        </a>
+
+        <a href="/puesto-habilidades">
+            🔗 Habilidades por puesto
+        </a>
+
+        <a href="/evaluaciones">
+            📝 Evaluaciones
+        </a>
+        
+        <a href="/seguimiento">
+            🎯 Seguimiento
+        </a>
+
+        <a href="/matriz">
+            📊 Matriz ILUO
+        </a>
+
+        <a href="/capacitacion">
+            🎯 Capacitación
+        </a>
+
+        <a href="/cursos">
+            📚 Cursos
+        </a>
+
+        <a href="/">`n            📈 Dashboard`n        </a>
+
+    
+{% include "_usuario_menu.html" %}
+</aside>
+
+
+    <main class="contenido">
+
+        <div class="encabezado">
+
+            <h1>📚 Cursos de capacitación</h1>
+
+            <p>
+                Crea y administra cursos relacionados
+                con las habilidades de la matriz ILUO.
+            </p>
+
+        </div>
+
+
+        <div class="tarjeta">
+
+            <h2>➕ Registrar nuevo curso</h2>
+
+            <form method="POST" enctype="multipart/form-data"
+                  class="formulario-curso">
+
+                <div>
+
+                    <label>Nombre del curso</label>
+
+                    <input
+                        type="text"
+                        name="nombre"
+                        placeholder="Ej. Interpretación de planos"
+                        required>
+
+                </div>
+
+
+                <div>
+
+                    <label>Habilidad relacionada</label>
+
+                    <select name="habilidad_id"
+                            required>
+
+                        <option value="">
+                            Seleccionar habilidad
+                        </option>
+
+                        {% for habilidad in habilidades %}
+
+                        <option value="{{ habilidad.id }}">
+
+                            {{ habilidad.nombre }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div>
+
+                    <label>Duración</label>
+
+                    <input
+                        type="text"
+                        name="duracion"
+                        placeholder="Ej. 2 horas">
+
+                </div>
+
+
+                <div>
+
+                    <label>Enlace del curso</label>
+
+                    <input
+                        type="text"
+                        name="enlace"
+                        placeholder="Pega aquí el enlace de Canva, Drive, etc.">
+
+                </div>
+
+
+                <div class="campo-completo">
+
+    <label>📄 Archivo PDF del curso</label>
+
+    <input
+        type="file"
+        name="archivo_pdf"
+        accept=".pdf,application/pdf">
+
+    <small>
+        Puedes subir el material del curso en formato PDF.
+    </small>
+
+</div>
+<div class="campo-completo">
+
+                    <label>Descripción</label>
+
+                    <textarea
+                        name="descripcion"
+                        placeholder="Describe brevemente el contenido del curso"></textarea>
+
+                </div>
+
+
+                <div class="campo-completo">
+
+                    <button type="submit"
+                            class="boton-guardar">
+
+                        💾 Guardar curso
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <div class="tarjeta">
+
+            <h2>📖 Cursos registrados</h2>
+
+            {% if cursos %}
+
+            <div style="overflow-x:auto;">
+
+                <table class="tabla-cursos">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Curso</th>
+
+                            <th>Habilidad</th>
+
+                            <th>Duración</th>
+
+                            <th>Descripción</th>
+
+                            <th>Acción</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for curso in cursos %}
+
+                        <tr>
+
+                            <td>
+
+                                <strong>
+                                    {{ curso.nombre }}
+                                </strong>
+
+                            </td>
+
+
+                            <td>
+
+                                {{ curso.habilidad.nombre }}
+
+                            </td>
+
+
+                            <td>
+
+                                {{ curso.duracion or "-" }}
+
+                            </td>
+
+
+                            <td>
+
+                                {{ curso.descripcion or "-" }}
+
+                            </td>
+
+
+                            <td>
+
+                                {% if curso.enlace %}
+
+                                <a href="{{ curso.enlace }}"
+                                   target="_blank"
+                                   class="boton-abrir">
+
+                                    🔗 Ver enlace
+
+                                </a>
+
+                                {% endif %}
+
+
+                                {% if curso.archivo_pdf %}
+
+                                <a href="{{ url_for('curso_pdf', nombre_archivo=curso.archivo_pdf) }}"
+                                   target="_blank"
+                                   class="boton-pdf">
+
+                                    📄 Ver PDF
+
+                                </a>
+
+                                {% endif %}
+
+
+                                {% if not curso.enlace and not curso.archivo_pdf %}
+
+                                —
+
+                                {% endif %}
+
+
+                                <div style="margin-top:10px; display:flex; gap:6px; flex-wrap:wrap;">
+
+                                    <form method="GET"
+                                          action="{{ url_for('editar_curso', id=curso.id) }}"
+                                          style="display:inline;">
+
+                                        <button type="submit"
+                                                class="boton-abrir">
+
+                                            ✏️ Editar
+
+                                        </button>
+
+                                    </form>
+
+
+                                    <a
+                                        href="{{ url_for('historial_curso', id=curso.id) }}"
+                                        class="boton-historial"
+                                        style="display:inline-block; padding:8px 12px; border-radius:6px; text-decoration:none; color:white; background:#7c3aed; font-weight:bold;"
+                                    >
+                                        📋 Historial
+                                    </a>
+
+
+                                    <form method="POST"
+                                          action="{{ url_for('eliminar_curso', id=curso.id) }}"
+                                          style="display:inline;"
+                                          onsubmit="return confirm('¿Seguro que deseas eliminar este curso? Esta acción no se puede deshacer.');">
+
+                                        <button type="submit"
+                                                class="boton-pdf">
+
+                                            🗑️ Eliminar
+
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            {% else %}
+
+            <div class="sin-cursos">
+
+                <h3>
+                    📚 Todavía no hay cursos registrados
+                </h3>
+
+                <p>
+                    Registra tu primer curso de capacitación.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </main>
+
+</div>
+
+
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+

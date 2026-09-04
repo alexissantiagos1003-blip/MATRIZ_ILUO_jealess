@@ -1,0 +1,36 @@
+﻿class Curso(db.Model):
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
+
+    nombre = db.Column(
+        db.String(200),
+        nullable=False
+    )
+
+    descripcion = db.Column(
+        db.Text,
+        nullable=True
+    )
+
+    duracion = db.Column(
+        db.String(100),
+        nullable=True
+    )
+
+    enlace = db.Column(
+        db.String(500),
+        nullable=True
+    )
+
+    habilidad_id = db.Column(
+        db.Integer,
+        db.ForeignKey("habilidad.id"),
+        nullable=False
+    )
+
+    habilidad = db.relationship(
+        "Habilidad"
+    )

@@ -1,0 +1,75 @@
+﻿# =========================
+# MATRIZ ILUO
+# =========================
+
+@app.route("/matriz")
+def matriz():
+
+    colaboradores = Colaborador.query.order_by(
+        Colaborador.nombre
+    ).all()
+
+    matriz = []
+
+    for colaborador in colaboradores:
+
+        asignaciones = PuestoHabilidad.query.filter_by(
+            puesto_id=colaborador.puesto_id
+        ).all()
+
+        habilidades_colaborador = []
+
+        for asignacion in asignaciones:
+
+            habilidad = asignacion.habilidad
+
+            evaluacion = Evaluacion.query.filter_by(
+                colaborador_id=colaborador.id,
+                habilidad_id=habilidad.id
+            ).first()
+
+            nivel = evaluacion.nivel if evaluacion else ""
+
+            habilidades_colaborador.append({
+                "id": habilidad.id,
+                "nombre": habilidad.nombre,
+                "nivel": nivel
+            })
+
+        # =========================
+        # CALCULAR % DE DOMINIO
+        # =========================
+
+        valores = {
+            "I": 25,
+            "L": 50,
+            "U": 75,
+            "O": 100
+        }
+
+        total = 0
+        cantidad = len(habilidades_colaborador)
+
+        for habilidad in habilidades_colaborador:
+
+            nivel = habilidad["nivel"]
+
+            if nivel in valores:
+                total += valores[nivel]
+
+        if cantidad > 0:
+            porcentaje = round(total / cantidad)
+        else:
+            porcentaje = 0
+
+        matriz.append({
+            "colaborador": colaborador,
+            "habilidades": habilidades_colaborador,
+            "porcentaje": porcentaje
+        })
+
+    return render_template(
+        "matriz.html",
+        matriz=matriz
+    )
+

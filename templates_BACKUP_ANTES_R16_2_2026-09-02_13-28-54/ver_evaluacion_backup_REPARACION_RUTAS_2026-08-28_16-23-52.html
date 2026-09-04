@@ -1,0 +1,293 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>
+        Evaluación {{ folio }}
+    </title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .contenedor {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .tarjeta {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.08);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        .folio {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .datos {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .dato {
+            padding: 12px;
+            background: #f7f7f7;
+            border-radius: 8px;
+        }
+
+        .dato strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #eeeeee;
+        }
+
+        .nivel {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .botones {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .boton {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .principal {
+            background: #1f6feb;
+            color: white;
+        }
+
+        .secundario {
+            background: #e9ecef;
+            color: #222;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <div class="tarjeta">
+
+        <h1>
+            Evaluación ILUO
+        </h1>
+
+        <div class="folio">
+            Folio: {{ folio }}
+        </div>
+
+        <div class="botones">
+
+            <a
+                class="boton principal"
+                href="{{ url_for('pdf_evaluacion', folio=folio) }}"
+                target="_blank"
+            >
+                📄 Ver PDF
+            </a>
+
+            <a
+                class="boton secundario"
+                href="{{ url_for('historial_evaluaciones') }}"
+            >
+                ← Regresar al historial
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="tarjeta">
+
+        <h2>
+            Datos de la evaluación
+        </h2>
+
+        <div class="datos">
+
+            <div class="dato">
+
+                <strong>
+                    Colaborador
+                </strong>
+
+                {{ colaborador.nombre if colaborador else "—" }}
+
+            </div>
+
+            <div class="dato">
+
+                <strong>
+                    Evaluador
+                </strong>
+
+                {{ evaluaciones[0].evaluador or "—" }}
+
+            </div>
+
+            <div class="dato">
+
+                <strong>
+                    Rol del evaluador
+                </strong>
+
+                {{ evaluaciones[0].rol_evaluador or "—" }}
+
+            </div>
+
+            <div class="dato">
+
+                <strong>
+                    Fecha
+                </strong>
+
+                {{ evaluaciones[0].fecha_evaluacion or "—" }}
+
+            </div>
+
+            <div class="dato">
+
+                <strong>
+                    Firma
+                </strong>
+
+                {% if evaluaciones[0].firma_archivo %}
+                    ✓ Registrada
+                {% else %}
+                    Pendiente
+                {% endif %}
+
+            </div>
+
+            <div class="dato">
+
+                <strong>
+                    Confirmación
+                </strong>
+
+                {% if evaluaciones[0].confirmacion_colaborador %}
+                    ✓ Confirmada
+                {% else %}
+                    Pendiente
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="tarjeta">
+
+        <h2>
+            Resultados ILUO
+        </h2>
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Habilidad
+                    </th>
+
+                    <th>
+                        Nivel
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for evaluacion in evaluaciones %}
+
+                <tr>
+
+                    <td>
+                        {{ evaluacion.habilidad.nombre if evaluacion.habilidad else "—" }}
+                    </td>
+
+                    <td class="nivel">
+                        {{ evaluacion.nivel }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <div class="tarjeta">
+
+        <h2>
+            Comentarios
+        </h2>
+
+        <p>
+            {{ evaluaciones[0].comentario or "Sin comentarios." }}
+        </p>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

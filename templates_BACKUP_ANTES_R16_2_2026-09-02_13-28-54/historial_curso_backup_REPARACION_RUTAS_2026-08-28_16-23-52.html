@@ -1,0 +1,242 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Historial - {{ curso.nombre }} - MATRIZ ILUO
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #333;
+        }
+
+        .contenedor {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .encabezado {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.08);
+        }
+
+        .encabezado h1 {
+            margin: 0 0 8px 0;
+        }
+
+        .encabezado p {
+            margin: 0;
+            color: #666;
+        }
+
+        .actualizacion {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.08);
+            border-left: 5px solid #4f46e5;
+        }
+
+        .fecha {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .cambios {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 10px;
+            white-space: pre-line;
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        .pdfs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .boton {
+            display: inline-block;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .pdf-anterior {
+            background: #64748b;
+        }
+
+        .pdf-nuevo {
+            background: #16a34a;
+        }
+
+        .sin-historial {
+            background: white;
+            padding: 35px;
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 3px 12px rgba(0,0,0,.08);
+        }
+
+        .volver {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 11px 18px;
+            background: #334155;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <div class="encabezado">
+
+        <h1>
+            📋 Historial de actualizaciones
+        </h1>
+
+        <p>
+            Curso:
+            <strong>{{ curso.nombre }}</strong>
+        </p>
+
+    </div>
+
+
+    {% if actualizaciones %}
+
+        {% for actualizacion in actualizaciones %}
+
+        <div class="actualizacion">
+
+            <div class="fecha">
+
+                📅
+                {{ actualizacion.fecha.strftime('%d/%m/%Y %H:%M') }}
+
+            </div>
+
+
+            {% if actualizacion.cambios %}
+
+            <div class="cambios">
+
+                <strong>
+                    📝 Cambios realizados
+                </strong>
+
+                <br><br>
+
+                {{ actualizacion.cambios }}
+
+            </div>
+
+            {% else %}
+
+            <div class="cambios">
+
+                No se registraron cambios descriptivos
+                para esta actualización.
+
+            </div>
+
+            {% endif %}
+
+
+            <div class="pdfs">
+
+                {% if actualizacion.pdf_anterior %}
+
+                <a
+                    class="boton pdf-anterior"
+                    href="{{ url_for('curso_pdf', nombre_archivo=actualizacion.pdf_anterior) }}"
+                    target="_blank"
+                >
+                    📄 Ver PDF anterior
+                </a>
+
+                {% endif %}
+
+
+                {% if actualizacion.pdf_nuevo %}
+
+                <a
+                    class="boton pdf-nuevo"
+                    href="{{ url_for('curso_pdf', nombre_archivo=actualizacion.pdf_nuevo) }}"
+                    target="_blank"
+                >
+                    📄 Ver PDF actualizado
+                </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="sin-historial">
+
+            <h2>
+                📚 No hay actualizaciones registradas
+            </h2>
+
+            <p>
+                Cuando este curso sea actualizado,
+                aquí aparecerá su historial.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+
+    <a
+        href="{{ url_for('cursos') }}"
+        class="volver"
+    >
+        ← Volver a cursos
+    </a>
+
+</div>
+
+</body>
+
+</html>

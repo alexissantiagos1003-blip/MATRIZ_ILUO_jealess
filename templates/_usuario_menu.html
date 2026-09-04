@@ -1,0 +1,282 @@
+﻿<style>
+
+    .usuario-menu-iluo {
+
+        display: block;
+
+        width: calc(100% - 24px);
+
+        margin: 24px 12px 12px 12px;
+
+        padding: 12px;
+
+        border-top: 1px solid rgba(255,255,255,0.15);
+
+        box-sizing: border-box;
+
+    }
+
+
+    .usuario-bloque-iluo {
+
+        display: block;
+
+        width: 100%;
+
+        padding: 12px;
+
+        border-radius: 10px;
+
+        background: rgba(255,255,255,0.10);
+
+        border: 1px solid rgba(255,255,255,0.16);
+
+        color: white;
+
+        box-sizing: border-box;
+
+    }
+
+
+    .usuario-cabecera-iluo {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+
+        margin-bottom: 10px;
+
+    }
+
+
+    .usuario-avatar-iluo {
+
+        width: 38px;
+
+        height: 38px;
+
+        min-width: 38px;
+
+        border-radius: 50%;
+
+        background: white;
+
+        color: #172033;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        font-weight: 800;
+
+    }
+
+
+    .usuario-texto-iluo {
+
+        min-width: 0;
+
+        overflow: hidden;
+
+    }
+
+
+    .usuario-nombre-iluo {
+
+        display: block;
+
+        color: white;
+
+        font-size: 13px;
+
+        font-weight: 800;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+
+        white-space: nowrap;
+
+    }
+
+
+    .usuario-rol-iluo {
+
+        display: block;
+
+        margin-top: 3px;
+
+        color: rgba(255,255,255,0.70);
+
+        font-size: 11px;
+
+    }
+
+
+    .usuario-acciones-iluo {
+
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 5px;
+
+    }
+
+
+    .usuario-link-iluo {
+
+        display: block;
+
+        width: 100%;
+
+        padding: 8px 9px;
+
+        border-radius: 7px;
+
+        text-decoration: none;
+
+        background: rgba(255,255,255,0.08);
+
+        color: white;
+
+        font-size: 12px;
+
+        font-weight: 700;
+
+        box-sizing: border-box;
+
+    }
+
+
+    .usuario-link-iluo:hover {
+
+        background: rgba(255,255,255,0.18);
+
+    }
+
+
+    .usuario-link-salir-iluo {
+
+        color: #ffd5d5;
+
+    }
+
+</style>
+
+
+{% if usuario_sesion %}
+
+<div class="usuario-menu-iluo">
+
+
+    <div class="usuario-bloque-iluo">
+
+
+        <div class="usuario-cabecera-iluo">
+
+
+            <div class="usuario-avatar-iluo">
+
+                {% if usuario_sesion.colaborador %}
+
+                    {{ usuario_sesion.colaborador.nombre[:1] | upper }}
+
+                {% else %}
+
+                    {{ usuario_sesion.username[:1] | upper }}
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="usuario-texto-iluo">
+
+
+                <span class="usuario-nombre-iluo">
+
+                    {% if usuario_sesion.colaborador %}
+
+                        {{ usuario_sesion.colaborador.nombre }}
+
+                    {% else %}
+
+                        {{ usuario_sesion.username }}
+
+                    {% endif %}
+
+                </span>
+
+
+                <span class="usuario-rol-iluo">
+
+                    {% if usuario_sesion.rol == "administrador" %}
+                        Administrador
+
+                    {% elif usuario_sesion.rol == "gerente_area" %}
+                        Gerente de Área
+
+                    {% elif usuario_sesion.rol == "gerente_operaciones" %}
+                        Gerente de Operaciones
+
+                    {% elif usuario_sesion.rol == "supervisor" %}
+                        Supervisor
+
+                    {% elif usuario_sesion.rol == "rh" %}
+                        RH
+
+                    {% elif usuario_sesion.rol == "colaborador" %}
+                        Colaborador
+
+                    {% else %}
+                        {{ usuario_sesion.rol }}
+
+                    {% endif %}
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="usuario-acciones-iluo">
+
+
+            <a
+                href="{{ url_for('perfil') }}"
+                class="usuario-link-iluo"
+            >
+                👤 Mi perfil
+            </a>
+
+
+            <a
+                href="{{ url_for('cambiar_contrasena') }}"
+                class="usuario-link-iluo"
+            >
+                🔑 Cambiar contraseña
+            </a>
+
+
+            <a
+                href="{{ url_for('logout') }}"
+                class="usuario-link-iluo usuario-link-salir-iluo"
+            >
+                🚪 Cerrar sesión
+            </a>
+
+
+        </div>
+
+
+    </div>
+
+</div>
+
+{% endif %}

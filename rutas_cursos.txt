@@ -1,0 +1,43 @@
+﻿# =========================
+# CURSOS
+# =========================
+
+@app.route("/cursos", methods=["GET", "POST"])
+def cursos():
+
+    if request.method == "POST":
+
+        nombre = request.form.get("nombre")
+        descripcion = request.form.get("descripcion")
+        duracion = request.form.get("duracion")
+        enlace = request.form.get("enlace")
+        habilidad_id = request.form.get("habilidad_id")
+
+        if nombre and habilidad_id:
+
+            curso = Curso(
+                nombre=nombre,
+                descripcion=descripcion,
+                duracion=duracion,
+                enlace=enlace,
+                habilidad_id=int(habilidad_id)
+            )
+
+            db.session.add(curso)
+            db.session.commit()
+
+        return redirect(url_for("cursos"))
+
+    cursos_registrados = Curso.query.order_by(
+        Curso.nombre
+    ).all()
+
+    habilidades = Habilidad.query.order_by(
+        Habilidad.nombre
+    ).all()
+
+    return render_template(
+        "cursos.html",
+        cursos=cursos_registrados,
+        habilidades=habilidades
+    )

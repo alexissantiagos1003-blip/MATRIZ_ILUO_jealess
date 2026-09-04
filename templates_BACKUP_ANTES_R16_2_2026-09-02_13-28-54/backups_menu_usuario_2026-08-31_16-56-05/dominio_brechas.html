@@ -1,0 +1,1675 @@
+﻿<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Dominio y Brechas - Matriz ILUO
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+
+    <style>
+
+        /* =================================================
+           PAGINA
+           ================================================= */
+
+        .dominio-page {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 20px;
+
+        }
+
+
+        /* =================================================
+           HERO
+           ================================================= */
+
+        .dominio-hero {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #172033,
+                    #273449
+                );
+
+            color: white;
+
+            border-radius: 18px;
+
+            padding: 28px 30px;
+
+        }
+
+
+        .dominio-hero h1 {
+
+            margin: 0 0 8px;
+
+            font-size: 29px;
+
+        }
+
+
+        .dominio-hero p {
+
+            margin: 0;
+
+            color: #dbe4f0;
+
+            line-height: 1.5;
+
+        }
+
+
+        /* =================================================
+           FILTROS
+           ================================================= */
+
+        .filtros {
+
+            background: white;
+
+            border:
+                1px solid #e4e7ec;
+
+            border-radius: 16px;
+
+            padding: 18px;
+
+            box-shadow:
+                0 6px 18px
+                rgba(
+                    15,
+                    23,
+                    42,
+                    .05
+                );
+
+        }
+
+
+        .filtros-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    3,
+                    minmax(
+                        0,
+                        1fr
+                    )
+                );
+
+            gap: 12px;
+
+        }
+
+
+        .campo {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 6px;
+
+        }
+
+
+        .campo label {
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            color: #475467;
+
+            text-transform: uppercase;
+
+        }
+
+
+        .campo select {
+
+            width: 100%;
+
+            box-sizing: border-box;
+
+            padding: 10px 12px;
+
+            border:
+                1px solid #d0d5dd;
+
+            border-radius: 10px;
+
+            font-size: 13px;
+
+            background: white;
+
+        }
+
+
+        /* =================================================
+           LISTADO COLABORADORES
+           ================================================= */
+
+        .colaboradores-panel {
+
+            background: white;
+
+            border:
+                1px solid #e4e7ec;
+
+            border-radius: 16px;
+
+            padding: 20px;
+
+            box-shadow:
+                0 6px 18px
+                rgba(
+                    15,
+                    23,
+                    42,
+                    .05
+                );
+
+        }
+
+
+        .colaboradores-panel h2 {
+
+            margin: 0;
+
+            font-size: 20px;
+
+            color: #172033;
+
+        }
+
+
+        .colaboradores-subtitulo {
+
+            margin-top: 5px;
+
+            margin-bottom: 18px;
+
+            color: #667085;
+
+            font-size: 13px;
+
+        }
+
+
+        .colaboradores-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(
+                        280px,
+                        1fr
+                    )
+                );
+
+            gap: 13px;
+
+        }
+
+
+        .colaborador-boton {
+
+            display: block;
+
+            text-decoration: none;
+
+            color: inherit;
+
+            background: white;
+
+            border:
+                1px solid #e4e7ec;
+
+            border-radius: 14px;
+
+            padding: 16px;
+
+            transition:
+                transform .15s ease,
+                box-shadow .15s ease,
+                border-color .15s ease;
+
+        }
+
+
+        .colaborador-boton:hover {
+
+            transform:
+                translateY(-2px);
+
+            border-color: #98a2b3;
+
+            box-shadow:
+                0 8px 20px
+                rgba(
+                    15,
+                    23,
+                    42,
+                    .08
+                );
+
+        }
+
+
+        .colaborador-nombre {
+
+            font-size: 16px;
+
+            font-weight: 900;
+
+            color: #172033;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .colaborador-dato {
+
+            margin-top: 6px;
+
+            font-size: 12px;
+
+            color: #667085;
+
+        }
+
+
+        .colaborador-dato strong {
+
+            color: #344054;
+
+        }
+
+
+        .sin-colaboradores {
+
+            padding: 35px 20px;
+
+            text-align: center;
+
+            border:
+                1px dashed #d0d5dd;
+
+            border-radius: 13px;
+
+            background: #f8fafc;
+
+            color: #667085;
+
+        }
+
+
+        /* =================================================
+           VISTA INDIVIDUAL
+           ================================================= */
+
+        .volver {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            text-decoration: none;
+
+            color: #344054;
+
+            background: #f2f4f7;
+
+            border-radius: 9px;
+
+            padding: 8px 12px;
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            margin-bottom: 15px;
+
+        }
+
+
+        .volver:hover {
+
+            background: #e4e7ec;
+
+        }
+
+
+        .colaborador-header {
+
+            background: white;
+
+            border:
+                1px solid #e4e7ec;
+
+            border-radius: 16px;
+
+            padding: 20px;
+
+        }
+
+
+        .colaborador-header h2 {
+
+            margin: 0;
+
+            font-size: 22px;
+
+            color: #172033;
+
+        }
+
+
+        .colaborador-meta {
+
+            margin-top: 7px;
+
+            font-size: 13px;
+
+            color: #667085;
+
+        }
+
+
+        /* =================================================
+           RESUMEN
+           ================================================= */
+
+        .resumen {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    4,
+                    minmax(
+                        0,
+                        1fr
+                    )
+                );
+
+            gap: 12px;
+
+        }
+
+
+        .resumen-card {
+
+            background: white;
+
+            border:
+                1px solid #e4e7ec;
+
+            border-radius: 15px;
+
+            padding: 16px;
+
+        }
+
+
+        .resumen-label {
+
+            font-size: 10px;
+
+            font-weight: 800;
+
+            color: #667085;
+
+            text-transform: uppercase;
+
+        }
+
+
+        .resumen-numero {
+
+            margin-top: 5px;
+
+            font-size: 25px;
+
+            font-weight: 900;
+
+            color: #172033;
+
+        }
+
+
+        /* =================================================
+           MATRIZ
+           ================================================= */
+
+        .matriz-contenedor {
+
+            background: white;
+
+            border:
+                1px solid #e4e7ec;
+
+            border-radius: 16px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 6px 18px
+                rgba(
+                    15,
+                    23,
+                    42,
+                    .05
+                );
+
+        }
+
+
+        .matriz-header {
+
+            padding: 18px 20px;
+
+            border-bottom:
+                1px solid #eaecf0;
+
+        }
+
+
+        .matriz-header h2 {
+
+            margin: 0;
+
+            font-size: 19px;
+
+            color: #172033;
+
+        }
+
+
+        .tabla-wrapper {
+
+            overflow-x: auto;
+
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 850px;
+
+        }
+
+
+        th {
+
+            text-align: left;
+
+            padding: 12px 14px;
+
+            font-size: 10px;
+
+            color: #667085;
+
+            background: #f8fafc;
+
+            border-bottom:
+                1px solid #eaecf0;
+
+            text-transform: uppercase;
+
+        }
+
+
+        td {
+
+            padding: 14px;
+
+            border-bottom:
+                1px solid #eaecf0;
+
+            font-size: 13px;
+
+            vertical-align: middle;
+
+        }
+
+
+        .habilidad {
+
+            font-weight: 800;
+
+            color: #172033;
+
+        }
+
+
+        .nivel {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            min-width: 30px;
+
+            padding: 5px 8px;
+
+            border-radius: 8px;
+
+            font-weight: 900;
+
+        }
+
+
+        .nivel-requerido {
+
+            background: #fff4cc;
+
+            color: #8a5a00;
+
+        }
+
+
+        .nivel-actual {
+
+            background: #eef4ff;
+
+            color: #175cd3;
+
+        }
+
+
+        .sin-evaluar {
+
+            background: #f2f4f7;
+
+            color: #667085;
+
+        }
+
+
+        .estado {
+
+            display: inline-flex;
+
+            padding: 5px 9px;
+
+            border-radius: 999px;
+
+            font-size: 10px;
+
+            font-weight: 900;
+
+        }
+
+
+        .estado-brecha {
+
+            background: #fef3f2;
+
+            color: #b42318;
+
+        }
+
+
+        .estado-ok {
+
+            background: #ecfdf3;
+
+            color: #027a48;
+
+        }
+
+
+        .estado-pendiente {
+
+            background: #fffaf0;
+
+            color: #8a5a00;
+
+        }
+
+
+        .brecha-numero {
+
+            font-weight: 900;
+
+            color: #b42318;
+
+        }
+
+
+        /* =================================================
+           CURSO
+           ================================================= */
+
+        .curso {
+
+            display: block;
+
+            padding: 8px 10px;
+
+            margin-bottom: 6px;
+
+            border:
+                1px solid #e4e7ec;
+
+            border-radius: 9px;
+
+            background: #f8fafc;
+
+        }
+
+
+        .curso-nombre {
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            color: #344054;
+
+        }
+
+
+        .sin-curso {
+
+            font-size: 12px;
+
+            color: #98a2b3;
+
+        }
+
+
+        /* =================================================
+           RESPONSIVE
+           ================================================= */
+
+        @media (max-width: 900px) {
+
+            .filtros-grid {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .resumen {
+
+                grid-template-columns:
+                    repeat(
+                        2,
+                        minmax(
+                            0,
+                            1fr
+                        )
+                    );
+
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .resumen {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="contenedor">
+
+
+    <!-- =================================================
+         MENU
+         ================================================= -->
+
+    <aside class="menu">
+
+        <h2>
+            MATRIZ ILUO
+        </h2>
+
+
+        <a href="/">
+            🏠 Inicio
+        </a>
+
+
+        <a href="/puestos">
+            🏭 Puestos
+        </a>
+
+
+        <a href="/colaboradores">
+            👥 Empleados
+        </a>
+
+
+        <a href="/habilidades">
+            🛠️ Habilidades
+        </a>
+
+
+        <a href="/puesto-habilidades">
+            🔗 Habilidades por puesto
+        </a>
+
+
+        <a href="/evaluaciones">
+            📝 Evaluaciones
+        </a>
+
+
+        <a href="/dominio-brechas">
+            📊 Dominio y Brechas
+        </a>
+
+
+        <a href="/dashboard">
+            📈 Dashboard
+        </a>
+
+
+    </aside>
+
+
+    <main class="contenido dominio-page">
+
+
+        <!-- =================================================
+             HERO
+             ================================================= -->
+
+        <section class="dominio-hero">
+
+            <h1>
+                📊 Dominio y Brechas
+            </h1>
+
+            <p>
+
+                Analiza el nivel actual de cada colaborador
+                frente al nivel requerido de su puesto.
+
+            </p>
+
+        </section>
+
+
+        <!-- =================================================
+             FILTROS
+             ================================================= -->
+
+        <section class="filtros">
+
+
+            <div class="filtros-grid">
+
+
+                <div class="campo">
+
+                    <label>
+                        Área
+                    </label>
+
+
+                    <select
+                        id="area_id"
+                    >
+
+                        <option value="">
+                            Todas las áreas
+                        </option>
+
+
+                        {% for area in areas %}
+
+                            <option
+                                value="{{ area.id }}"
+                                {% if area_id == area.id %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {{ area.nombre }}
+
+                            </option>
+
+                        {% endfor %}
+
+
+                    </select>
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label>
+                        Departamento
+                    </label>
+
+
+                    <select
+                        id="departamento_id"
+                    >
+
+                        <option value="">
+                            Todos los departamentos
+                        </option>
+
+
+                        {% for departamento in departamentos %}
+
+                            <option
+                                value="{{ departamento.id }}"
+                                {% if departamento_id == departamento.id %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {{ departamento.nombre }}
+
+                            </option>
+
+                        {% endfor %}
+
+
+                    </select>
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label>
+                        Puesto
+                    </label>
+
+
+                    <select
+                        id="puesto_id"
+                    >
+
+                        <option value="">
+                            Todos los puestos
+                        </option>
+
+
+                        {% for puesto in puestos %}
+
+                            <option
+                                value="{{ puesto.id }}"
+                                {% if puesto_id == puesto.id %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {{ puesto.nombre }}
+
+                            </option>
+
+                        {% endfor %}
+
+
+                    </select>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+        {% if colaborador_actual %}
+
+
+            <!-- =================================================
+                 VISTA INDIVIDUAL
+                 ================================================= -->
+
+            <section class="colaborador-header">
+
+
+                <a
+                    class="volver"
+                    href="{{
+                        url_for(
+                            'dominio_brechas',
+                            area_id=area_id,
+                            departamento_id=departamento_id,
+                            puesto_id=puesto_id
+                        )
+                    }}"
+                >
+
+                    ← Regresar a colaboradores
+
+                </a>
+
+
+                <h2>
+
+                    {{ colaborador_actual.nombre }}
+
+                </h2>
+
+
+                <div class="colaborador-meta">
+
+                    Puesto:
+
+                    <strong>
+                        {{
+                            colaborador_actual.puesto.nombre
+                            if colaborador_actual.puesto
+                            else
+                            "Sin puesto"
+                        }}
+                    </strong>
+
+                    &nbsp; · &nbsp;
+
+                    Departamento:
+
+                    <strong>
+                        {{
+                            colaborador_actual.puesto.departamento.nombre
+                            if colaborador_actual.puesto
+                            and colaborador_actual.puesto.departamento
+                            else
+                            "Sin departamento"
+                        }}
+                    </strong>
+
+                    &nbsp; · &nbsp;
+
+                    Área:
+
+                    <strong>
+                        {{
+                            colaborador_actual.puesto.area.nombre
+                            if colaborador_actual.puesto
+                            and colaborador_actual.puesto.area
+                            else
+                            "Sin área"
+                        }}
+                    </strong>
+
+                </div>
+
+
+            </section>
+
+
+            <!-- =================================================
+                 RESUMEN
+                 ================================================= -->
+
+            <section class="resumen">
+
+
+                <div class="resumen-card">
+
+                    <div class="resumen-label">
+                        Habilidades
+                    </div>
+
+                    <div class="resumen-numero">
+                        {{ resumen.total }}
+                    </div>
+
+                </div>
+
+
+                <div class="resumen-card">
+
+                    <div class="resumen-label">
+                        Sin brecha
+                    </div>
+
+                    <div class="resumen-numero">
+                        {{ resumen.sin_brecha }}
+                    </div>
+
+                </div>
+
+
+                <div class="resumen-card">
+
+                    <div class="resumen-label">
+                        Brechas
+                    </div>
+
+                    <div class="resumen-numero">
+                        {{ resumen.brechas }}
+                    </div>
+
+                </div>
+
+
+                <div class="resumen-card">
+
+                    <div class="resumen-label">
+                        Cumplimiento
+                    </div>
+
+                    <div class="resumen-numero">
+                        {{ resumen.cumplimiento }}%
+                    </div>
+
+                </div>
+
+
+            </section>
+
+
+            <!-- =================================================
+                 MATRIZ
+                 ================================================= -->
+
+            <section class="matriz-contenedor">
+
+
+                <div class="matriz-header">
+
+                    <h2>
+                        Matriz de dominio y brechas
+                    </h2>
+
+                </div>
+
+
+                <div class="tabla-wrapper">
+
+
+                    <table>
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Habilidad
+                                </th>
+
+                                <th>
+                                    Requerido
+                                </th>
+
+                                <th>
+                                    Actual
+                                </th>
+
+                                <th>
+                                    Brecha
+                                </th>
+
+                                <th>
+                                    Estado
+                                </th>
+
+                                <th>
+                                    Curso / capacitación
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+
+                            {% for fila in matriz_brechas %}
+
+
+                                <tr>
+
+
+                                    <td>
+
+                                        <div
+                                            class="habilidad"
+                                        >
+
+                                            {{ fila.habilidad.nombre }}
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <span
+                                            class="
+                                                nivel
+                                                nivel-requerido
+                                            "
+                                        >
+
+                                            {{ fila.requerido }}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if fila.actual %}
+
+                                            <span
+                                                class="
+                                                    nivel
+                                                    nivel-actual
+                                                "
+                                            >
+
+                                                {{ fila.actual }}
+
+                                            </span>
+
+                                        {% else %}
+
+                                            <span
+                                                class="
+                                                    nivel
+                                                    sin-evaluar
+                                                "
+                                            >
+
+                                                —
+
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if
+                                            fila.estado == "brecha"
+                                        %}
+
+                                            <span
+                                                class="brecha-numero"
+                                            >
+
+                                                {{ fila.diferencia }}
+
+                                            </span>
+
+                                        {% elif
+                                            fila.estado == "pendiente"
+                                        %}
+
+                                            —
+
+                                        {% else %}
+
+                                            0
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if
+                                            fila.estado == "brecha"
+                                        %}
+
+                                            <span
+                                                class="
+                                                    estado
+                                                    estado-brecha
+                                                "
+                                            >
+
+                                                BRECHA
+
+                                            </span>
+
+                                        {% elif
+                                            fila.estado == "pendiente"
+                                        %}
+
+                                            <span
+                                                class="
+                                                    estado
+                                                    estado-pendiente
+                                                "
+                                            >
+
+                                                PENDIENTE
+
+                                            </span>
+
+                                        {% else %}
+
+                                            <span
+                                                class="
+                                                    estado
+                                                    estado-ok
+                                                "
+                                            >
+
+                                                CUMPLE
+
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if fila.cursos %}
+
+                                            {% for curso in fila.cursos %}
+
+                                                <div
+                                                    class="curso"
+                                                >
+
+                                                    <div
+                                                        class="curso-nombre"
+                                                    >
+
+                                                        🎓
+                                                        {{ curso.nombre }}
+
+                                                    </div>
+
+                                                </div>
+
+                                            {% endfor %}
+
+                                        {% else %}
+
+                                            <span
+                                                class="sin-curso"
+                                            >
+
+                                                Sin curso relacionado
+
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                </tr>
+
+
+                            {% endfor %}
+
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+            </section>
+
+
+        {% else %}
+
+
+            <!-- =================================================
+                 LISTADO DE COLABORADORES
+                 ================================================= -->
+
+            <section class="colaboradores-panel">
+
+
+                <h2>
+                    Colaboradores
+                </h2>
+
+
+                <div class="colaboradores-subtitulo">
+
+                    Selecciona un colaborador para consultar
+                    su dominio, brechas y necesidades de
+                    capacitación.
+
+                </div>
+
+
+                {% if colaboradores %}
+
+
+                    <div class="colaboradores-grid">
+
+
+                        {% for colaborador in colaboradores %}
+
+
+                            <a
+                                class="colaborador-boton"
+                                href="{{
+                                    url_for(
+                                        'dominio_brechas',
+                                        area_id=area_id,
+                                        departamento_id=departamento_id,
+                                        puesto_id=puesto_id,
+                                        colaborador_id=colaborador.id
+                                    )
+                                }}"
+                            >
+
+
+                                <div
+                                    class="colaborador-nombre"
+                                >
+
+                                    {{ colaborador.nombre }}
+
+                                </div>
+
+
+                                <div
+                                    class="colaborador-dato"
+                                >
+
+                                    <strong>
+                                        Puesto:
+                                    </strong>
+
+                                    {{
+                                        colaborador.puesto.nombre
+                                        if colaborador.puesto
+                                        else
+                                        "Sin puesto"
+                                    }}
+
+                                </div>
+
+
+                                <div
+                                    class="colaborador-dato"
+                                >
+
+                                    <strong>
+                                        Departamento:
+                                    </strong>
+
+                                    {{
+                                        colaborador.puesto.departamento.nombre
+                                        if colaborador.puesto
+                                        and colaborador.puesto.departamento
+                                        else
+                                        "Sin departamento"
+                                    }}
+
+                                </div>
+
+
+                                <div
+                                    class="colaborador-dato"
+                                >
+
+                                    <strong>
+                                        Área:
+                                    </strong>
+
+                                    {{
+                                        colaborador.puesto.area.nombre
+                                        if colaborador.puesto
+                                        and colaborador.puesto.area
+                                        else
+                                        "Sin área"
+                                    }}
+
+                                </div>
+
+
+                            </a>
+
+
+                        {% endfor %}
+
+
+                    </div>
+
+
+                {% else %}
+
+
+                    <div class="sin-colaboradores">
+
+                        No hay colaboradores que coincidan
+                        con los filtros seleccionados.
+
+                    </div>
+
+
+                {% endif %}
+
+
+            </section>
+
+
+        {% endif %}
+
+
+    </main>
+
+
+</div>
+
+
+<script>
+
+
+    function aplicarFiltros(
+        colaboradorId = ""
+    ) {
+
+        const area =
+            document.getElementById(
+                "area_id"
+            ).value;
+
+
+        const departamento =
+            document.getElementById(
+                "departamento_id"
+            ).value;
+
+
+        const puesto =
+            document.getElementById(
+                "puesto_id"
+            ).value;
+
+
+        const params =
+            new URLSearchParams();
+
+
+        if (area) {
+
+            params.set(
+                "area_id",
+                area
+            );
+
+        }
+
+
+        if (departamento) {
+
+            params.set(
+                "departamento_id",
+                departamento
+            );
+
+        }
+
+
+        if (puesto) {
+
+            params.set(
+                "puesto_id",
+                puesto
+            );
+
+        }
+
+
+        if (colaboradorId) {
+
+            params.set(
+                "colaborador_id",
+                colaboradorId
+            );
+
+        }
+
+
+        const query =
+            params.toString();
+
+
+        window.location.href =
+            "/dominio-brechas"
+            +
+            (
+                query
+                ? "?" + query
+                : ""
+            );
+
+    }
+
+
+    document
+        .getElementById(
+            "area_id"
+        )
+        .addEventListener(
+            "change",
+            function () {
+
+                document
+                    .getElementById(
+                        "departamento_id"
+                    )
+                    .value = "";
+
+                document
+                    .getElementById(
+                        "puesto_id"
+                    )
+                    .value = "";
+
+                aplicarFiltros();
+
+            }
+        );
+
+
+    document
+        .getElementById(
+            "departamento_id"
+        )
+        .addEventListener(
+            "change",
+            function () {
+
+                document
+                    .getElementById(
+                        "puesto_id"
+                    )
+                    .value = "";
+
+                aplicarFiltros();
+
+            }
+        );
+
+
+    document
+        .getElementById(
+            "puesto_id"
+        )
+        .addEventListener(
+            "change",
+            function () {
+
+                aplicarFiltros();
+
+            }
+        );
+
+
+</script>
+
+
+</body>
+
+</html>

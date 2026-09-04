@@ -1,0 +1,756 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Historial de evaluaciones</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .contenedor {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .tarjeta {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.08);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #eeeeee;
+        }
+
+        .nivel {
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .estado {
+            display: inline-block;
+            padding: 5px 8px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .estado-firmada {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .estado-pendiente {
+            background: #fff3cd;
+            color: #664d03;
+        }
+
+        .boton-accion {
+            display: inline-block;
+            padding: 7px 10px;
+            margin: 2px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+            background: #e9ecef;
+            color: #222;
+        }
+
+        .boton-accion:hover {
+            opacity: .8;
+        }
+
+        .boton-principal {
+            background: #1f6feb;
+            color: white;
+        }
+
+        .habilidad {
+            margin-bottom: 4px;
+        }
+
+        .filtros {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filtros select,
+        .filtros button {
+            padding: 9px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .filtros button {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <div class="tarjeta">
+
+        <h1>
+            Historial de evaluaciones
+        </h1>
+
+        <form method="GET" action="{{ url_for('historial_evaluaciones') }}">
+
+            <div class="filtros">
+
+                <select name="colaborador_id">
+
+                    <option value="">
+                        Todos los colaboradores
+                    </option>
+
+                    {% for colaborador in colaboradores %}
+
+                        <option
+                            value="{{ colaborador.id }}"
+                            {% if colaborador.id == colaborador_seleccionado %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ colaborador.nombre }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+                <select name="area_id">
+
+                    <option value="">
+                        Todas las áreas
+                    </option>
+
+                    {% for area in areas %}
+
+                        <option
+                            value="{{ area.id }}"
+                            {% if area.id == area_seleccionada %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ area.nombre }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+                <select name="departamento_id">
+
+                    <option value="">
+                        Todos los departamentos
+                    </option>
+
+                    {% for departamento in departamentos %}
+
+                        <option
+                            value="{{ departamento.id }}"
+                            {% if departamento.id == departamento_seleccionado %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ departamento.nombre }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+                <select name="puesto_id">
+
+                    <option value="">
+                        Todos los puestos
+                    </option>
+
+                    {% for puesto in puestos %}
+
+                        <option
+                            value="{{ puesto.id }}"
+                            {% if puesto.id == puesto_seleccionado %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ puesto.nombre }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+                <button type="submit">
+                    Filtrar
+                </button>
+
+                <a
+                    href="{{ url_for('historial_evaluaciones') }}"
+                    class="boton-accion"
+                >
+                    Limpiar
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    {% if historial %}
+
+    <div class="tarjeta">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Colaborador
+                    </th>
+
+                    <th>
+                        Habilidades
+                    </th>
+
+                    <th>
+                        Fecha
+                    </th>
+
+                    <th>
+                        Evaluador
+                    </th>
+
+                    <th>
+                        Firma
+                    </th>
+
+                    <th>
+                        Acciones
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for grupo in historial %}
+
+                <tr>
+
+                    <td>
+                        {{ grupo.colaborador.nombre }}
+                    </td>
+
+
+                    <td>
+
+                        {% for evaluacion in grupo.evaluaciones %}
+
+                            <div class="habilidad">
+
+                                {{ evaluacion.habilidad.nombre }}
+
+                                —
+                                <strong class="nivel">
+                                    {{ evaluacion.nivel }}
+                                </strong>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if grupo.fecha %}
+
+                            {{ grupo.fecha }}
+
+                        {% else %}
+
+                            —
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {{ grupo.evaluador or "—" }}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if grupo.firma_archivo %}
+
+                            <span class="estado estado-firmada">
+                                ✓ Firmada
+                            </span>
+
+                        {% else %}
+
+                            <span class="estado estado-pendiente">
+                                Pendiente
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        {% if grupo.evaluaciones %}
+
+                            {% set evaluacion_id = grupo.evaluaciones[0].id %}
+
+                            <a
+                                href="{{ url_for('ver_evaluacion', evaluacion_id=evaluacion_id) }}"
+                                class="boton-accion boton-principal"
+                            >
+                                👁️ Ver
+                            </a>
+
+                            <a
+                                href="{{ url_for('pdf_evaluacion', evaluacion_id=evaluacion_id) }}"
+                                class="boton-accion"
+                                target="_blank"
+                            >
+                                📄 PDF
+                            </a>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+    <div class="tarjeta">
+
+        <h3>
+            No hay evaluaciones registradas
+        </h3>
+
+        <p>
+            Cuando se guarde una evaluación aparecerá aquí.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+<!-- FILTROS JERARQUICOS EN CASCADA -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const areaSelect =
+            document.querySelector(
+                'select[name="area_id"]'
+            );
+
+        const departamentoSelect =
+            document.querySelector(
+                'select[name="departamento_id"]'
+            );
+
+        const puestoSelect =
+            document.querySelector(
+                'select[name="puesto_id"]'
+            );
+
+
+        if (
+            !areaSelect ||
+            !departamentoSelect ||
+            !puestoSelect
+        ) {
+            return;
+        }
+
+
+        // =================================================
+        // DATOS GENERADOS DESDE FLASK/JINJA
+        // =================================================
+
+        const departamentos = [
+
+            {% for departamento in departamentos %}
+
+            {
+                id: {{ departamento.id }},
+                nombre: {{ departamento.nombre|tojson }},
+                area_id: {{ departamento.area_id|tojson }}
+            }
+
+            {% if not loop.last %},{% endif %}
+
+            {% endfor %}
+
+        ];
+
+
+        const puestos = [
+
+            {% for puesto in puestos %}
+
+            {
+                id: {{ puesto.id }},
+                nombre: {{ puesto.nombre|tojson }},
+                departamento_id: {{ puesto.departamento_id|tojson }}
+            }
+
+            {% if not loop.last %},{% endif %}
+
+            {% endfor %}
+
+        ];
+
+
+        // =================================================
+        // VALORES ACTUALES
+        // =================================================
+
+        const areaInicial =
+            "{{ area_seleccionada or '' }}";
+
+        const departamentoInicial =
+            "{{ departamento_seleccionado or '' }}";
+
+        const puestoInicial =
+            "{{ puesto_seleccionado or '' }}";
+
+
+        // =================================================
+        // FUNCION PARA LIMPIAR SELECT
+        // =================================================
+
+        function limpiarSelect(
+            select,
+            texto
+        ) {
+
+            select.innerHTML = "";
+
+            const opcion =
+                document.createElement(
+                    "option"
+                );
+
+            opcion.value = "";
+            opcion.textContent = texto;
+
+            select.appendChild(
+                opcion
+            );
+        }
+
+
+        // =================================================
+        // CARGAR DEPARTAMENTOS SEGUN AREA
+        // =================================================
+
+        function cargarDepartamentos(
+            areaId,
+            valorSeleccionado
+        ) {
+
+            limpiarSelect(
+                departamentoSelect,
+                "Todos los departamentos"
+            );
+
+
+            const id =
+                areaId
+                ? Number(areaId)
+                : null;
+
+
+            departamentos
+                .filter(
+                    function (departamento) {
+
+                        return !id
+                            || Number(
+                                departamento.area_id
+                            ) === id;
+
+                    }
+                )
+                .forEach(
+                    function (departamento) {
+
+                        const opcion =
+                            document.createElement(
+                                "option"
+                            );
+
+                        opcion.value =
+                            departamento.id;
+
+                        opcion.textContent =
+                            departamento.nombre;
+
+
+                        if (
+                            String(
+                                departamento.id
+                            )
+                            ===
+                            String(
+                                valorSeleccionado || ""
+                            )
+                        ) {
+
+                            opcion.selected =
+                                true;
+
+                        }
+
+
+                        departamentoSelect.appendChild(
+                            opcion
+                        );
+
+                    }
+                );
+
+        }
+
+
+        // =================================================
+        // CARGAR PUESTOS SEGUN DEPARTAMENTO
+        // =================================================
+
+        function cargarPuestos(
+            departamentoId,
+            valorSeleccionado
+        ) {
+
+            limpiarSelect(
+                puestoSelect,
+                "Todos los puestos"
+            );
+
+
+            const id =
+                departamentoId
+                ? Number(departamentoId)
+                : null;
+
+
+            puestos
+                .filter(
+                    function (puesto) {
+
+                        return !id
+                            || Number(
+                                puesto.departamento_id
+                            ) === id;
+
+                    }
+                )
+                .forEach(
+                    function (puesto) {
+
+                        const opcion =
+                            document.createElement(
+                                "option"
+                            );
+
+                        opcion.value =
+                            puesto.id;
+
+                        opcion.textContent =
+                            puesto.nombre;
+
+
+                        if (
+                            String(
+                                puesto.id
+                            )
+                            ===
+                            String(
+                                valorSeleccionado || ""
+                            )
+                        ) {
+
+                            opcion.selected =
+                                true;
+
+                        }
+
+
+                        puestoSelect.appendChild(
+                            opcion
+                        );
+
+                    }
+                );
+
+        }
+
+
+        // =================================================
+        // CAMBIO DE AREA
+        // =================================================
+
+        areaSelect.addEventListener(
+            "change",
+            function () {
+
+                cargarDepartamentos(
+                    areaSelect.value,
+                    ""
+                );
+
+
+                cargarPuestos(
+                    "",
+                    ""
+                );
+
+            }
+        );
+
+
+        // =================================================
+        // CAMBIO DE DEPARTAMENTO
+        // =================================================
+
+        departamentoSelect.addEventListener(
+            "change",
+            function () {
+
+                cargarPuestos(
+                    departamentoSelect.value,
+                    ""
+                );
+
+            }
+        );
+
+
+        // =================================================
+        // CARGA INICIAL
+        // =================================================
+
+        cargarDepartamentos(
+            areaInicial,
+            departamentoInicial
+        );
+
+
+        cargarPuestos(
+            departamentoInicial,
+            puestoInicial
+        );
+
+
+        // =================================================
+        // PROTECCION ADICIONAL
+        // =================================================
+
+        departamentoSelect.addEventListener(
+            "change",
+            function () {
+
+                const seleccionado =
+                    departamentoSelect.value;
+
+
+                if (
+                    !seleccionado
+                ) {
+
+                    cargarPuestos(
+                        "",
+                        ""
+                    );
+
+                }
+
+            }
+        );
+
+    }
+);
+
+</script>
+
+
+{% include "_usuario_menu.html" %}
+</body>
+
+</html>
+
+

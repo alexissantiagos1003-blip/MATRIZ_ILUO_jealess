@@ -1,0 +1,1437 @@
+﻿<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Dominio y Brechas - Matriz ILUO
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+
+    <style>
+
+
+        /* =================================================
+           GENERAL
+           ================================================= */
+
+        .dominio-page {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 20px;
+
+        }
+
+
+        /* =================================================
+           HERO
+           ================================================= */
+
+        .dominio-hero {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #172033,
+                    #273449
+                );
+
+            color: white;
+
+            border-radius: 18px;
+
+            padding: 28px 30px;
+
+        }
+
+
+        .dominio-hero h1 {
+
+            margin: 0 0 8px;
+
+            font-size: 29px;
+
+        }
+
+
+        .dominio-hero p {
+
+            margin: 0;
+
+            color: #dbe4f0;
+
+            line-height: 1.5;
+
+        }
+
+
+        /* =================================================
+           FILTROS
+           ================================================= */
+
+        .filtros {
+
+            background: white;
+
+            border:
+                1px solid #e4e7ec;
+
+            border-radius: 16px;
+
+            padding: 18px;
+
+            box-shadow:
+                0 6px 18px
+                rgba(
+                    15,
+                    23,
+                    42,
+                    .05
+                );
+
+        }
+
+
+        .filtros-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    4,
+                    minmax(
+                        0,
+                        1fr
+                    )
+                );
+
+            gap: 12px;
+
+        }
+
+
+        .campo {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 6px;
+
+        }
+
+
+        .campo label {
+
+            font-size: 11px;
+
+            font-weight: 800;
+
+            color: #475467;
+
+            text-transform: uppercase;
+
+        }
+
+
+        .campo select {
+
+            width: 100%;
+
+            box-sizing: border-box;
+
+            padding: 10px 12px;
+
+            border:
+                1px solid #d0d5dd;
+
+            border-radius: 10px;
+
+            font-size: 13px;
+
+            background: white;
+
+        }
+
+
+        /* =================================================
+           RESUMEN
+           ================================================= */
+
+        .resumen {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    4,
+                    minmax(
+                        0,
+                        1fr
+                    )
+                );
+
+            gap: 12px;
+
+        }
+
+
+        .resumen-card {
+
+            background: white;
+
+            border:
+                1px solid #e4e7ec;
+
+            border-radius: 15px;
+
+            padding: 16px;
+
+        }
+
+
+        .resumen-label {
+
+            font-size: 10px;
+
+            font-weight: 800;
+
+            text-transform: uppercase;
+
+            color: #667085;
+
+        }
+
+
+        .resumen-numero {
+
+            margin-top: 5px;
+
+            font-size: 25px;
+
+            font-weight: 900;
+
+            color: #172033;
+
+        }
+
+
+        /* =================================================
+           COLABORADOR
+           ================================================= */
+
+        .colaborador-card {
+
+            background: white;
+
+            border:
+                1px solid #e4e7ec;
+
+            border-radius: 16px;
+
+            padding: 20px;
+
+        }
+
+
+        .colaborador-nombre {
+
+            margin: 0;
+
+            font-size: 21px;
+
+            font-weight: 900;
+
+            color: #172033;
+
+        }
+
+
+        .colaborador-puesto {
+
+            margin-top: 5px;
+
+            color: #667085;
+
+            font-size: 13px;
+
+        }
+
+
+        /* =================================================
+           MATRIZ
+           ================================================= */
+
+        .matriz-contenedor {
+
+            background: white;
+
+            border:
+                1px solid #e4e7ec;
+
+            border-radius: 16px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 6px 18px
+                rgba(
+                    15,
+                    23,
+                    42,
+                    .05
+                );
+
+        }
+
+
+        .matriz-header {
+
+            padding: 18px 20px;
+
+            border-bottom:
+                1px solid #eaecf0;
+
+        }
+
+
+        .matriz-header h2 {
+
+            margin: 0;
+
+            font-size: 19px;
+
+            color: #172033;
+
+        }
+
+
+        .tabla-wrapper {
+
+            overflow-x: auto;
+
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 850px;
+
+        }
+
+
+        th {
+
+            text-align: left;
+
+            padding: 12px 14px;
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+
+            letter-spacing: .04em;
+
+            color: #667085;
+
+            background: #f8fafc;
+
+            border-bottom:
+                1px solid #eaecf0;
+
+        }
+
+
+        td {
+
+            padding: 14px;
+
+            border-bottom:
+                1px solid #eaecf0;
+
+            font-size: 13px;
+
+            vertical-align: top;
+
+        }
+
+
+        .habilidad {
+
+            font-weight: 800;
+
+            color: #172033;
+
+        }
+
+
+        .nivel {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            min-width: 30px;
+
+            padding: 5px 8px;
+
+            border-radius: 8px;
+
+            font-weight: 900;
+
+        }
+
+
+        .nivel-requerido {
+
+            background: #fff4cc;
+
+            color: #8a5a00;
+
+        }
+
+
+        .nivel-actual {
+
+            background: #eef4ff;
+
+            color: #175cd3;
+
+        }
+
+
+        .sin-evaluar {
+
+            background: #f2f4f7;
+
+            color: #667085;
+
+        }
+
+
+        .estado {
+
+            display: inline-flex;
+
+            padding: 5px 9px;
+
+            border-radius: 999px;
+
+            font-size: 10px;
+
+            font-weight: 900;
+
+            text-transform: uppercase;
+
+        }
+
+
+        .estado-brecha {
+
+            background: #fef3f2;
+
+            color: #b42318;
+
+        }
+
+
+        .estado-ok {
+
+            background: #ecfdf3;
+
+            color: #027a48;
+
+        }
+
+
+        .estado-pendiente {
+
+            background: #fffaf0;
+
+            color: #8a5a00;
+
+        }
+
+
+        .brecha-numero {
+
+            font-weight: 900;
+
+            color: #b42318;
+
+        }
+
+
+        /* =================================================
+           CURSOS
+           ================================================= */
+
+        .curso {
+
+            display: block;
+
+            margin-bottom: 7px;
+
+            padding: 8px 10px;
+
+            border:
+                1px solid #e4e7ec;
+
+            border-radius: 9px;
+
+            background: #f8fafc;
+
+        }
+
+
+        .curso-nombre {
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            color: #344054;
+
+        }
+
+
+        .sin-curso {
+
+            color: #98a2b3;
+
+            font-size: 12px;
+
+            font-style: italic;
+
+        }
+
+
+        /* =================================================
+           VACIO
+           ================================================= */
+
+        .vacio {
+
+            padding: 45px 20px;
+
+            text-align: center;
+
+            color: #667085;
+
+        }
+
+
+        /* =================================================
+           RESPONSIVE
+           ================================================= */
+
+        @media (max-width: 950px) {
+
+            .filtros-grid {
+
+                grid-template-columns:
+                    repeat(
+                        2,
+                        minmax(
+                            0,
+                            1fr
+                        )
+                    );
+
+            }
+
+            .resumen {
+
+                grid-template-columns:
+                    repeat(
+                        2,
+                        minmax(
+                            0,
+                            1fr
+                        )
+                    );
+
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .filtros-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .resumen {
+
+                grid-template-columns: 1fr;
+
+            }
+
+        }
+
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="contenedor">
+
+
+    <!-- =================================================
+         MENU
+         ================================================= -->
+
+    <aside class="menu">
+
+        <h2>MATRIZ ILUO</h2>
+
+
+        <a href="/">
+            🏠 Inicio
+        </a>
+
+
+        <a href="/puestos">
+            🏭 Puestos
+        </a>
+
+
+        <a href="/colaboradores">
+            👥 Empleados
+        </a>
+
+
+        <a href="/habilidades">
+            🛠️ Habilidades
+        </a>
+
+
+        <a href="/puesto-habilidades">
+            🔗 Habilidades por puesto
+        </a>
+
+
+        <a href="/evaluaciones">
+            📝 Evaluaciones
+        </a>
+
+
+        <a href="/dominio-brechas">
+            📊 Dominio y Brechas
+        </a>
+
+
+        <a href="/historial-evaluaciones">
+            📋 Historial de evaluaciones
+        </a>
+
+
+        <a href="/dashboard">
+            📈 Dashboard
+        </a>
+
+
+    </aside>
+
+
+    <!-- =================================================
+         CONTENIDO
+         ================================================= -->
+
+    <main class="contenido dominio-page">
+
+
+        <section class="dominio-hero">
+
+            <h1>
+                📊 Dominio y Brechas
+            </h1>
+
+            <p>
+
+                Compara el nivel requerido del puesto
+                contra el nivel actual del colaborador
+                e identifica las acciones de capacitación.
+
+            </p>
+
+        </section>
+
+
+        <!-- =================================================
+             FILTROS
+             ================================================= -->
+
+        <section class="filtros">
+
+
+            <div class="filtros-grid">
+
+
+                <!-- AREA -->
+
+                <div class="campo">
+
+                    <label>
+                        Área
+                    </label>
+
+
+                    <select
+                        id="area_id"
+                        onchange="filtrarArea(this.value)"
+                    >
+
+                        <option value="">
+                            Todas las áreas
+                        </option>
+
+
+                        {% for area in areas %}
+
+                            <option
+                                value="{{ area.id }}"
+                                {% if area_id == area.id %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {{ area.nombre }}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- DEPARTAMENTO -->
+
+                <div class="campo">
+
+                    <label>
+                        Departamento
+                    </label>
+
+
+                    <select
+                        id="departamento_id"
+                        onchange="filtrarDepartamento(this.value)"
+                    >
+
+                        <option value="">
+                            Todos los departamentos
+                        </option>
+
+
+                        {% for departamento in departamentos %}
+
+                            <option
+                                value="{{ departamento.id }}"
+                                {% if departamento_id == departamento.id %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {{ departamento.nombre }}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- PUESTO -->
+
+                <div class="campo">
+
+                    <label>
+                        Puesto
+                    </label>
+
+
+                    <select
+                        id="puesto_id"
+                        onchange="filtrarPuesto(this.value)"
+                    >
+
+                        <option value="">
+                            Todos los puestos
+                        </option>
+
+
+                        {% for puesto in puestos %}
+
+                            <option
+                                value="{{ puesto.id }}"
+                                {% if puesto_id == puesto.id %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {{ puesto.nombre }}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- COLABORADOR -->
+
+                <div class="campo">
+
+                    <label>
+                        Colaborador
+                    </label>
+
+
+                    <select
+                        id="colaborador_id"
+                        onchange="filtrarColaborador(this.value)"
+                    >
+
+                        <option value="">
+                            Seleccionar colaborador...
+                        </option>
+
+
+                        {% for colaborador in colaboradores %}
+
+                            <option
+                                value="{{ colaborador.id }}"
+                                {% if colaborador_id == colaborador.id %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {{ colaborador.nombre }}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+        {% if colaborador_actual %}
+
+
+            <!-- =================================================
+                 RESUMEN
+                 ================================================= -->
+
+            <section class="resumen">
+
+
+                <div class="resumen-card">
+
+                    <div class="resumen-label">
+                        Habilidades
+                    </div>
+
+                    <div class="resumen-numero">
+                        {{ resumen.total }}
+                    </div>
+
+                </div>
+
+
+                <div class="resumen-card">
+
+                    <div class="resumen-label">
+                        Sin brecha
+                    </div>
+
+                    <div class="resumen-numero">
+                        {{ resumen.sin_brecha }}
+                    </div>
+
+                </div>
+
+
+                <div class="resumen-card">
+
+                    <div class="resumen-label">
+                        Brechas
+                    </div>
+
+                    <div class="resumen-numero">
+                        {{ resumen.brechas }}
+                    </div>
+
+                </div>
+
+
+                <div class="resumen-card">
+
+                    <div class="resumen-label">
+                        Cumplimiento
+                    </div>
+
+                    <div class="resumen-numero">
+                        {{ resumen.cumplimiento }}%
+                    </div>
+
+                </div>
+
+
+            </section>
+
+
+            <!-- =================================================
+                 COLABORADOR
+                 ================================================= -->
+
+            <section class="colaborador-card">
+
+                <h2 class="colaborador-nombre">
+
+                    {{ colaborador_actual.nombre }}
+
+                </h2>
+
+
+                <div class="colaborador-puesto">
+
+                    Puesto:
+
+                    <strong>
+                        {{
+                            colaborador_actual.puesto.nombre
+                            if colaborador_actual.puesto
+                            else
+                            "Sin puesto"
+                        }}
+                    </strong>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 MATRIZ
+                 ================================================= -->
+
+            <section class="matriz-contenedor">
+
+
+                <div class="matriz-header">
+
+                    <h2>
+                        Matriz de dominio y brechas
+                    </h2>
+
+                </div>
+
+
+                <div class="tabla-wrapper">
+
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Habilidad
+                                </th>
+
+                                <th>
+                                    Requerido
+                                </th>
+
+                                <th>
+                                    Actual
+                                </th>
+
+                                <th>
+                                    Brecha
+                                </th>
+
+                                <th>
+                                    Estado
+                                </th>
+
+                                <th>
+                                    Curso / capacitación
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+
+                            {% for fila in matriz_brechas %}
+
+
+                                <tr>
+
+
+                                    <td>
+
+                                        <div
+                                            class="habilidad"
+                                        >
+
+                                            {{
+                                                fila.habilidad.nombre
+                                            }}
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <!-- REQUERIDO -->
+
+                                    <td>
+
+                                        <span
+                                            class="
+                                                nivel
+                                                nivel-requerido
+                                            "
+                                        >
+
+                                            {{ fila.requerido }}
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <!-- ACTUAL -->
+
+                                    <td>
+
+
+                                        {% if fila.actual %}
+
+                                            <span
+                                                class="
+                                                    nivel
+                                                    nivel-actual
+                                                "
+                                            >
+
+                                                {{ fila.actual }}
+
+                                            </span>
+
+                                        {% else %}
+
+                                            <span
+                                                class="
+                                                    nivel
+                                                    sin-evaluar
+                                                "
+                                            >
+
+                                                —
+
+                                            </span>
+
+                                        {% endif %}
+
+
+                                    </td>
+
+
+                                    <!-- BRECHA -->
+
+                                    <td>
+
+
+                                        {% if
+                                            fila.estado
+                                            == "brecha"
+                                        %}
+
+                                            <span
+                                                class="brecha-numero"
+                                            >
+
+                                                {{ fila.diferencia }}
+
+                                            </span>
+
+
+                                        {% elif
+                                            fila.estado
+                                            == "pendiente"
+                                        %}
+
+                                            —
+
+                                        {% else %}
+
+                                            0
+
+                                        {% endif %}
+
+
+                                    </td>
+
+
+                                    <!-- ESTADO -->
+
+                                    <td>
+
+
+                                        {% if
+                                            fila.estado
+                                            == "brecha"
+                                        %}
+
+                                            <span
+                                                class="
+                                                    estado
+                                                    estado-brecha
+                                                "
+                                            >
+
+                                                BRECHA
+
+                                            </span>
+
+
+                                        {% elif
+                                            fila.estado
+                                            == "pendiente"
+                                        %}
+
+                                            <span
+                                                class="
+                                                    estado
+                                                    estado-pendiente
+                                                "
+                                            >
+
+                                                PENDIENTE
+
+                                            </span>
+
+
+                                        {% else %}
+
+                                            <span
+                                                class="
+                                                    estado
+                                                    estado-ok
+                                                "
+                                            >
+
+                                                CUMPLE
+
+                                            </span>
+
+                                        {% endif %}
+
+
+                                    </td>
+
+
+                                    <!-- CURSOS -->
+
+                                    <td>
+
+
+                                        {% if fila.cursos %}
+
+
+                                            {% for curso in fila.cursos %}
+
+                                                <div
+                                                    class="curso"
+                                                >
+
+                                                    <div
+                                                        class="curso-nombre"
+                                                    >
+
+                                                        🎓
+                                                        {{ curso.nombre }}
+
+                                                    </div>
+
+                                                </div>
+
+                                            {% endfor %}
+
+
+                                        {% else %}
+
+
+                                            <span
+                                                class="sin-curso"
+                                            >
+
+                                                Sin curso relacionado
+
+                                            </span>
+
+
+                                        {% endif %}
+
+
+                                    </td>
+
+
+                                </tr>
+
+
+                            {% endfor %}
+
+
+                        </tbody>
+
+                    </table>
+
+
+                </div>
+
+
+            </section>
+
+
+        {% else %}
+
+
+            <section class="matriz-contenedor">
+
+                <div class="vacio">
+
+                    <h2>
+                        Selecciona un colaborador
+                    </h2>
+
+                    <p>
+
+                        Utiliza los filtros de Área,
+                        Departamento y Puesto para localizarlo
+                        y revisar su dominio y brechas.
+
+                    </p>
+
+                </div>
+
+            </section>
+
+
+        {% endif %}
+
+
+    </main>
+
+</div>
+
+
+<script>
+
+
+    function construirUrl(
+        params
+    ) {
+
+        const url =
+            new URL(
+                window.location.href
+            );
+
+
+        url.search = "";
+
+
+        Object.keys(params).forEach(
+            clave => {
+
+                if (
+                    params[clave]
+                    !==
+                    null
+                    &&
+                    params[clave]
+                    !==
+                    ""
+                ) {
+
+                    url.searchParams.set(
+                        clave,
+                        params[clave]
+                    );
+
+                }
+
+            }
+        );
+
+
+        return url.toString();
+
+    }
+
+
+    function filtrarArea(
+        valor
+    ) {
+
+        window.location.href =
+            construirUrl({
+
+                area_id:
+                    valor,
+
+                departamento_id:
+                    "",
+
+                puesto_id:
+                    "",
+
+                colaborador_id:
+                    ""
+
+            });
+
+    }
+
+
+    function filtrarDepartamento(
+        valor
+    ) {
+
+        window.location.href =
+            construirUrl({
+
+                area_id:
+                    document.getElementById(
+                        "area_id"
+                    ).value,
+
+                departamento_id:
+                    valor,
+
+                puesto_id:
+                    "",
+
+                colaborador_id:
+                    ""
+
+            });
+
+    }
+
+
+    function filtrarPuesto(
+        valor
+    ) {
+
+        window.location.href =
+            construirUrl({
+
+                area_id:
+                    document.getElementById(
+                        "area_id"
+                    ).value,
+
+                departamento_id:
+                    document.getElementById(
+                        "departamento_id"
+                    ).value,
+
+                puesto_id:
+                    valor,
+
+                colaborador_id:
+                    ""
+
+            });
+
+    }
+
+
+    function filtrarColaborador(
+        valor
+    ) {
+
+        window.location.href =
+            construirUrl({
+
+                area_id:
+                    document.getElementById(
+                        "area_id"
+                    ).value,
+
+                departamento_id:
+                    document.getElementById(
+                        "departamento_id"
+                    ).value,
+
+                puesto_id:
+                    document.getElementById(
+                        "puesto_id"
+                    ).value,
+
+                colaborador_id:
+                    valor
+
+            });
+
+    }
+
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1828 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Roles y permisos</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 18px;
+            background: #f4f6f8;
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+            color: #182230;
+        }
+
+        .contenedor {
+            width: 100%;
+            max-width: 1650px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            margin: 0 0 4px 0;
+            font-size: 30px;
+        }
+
+        .subtitulo {
+            margin: 0 0 18px 0;
+            color: #657286;
+            font-size: 15px;
+        }
+
+        .aviso {
+            margin-bottom: 14px;
+            padding: 10px 14px;
+            background: #fff8dc;
+            border-left: 4px solid #d8b24c;
+            border-radius: 7px;
+            color: #5c4a12;
+            font-size: 13px;
+        }
+
+        /* ====================================================
+           FILTROS
+           ==================================================== */
+
+        .filtros {
+            width: 100%;
+            margin-bottom: 16px;
+            padding: 13px 16px;
+            background: white;
+            border: 1px solid #dfe5ec;
+            border-radius: 11px;
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.045);
+        }
+
+        .filtros-grid {
+            display: grid;
+
+            grid-template-columns:
+                1fr
+                1fr
+                1.25fr
+                auto;
+
+            gap: 12px;
+
+            align-items: end;
+        }
+
+        .filtro-campo {
+            min-width: 0;
+        }
+
+        .filtro-label {
+            display: block;
+
+            margin-bottom: 4px;
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.05em;
+
+            color: #778497;
+        }
+
+        .filtro-select {
+            width: 100%;
+
+            height: 36px;
+
+            padding: 6px 10px;
+
+            border: 1px solid #cfd7e2;
+
+            border-radius: 7px;
+
+            background: white;
+
+            color: #182230;
+
+            font-size: 13px;
+        }
+
+        .filtro-select:disabled {
+            background: #f1f3f6;
+            color: #9aa4b1;
+            cursor: not-allowed;
+        }
+
+        .filtro-resultado {
+            align-self: center;
+
+            white-space: nowrap;
+
+            padding-bottom: 2px;
+
+            color: #647184;
+
+            font-size: 12px;
+        }
+
+        .filtro-limpiar {
+            height: 36px;
+
+            padding: 0 13px;
+
+            border: 1px solid #cfd7e2;
+
+            border-radius: 7px;
+
+            background: white;
+
+            color: #3c4858;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+        .filtro-limpiar:hover {
+            background: #f7f9fb;
+        }
+
+
+        /* ====================================================
+           BLOQUE DE CADA PUESTO
+           ==================================================== */
+
+        .puesto {
+            width: 100%;
+            margin-bottom: 14px;
+            background: white;
+            border: 1px solid #dfe5ec;
+            border-radius: 11px;
+            overflow: hidden;
+            box-shadow:
+                0 2px 8px rgba(0,0,0,0.045);
+        }
+
+        .puesto-cabecera {
+            display: grid;
+
+            grid-template-columns:
+                minmax(250px, 1.55fr)
+                minmax(170px, 1fr)
+                minmax(190px, 1fr)
+                minmax(210px, 1.1fr);
+
+            gap: 16px;
+
+            align-items: center;
+
+            padding: 13px 16px;
+
+            background: #f8fafc;
+
+            border-bottom: 1px solid #e3e8ee;
+        }
+
+        .campo-titulo {
+            margin-bottom: 3px;
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.05em;
+
+            color: #7a8798;
+        }
+
+        .puesto-nombre {
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1.15;
+        }
+
+        .dato {
+            font-size: 14px;
+            line-height: 1.2;
+        }
+
+        .selector-rol {
+            width: 100%;
+
+            height: 36px;
+
+            padding: 6px 10px;
+
+            border: 1px solid #cfd7e2;
+
+            border-radius: 7px;
+
+            background: #ffffff;
+
+            font-size: 14px;
+
+            color: #182230;
+        }
+
+        .rol-mensaje {
+            margin-top: 4px;
+
+            font-size: 11px;
+
+            color: #708097;
+        }
+
+
+        /* ====================================================
+           PERMISOS
+           ==================================================== */
+
+        .permisos {
+            padding: 0;
+        }
+
+        .permisos-titulo {
+            padding: 9px 16px 7px 16px;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            color: #263246;
+        }
+
+        .tabla {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .tabla th {
+            padding: 7px 12px;
+
+            background: #f6f8fa;
+
+            border-top: 1px solid #e8edf2;
+            border-bottom: 1px solid #e2e7ed;
+
+            text-align: left;
+
+            font-size: 11px;
+
+            color: #718096;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.03em;
+        }
+
+        .tabla th:nth-child(1) {
+            width: 50%;
+        }
+
+        .tabla th:nth-child(2) {
+            width: 18%;
+        }
+
+        .tabla th:nth-child(3) {
+            width: 32%;
+        }
+
+        .tabla td {
+            padding: 7px 12px;
+
+            border-bottom: 1px solid #edf1f5;
+
+            vertical-align: middle;
+        }
+
+        .tabla tr:last-child td {
+            border-bottom: none;
+        }
+
+        .permiso-nombre {
+            display: inline-block;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            color: #1c2736;
+        }
+
+        .permiso-descripcion {
+            display: inline;
+
+            margin-left: 7px;
+
+            font-size: 11px;
+
+            color: #7b8798;
+        }
+
+        .check-wrap {
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+        }
+
+        .check-permiso {
+            width: 17px;
+            height: 17px;
+
+            margin: 0;
+
+            cursor: pointer;
+        }
+
+        .estado-permiso {
+            font-size: 11px;
+
+            color: #758195;
+        }
+
+        .alcance {
+            width: 100%;
+
+            max-width: 220px;
+
+            height: 32px;
+
+            padding: 4px 9px;
+
+            border: 1px solid #cfd7e2;
+
+            border-radius: 7px;
+
+            background: white;
+
+            font-size: 13px;
+
+            color: #182230;
+        }
+
+
+        /* ====================================================
+           ACCIONES
+           ==================================================== */
+
+        .acciones {
+            display: flex;
+
+            justify-content: flex-end;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-top: 16px;
+
+            padding: 12px 0;
+        }
+
+        .nota {
+            margin-right: auto;
+
+            color: #6e7a8c;
+
+            font-size: 12px;
+        }
+
+        .boton {
+            min-height: 36px;
+
+            padding: 8px 17px;
+
+            border: 0;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+        .boton-principal {
+            background: #172033;
+
+            color: white;
+        }
+
+
+        /* ====================================================
+           RESPONSIVE
+           ==================================================== */
+
+        @media (max-width: 1050px) {
+
+            .puesto-cabecera {
+
+                grid-template-columns:
+                    1.3fr
+                    1fr;
+
+            }
+
+            .filtros-grid {
+
+                grid-template-columns:
+                    1fr
+                    1fr;
+
+            }
+
+            .filtro-resultado {
+
+                grid-column: 1 / -1;
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+
+            .filtros-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .filtro-resultado {
+
+                grid-column: auto;
+            }
+
+            .puesto-cabecera {
+
+                grid-template-columns: 1fr;
+
+                gap: 9px;
+
+                padding: 12px;
+            }
+
+            .tabla {
+
+                table-layout: auto;
+
+            }
+
+            .tabla th:nth-child(1),
+            .tabla th:nth-child(2),
+            .tabla th:nth-child(3) {
+
+                width: auto;
+
+            }
+
+            .tabla td {
+
+                padding: 6px 8px;
+
+            }
+
+            .permiso-descripcion {
+
+                display: block;
+
+                margin: 2px 0 0 0;
+
+            }
+
+            .alcance {
+
+                max-width: none;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="contenedor">
+
+
+    <h1>Roles y permisos</h1>
+
+
+    <p class="subtitulo">
+        Configuración de permisos por puesto, rol y alcance.
+    </p>
+
+
+    <div class="aviso">
+
+        Cada puesto tiene un rol.
+        Los permisos se heredan desde ese rol.
+        El alcance determina hasta dónde puede actuar.
+
+    </div>
+
+
+    <!-- =======================================================
+         FILTROS EN CASCADA
+         ======================================================= -->
+
+    <div class="filtros">
+
+        <div class="filtros-grid">
+
+
+            <div class="filtro-campo">
+
+                <label
+                    class="filtro-label"
+                    for="filtroArea"
+                >
+                    Área
+                </label>
+
+                <select
+                    id="filtroArea"
+                    class="filtro-select"
+                >
+
+                    <option value="">
+                        Todas las áreas
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filtro-campo">
+
+                <label
+                    class="filtro-label"
+                    for="filtroDepartamento"
+                >
+                    Departamento
+                </label>
+
+                <select
+                    id="filtroDepartamento"
+                    class="filtro-select"
+                    disabled
+                >
+
+                    <option value="">
+                        Todos los departamentos
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filtro-campo">
+
+                <label
+                    class="filtro-label"
+                    for="filtroPuesto"
+                >
+                    Puesto
+                </label>
+
+                <select
+                    id="filtroPuesto"
+                    class="filtro-select"
+                    disabled
+                >
+
+                    <option value="">
+                        Todos los puestos
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="filtro-limpiar"
+                id="limpiarFiltros"
+            >
+                Limpiar
+            </button>
+
+
+            <div
+                class="filtro-resultado"
+                id="filtroResultado"
+            >
+                Mostrando todos los puestos.
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <form
+        method="POST"
+        id="formRolesPermisos"
+    >
+
+
+        {% for puesto in puestos %}
+
+
+        {% set nombre_puesto =
+            (puesto.nombre or "")|lower|trim
+        %}
+
+
+        {% set rol_inicial = "colaborador" %}
+
+
+        {% if nombre_puesto == "gerente general" %}
+
+            {% set rol_inicial = "gerente_area" %}
+
+        {% elif nombre_puesto == "gerente de operaciones" %}
+
+            {% set rol_inicial = "gerente_operaciones" %}
+
+        {% elif nombre_puesto == "gerente de recursos humanos" %}
+
+            {% set rol_inicial = "rh" %}
+
+        {% elif nombre_puesto == "supervisor de producción" %}
+
+            {% set rol_inicial = "supervisor" %}
+
+        {% elif nombre_puesto == "supervisor de mp" %}
+
+            {% set rol_inicial = "supervisor" %}
+
+        {% endif %}
+
+
+        {% for rol in roles %}
+
+            {% if rol.nombre == puesto_rol[puesto.id] %}
+
+                {% set rol_inicial = rol.nombre %}
+
+            {% endif %}
+
+        {% endfor %}
+
+
+        {% set area_nombre = "" %}
+
+        {% if puesto.departamento
+              and puesto.departamento.area %}
+
+            {% set area_nombre =
+                puesto.departamento.area.nombre
+            %}
+
+        {% elif puesto.area %}
+
+            {% set area_nombre =
+                puesto.area.nombre
+            %}
+
+        {% endif %}
+
+
+        {% set departamento_nombre = "" %}
+
+        {% if puesto.departamento %}
+
+            {% set departamento_nombre =
+                puesto.departamento.nombre
+            %}
+
+        {% endif %}
+
+
+        <section
+            class="puesto"
+            data-puesto-id="{{ puesto.id }}"
+            data-puesto="{{ puesto.nombre }}"
+            data-area="{{ area_nombre }}"
+            data-departamento="{{ departamento_nombre }}"
+        >
+
+
+            <div class="puesto-cabecera">
+
+
+                <div>
+
+                    <div class="campo-titulo">
+                        Puesto
+                    </div>
+
+                    <div class="puesto-nombre">
+                        {{ puesto.nombre }}
+                    </div>
+
+                </div>
+
+
+                <div>
+
+                    <div class="campo-titulo">
+                        Área
+                    </div>
+
+                    <div class="dato">
+
+                        {% if area_nombre %}
+
+                            {{ area_nombre }}
+
+                        {% else %}
+
+                            Sin área
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <div>
+
+                    <div class="campo-titulo">
+                        Departamento
+                    </div>
+
+                    <div class="dato">
+
+                        {% if departamento_nombre %}
+
+                            {{ departamento_nombre }}
+
+                        {% else %}
+
+                            Sin departamento
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <div>
+
+                    <div class="campo-titulo">
+                        Rol
+                    </div>
+
+
+                    <select
+                        class="selector-rol"
+                        name="puesto_rol_{{ puesto.id }}"
+                        data-puesto="{{ puesto.id }}"
+                        onchange="actualizarRol(this)"
+                        {% if not es_admin|default(false) %}
+                            disabled
+                        {% endif %}
+                    >
+
+                        {% for rol in roles %}
+
+                            <option
+                                value="{{ rol.nombre }}"
+                                {% if rol.nombre == rol_inicial %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {% if rol.nombre == "administrador" %}
+
+                                    Administrador
+
+                                {% elif rol.nombre == "gerente_area" %}
+
+                                    Gerente de Área
+
+                                {% elif rol.nombre == "gerente_operaciones" %}
+
+                                    Gerente de Operaciones
+
+                                {% elif rol.nombre == "supervisor" %}
+
+                                    Supervisor
+
+                                {% elif rol.nombre == "rh" %}
+
+                                    RH
+
+                                {% elif rol.nombre == "colaborador" %}
+
+                                    Colaborador
+
+                                {% else %}
+
+                                    {{ rol.nombre }}
+
+                                {% endif %}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+
+                    <div
+                        class="rol-mensaje"
+                        id="rol-mensaje-{{ puesto.id }}"
+                    >
+
+                        Rol:
+                        <strong>
+                            {{ rol_inicial }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="permisos">
+
+                <div class="permisos-titulo">
+                    Permisos
+                </div>
+
+
+                <table class="tabla">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Permiso
+                            </th>
+
+                            <th>
+                                Permitido
+                            </th>
+
+                            <th>
+                                Alcance
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                    {% for permiso in permisos %}
+
+
+                        {% set seleccionado = namespace(
+                            permitido=false,
+                            alcance="empresa"
+                        ) %}
+
+
+                        {% for rol in roles %}
+
+                            {% if rol.nombre == rol_inicial %}
+
+                                {% set dato =
+                                    matriz[rol.id][permiso.id]
+                                %}
+
+
+                                {% if dato is mapping %}
+
+                                    {% if dato.permitido %}
+
+                                        {% set seleccionado.permitido =
+                                            true
+                                        %}
+
+                                    {% endif %}
+
+                                    {% if dato.alcance %}
+
+                                        {% set seleccionado.alcance =
+                                            dato.alcance
+                                        %}
+
+                                    {% endif %}
+
+                                {% elif dato %}
+
+                                    {% set seleccionado.permitido =
+                                        true
+                                    %}
+
+                                {% endif %}
+
+                            {% endif %}
+
+                        {% endfor %}
+
+
+                        <tr>
+
+                            <td>
+
+                                <span class="permiso-nombre">
+                                    {{ permiso.nombre }}
+                                </span>
+
+                                {% if permiso.descripcion %}
+
+                                    <span class="permiso-descripcion">
+                                        {{ permiso.descripcion }}
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="check-wrap">
+
+                                    <input
+                                        type="checkbox"
+                                        class="check-permiso"
+                                        name="permiso_{{ puesto.id }}_{{ permiso.id }}"
+                                        {% if seleccionado.permitido %}
+                                            checked
+                                        {% endif %}
+                                        {% if not es_admin|default(false) %}
+                                            disabled
+                                        {% endif %}
+                                    >
+
+                                    <span class="estado-permiso">
+
+                                        {% if seleccionado.permitido %}
+
+                                            Permitido
+
+                                        {% else %}
+
+                                            Denegado
+
+                                        {% endif %}
+
+                                    </span>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+
+                                <select
+                                    class="alcance"
+                                    name="alcance_{{ puesto.id }}_{{ permiso.id }}"
+                                    {% if not es_admin|default(false) %}
+                                        disabled
+                                    {% endif %}
+                                >
+
+                                    <option
+                                        value="propio"
+                                        {% if seleccionado.alcance ==
+                                            "propio" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Propio
+                                    </option>
+
+
+                                    <option
+                                        value="departamento"
+                                        {% if seleccionado.alcance ==
+                                            "departamento" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Departamento
+                                    </option>
+
+
+                                    <option
+                                        value="area"
+                                        {% if seleccionado.alcance ==
+                                            "area" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Área
+                                    </option>
+
+
+                                    <option
+                                        value="empresa"
+                                        {% if seleccionado.alcance ==
+                                            "empresa" %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        Empresa
+                                    </option>
+
+                                </select>
+
+                            </td>
+
+                        </tr>
+
+
+                    {% endfor %}
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        </section>
+
+
+        {% endfor %}
+
+
+        <div class="acciones">
+
+            <div class="nota">
+
+                Los cambios se guardarán cuando terminemos
+                la persistencia Puesto → Rol → Permisos → Alcance.
+
+            </div>
+
+
+            <button
+                type="button"
+                class="boton boton-principal"
+                onclick="guardarPendiente()"
+                {% if not es_admin|default(false) %}
+                    disabled
+                {% endif %}
+            >
+                Guardar cambios
+            </button>
+
+        </div>
+
+
+    </form>
+
+
+</div>
+
+
+<script>
+
+    /* ========================================================
+       UTILIDADES
+       ======================================================== */
+
+    function normalizar(valor) {
+
+        return (valor || "")
+            .toString()
+            .trim()
+            .toLowerCase();
+
+    }
+
+
+    function textoVisible(select) {
+
+        if (
+            !select ||
+            select.selectedIndex < 0
+        ) {
+            return "";
+        }
+
+        return select
+            .options[
+                select.selectedIndex
+            ]
+            .text
+            .trim();
+
+    }
+
+
+    /* ========================================================
+       REFERENCIAS
+       ======================================================== */
+
+    var filtroArea =
+        document.getElementById(
+            "filtroArea"
+        );
+
+    var filtroDepartamento =
+        document.getElementById(
+            "filtroDepartamento"
+        );
+
+    var filtroPuesto =
+        document.getElementById(
+            "filtroPuesto"
+        );
+
+    var filtroResultado =
+        document.getElementById(
+            "filtroResultado"
+        );
+
+    var limpiarFiltros =
+        document.getElementById(
+            "limpiarFiltros"
+        );
+
+    var bloques =
+        Array.from(
+            document.querySelectorAll(
+                ".puesto"
+            )
+        );
+
+
+    /* ========================================================
+       DATOS
+       ======================================================== */
+
+    var datosPuestos =
+        bloques.map(function(bloque) {
+
+            return {
+                id:
+                    bloque.dataset.puestoId,
+
+                puesto:
+                    bloque.dataset.puesto,
+
+                puestoNormalizado:
+                    normalizar(
+                        bloque.dataset.puesto
+                    ),
+
+                area:
+                    bloque.dataset.area,
+
+                areaNormalizada:
+                    normalizar(
+                        bloque.dataset.area
+                    ),
+
+                departamento:
+                    bloque.dataset.departamento,
+
+                departamentoNormalizado:
+                    normalizar(
+                        bloque.dataset.departamento
+                    )
+            };
+
+        });
+
+
+    /* ========================================================
+       AGREGAR OPCIONES UNICAS
+       ======================================================== */
+
+    function valoresUnicos(
+        campo,
+        filtroAreaValor,
+        filtroDepartamentoValor
+    ) {
+
+        var mapa =
+            new Map();
+
+        datosPuestos.forEach(
+            function(item) {
+
+                var coincideArea =
+                    !filtroAreaValor ||
+                    item.areaNormalizada ===
+                    filtroAreaValor;
+
+                var coincideDepartamento =
+                    !filtroDepartamentoValor ||
+                    item.departamentoNormalizado ===
+                    filtroDepartamentoValor;
+
+                if (
+                    coincideArea &&
+                    coincideDepartamento
+                ) {
+
+                    var valor =
+                        item[campo];
+
+                    var normalizado =
+                        normalizar(valor);
+
+                    if (
+                        normalizado &&
+                        !mapa.has(normalizado)
+                    ) {
+
+                        mapa.set(
+                            normalizado,
+                            valor
+                        );
+                    }
+
+                }
+
+            }
+        );
+
+        return Array.from(
+            mapa.entries()
+        ).sort(
+            function(a, b) {
+
+                return a[1].localeCompare(
+                    b[1],
+                    "es",
+                    {
+                        sensitivity: "base"
+                    }
+                );
+
+            }
+        );
+
+    }
+
+
+    /* ========================================================
+       LLENAR SELECT
+       ======================================================== */
+
+    function llenarSelect(
+        select,
+        opcionTodos,
+        opciones,
+        valorAnterior
+    ) {
+
+        select.innerHTML = "";
+
+        var optionTodos =
+            document.createElement(
+                "option"
+            );
+
+        optionTodos.value = "";
+
+        optionTodos.textContent =
+            opcionTodos;
+
+        select.appendChild(
+            optionTodos
+        );
+
+
+        opciones.forEach(
+            function(item) {
+
+                var option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    normalizar(
+                        item[0]
+                    );
+
+                option.textContent =
+                    item[1];
+
+                select.appendChild(
+                    option
+                );
+
+            }
+        );
+
+
+        var normalizadoAnterior =
+            normalizar(
+                valorAnterior
+            );
+
+        if (
+            normalizadoAnterior
+        ) {
+
+            var existe =
+                Array.from(
+                    select.options
+                ).some(
+                    function(option) {
+
+                        return option.value ===
+                            normalizadoAnterior;
+
+                    }
+                );
+
+            if (existe) {
+
+                select.value =
+                    normalizadoAnterior;
+
+            }
+            else {
+
+                select.value = "";
+
+            }
+
+        }
+        else {
+
+            select.value = "";
+
+        }
+
+    }
+
+
+    /* ========================================================
+       FILTRO DE DEPARTAMENTOS
+       ======================================================== */
+
+    function actualizarDepartamentos() {
+
+        var area =
+            filtroArea.value;
+
+        var departamentoAnterior =
+            filtroDepartamento.value;
+
+        var opciones =
+            valoresUnicos(
+                "departamento",
+                area,
+                ""
+            );
+
+
+        llenarSelect(
+            filtroDepartamento,
+            "Todos los departamentos",
+            opciones,
+            departamentoAnterior
+        );
+
+
+        filtroDepartamento.disabled =
+            opciones.length === 0;
+
+
+        if (
+            filtroDepartamento.value !==
+            departamentoAnterior
+        ) {
+
+            filtroPuesto.value = "";
+
+        }
+
+
+        actualizarPuestos();
+
+    }
+
+
+    /* ========================================================
+       FILTRO DE PUESTOS
+       ======================================================== */
+
+    function actualizarPuestos() {
+
+        var area =
+            filtroArea.value;
+
+        var departamento =
+            filtroDepartamento.value;
+
+        var puestoAnterior =
+            filtroPuesto.value;
+
+        var opciones =
+            valoresUnicos(
+                "puesto",
+                area,
+                departamento
+            );
+
+
+        llenarSelect(
+            filtroPuesto,
+            "Todos los puestos",
+            opciones,
+            puestoAnterior
+        );
+
+
+        filtroPuesto.disabled =
+            opciones.length === 0;
+
+
+        aplicarFiltros();
+
+    }
+
+
+    /* ========================================================
+       APLICAR FILTROS
+       ======================================================== */
+
+    function aplicarFiltros() {
+
+        var area =
+            normalizar(
+                filtroArea.value
+            );
+
+        var departamento =
+            normalizar(
+                filtroDepartamento.value
+            );
+
+        var puesto =
+            normalizar(
+                filtroPuesto.value
+            );
+
+
+        var visibles = 0;
+
+
+        bloques.forEach(
+            function(bloque) {
+
+                var datos =
+                    datosPuestos.find(
+                        function(item) {
+
+                            return item.id ===
+                                bloque.dataset.puestoId;
+
+                        }
+                    );
+
+
+                if (!datos) {
+
+                    bloque.style.display =
+                        "none";
+
+                    return;
+                }
+
+
+                var coincideArea =
+                    !area ||
+                    datos.areaNormalizada ===
+                    area;
+
+
+                var coincideDepartamento =
+                    !departamento ||
+                    datos.departamentoNormalizado ===
+                    departamento;
+
+
+                var coincidePuesto =
+                    !puesto ||
+                    datos.puestoNormalizado ===
+                    puesto;
+
+
+                var mostrar =
+                    coincideArea &&
+                    coincideDepartamento &&
+                    coincidePuesto;
+
+
+                bloque.style.display =
+                    mostrar
+                    ? ""
+                    : "none";
+
+
+                if (mostrar) {
+
+                    visibles++;
+
+                }
+
+            }
+        );
+
+
+        var total =
+            bloques.length;
+
+
+        if (
+            !area &&
+            !departamento &&
+            !puesto
+        ) {
+
+            filtroResultado.textContent =
+                "Mostrando todos los puestos ("
+                + total
+                + ").";
+
+        }
+        else {
+
+            filtroResultado.textContent =
+                "Mostrando "
+                + visibles
+                + " de "
+                + total
+                + " puestos.";
+
+        }
+
+    }
+
+
+    /* ========================================================
+       CAMBIO DE AREA
+       ======================================================== */
+
+    filtroArea.addEventListener(
+        "change",
+        function() {
+
+            filtroDepartamento.value = "";
+
+            filtroPuesto.value = "";
+
+            actualizarDepartamentos();
+
+        }
+    );
+
+
+    /* ========================================================
+       CAMBIO DE DEPARTAMENTO
+       ======================================================== */
+
+    filtroDepartamento.addEventListener(
+        "change",
+        function() {
+
+            filtroPuesto.value = "";
+
+            actualizarPuestos();
+
+        }
+    );
+
+
+    /* ========================================================
+       CAMBIO DE PUESTO
+       ======================================================== */
+
+    filtroPuesto.addEventListener(
+        "change",
+        function() {
+
+            aplicarFiltros();
+
+        }
+    );
+
+
+    /* ========================================================
+       LIMPIAR
+       ======================================================== */
+
+    limpiarFiltros.addEventListener(
+        "click",
+        function() {
+
+            filtroArea.value = "";
+
+            filtroDepartamento.value = "";
+
+            filtroPuesto.value = "";
+
+            actualizarDepartamentos();
+
+        }
+    );
+
+
+    /* ========================================================
+       ROL
+       ======================================================== */
+
+    function actualizarRol(select) {
+
+        var puestoId =
+            select.getAttribute(
+                "data-puesto"
+            );
+
+        var mensaje =
+            document.getElementById(
+                "rol-mensaje-" + puestoId
+            );
+
+        if (!mensaje) {
+
+            return;
+
+        }
+
+        var texto =
+            textoVisible(
+                select
+            );
+
+        mensaje.innerHTML =
+            "Rol: <strong>"
+            + texto
+            + "</strong>";
+
+    }
+
+
+    /* ========================================================
+       ESTADO DE PERMISOS
+       ======================================================== */
+
+    function actualizarEstados() {
+
+        var checks =
+            document.querySelectorAll(
+                ".check-permiso"
+            );
+
+
+        checks.forEach(
+            function(check) {
+
+                var estado =
+                    check.parentElement.querySelector(
+                        ".estado-permiso"
+                    );
+
+
+                if (!estado) {
+
+                    return;
+
+                }
+
+
+                estado.textContent =
+                    check.checked
+                    ? "Permitido"
+                    : "Denegado";
+
+            }
+        );
+
+    }
+
+
+    /* ========================================================
+       GUARDAR
+       ======================================================== */
+
+    function guardarPendiente() {
+
+        alert(
+            "La interfaz está lista. La persistencia Puesto → Rol → Permisos → Alcance se habilitará en el siguiente paso."
+        );
+
+    }
+
+
+    /* ========================================================
+       CHECKBOX CHANGE
+       ======================================================== */
+
+    document.addEventListener(
+        "change",
+        function(event) {
+
+            if (
+                event.target.classList.contains(
+                    "check-permiso"
+                )
+            ) {
+
+                actualizarEstados();
+
+            }
+
+        }
+    );
+
+
+    /* ========================================================
+       INICIALIZAR
+       ======================================================== */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            var opcionesAreas =
+                valoresUnicos(
+                    "area",
+                    "",
+                    ""
+                );
+
+
+            llenarSelect(
+                filtroArea,
+                "Todas las áreas",
+                opcionesAreas,
+                ""
+            );
+
+
+            actualizarDepartamentos();
+
+            actualizarEstados();
+
+        }
+    );
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,627 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Usuarios | MATRIZ ILUO</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+
+        .usuarios-contenedor {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .usuarios-titulo {
+            margin-bottom: 6px;
+        }
+
+        .usuarios-subtitulo {
+            color: #64748b;
+            margin-bottom: 24px;
+        }
+
+        .usuarios-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .usuarios-grid {
+            display: grid;
+            grid-template-columns:
+                1fr
+                1.5fr
+                1fr
+                1fr;
+            gap: 14px;
+            align-items: end;
+        }
+
+        .usuarios-campo {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .usuarios-campo label {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .usuarios-campo input,
+        .usuarios-campo select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+        }
+
+        .usuarios-tabla-wrap {
+            overflow-x: auto;
+        }
+
+        .usuarios-tabla {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1050px;
+        }
+
+        .usuarios-tabla th,
+        .usuarios-tabla td {
+            padding: 11px 9px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .usuarios-tabla th {
+            background: #172033;
+            color: white;
+            font-size: 13px;
+        }
+
+        .usuarios-tabla tr:hover td {
+            background: #f8fafc;
+        }
+
+        .estado-activo {
+            font-weight: 700;
+        }
+
+        .estado-inactivo {
+            color: #a61b1b;
+            font-weight: 700;
+        }
+
+        .rol-usuario {
+            font-weight: 700;
+        }
+
+        .acciones-usuario {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            align-items: center;
+        }
+
+        .acciones-usuario form {
+            margin: 0;
+        }
+
+        .password-inline {
+            width: 145px;
+            box-sizing: border-box;
+            padding: 8px 9px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+        }
+
+        .usuarios-alerta {
+            padding: 12px 14px;
+            margin-bottom: 18px;
+            border-radius: 9px;
+            background: #fff8d8;
+            border-left: 4px solid #d7ae29;
+        }
+
+        .usuarios-error {
+            padding: 12px 14px;
+            margin-bottom: 18px;
+            border-radius: 9px;
+            background: #fff1f1;
+            border-left: 4px solid #b91c1c;
+            color: #7f1d1d;
+        }
+
+        .usuarios-info {
+            margin-top: 12px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        @media (max-width: 1000px) {
+
+            .usuarios-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+        }
+
+        @media (max-width: 650px) {
+
+            .usuarios-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="contenedor">
+
+    <aside class="menu">
+
+    {% include "_menu_principal.html" %}
+
+</aside>
+
+
+    <main class="contenido">
+
+        <div class="usuarios-contenedor">
+
+            <div class="encabezado">
+
+                <h1 class="usuarios-titulo">
+                    Administración de usuarios
+                </h1>
+
+                <p class="usuarios-subtitulo">
+                    Gestiona las cuentas de acceso y su vinculación
+                    con los colaboradores.
+                </p>
+
+            </div>
+
+
+            {% if mensaje %}
+
+                <div class="usuarios-alerta">
+                    {{ mensaje }}
+                </div>
+
+            {% endif %}
+
+
+            {% if error %}
+
+                <div class="usuarios-error">
+                    {{ error }}
+                </div>
+
+            {% endif %}
+
+
+            <div class="usuarios-card">
+
+                <h2>
+                    ➕ Nuevo usuario
+                </h2>
+
+                <form
+                    method="POST"
+                    action="{{ url_for('crear_usuario') }}"
+                >
+
+                    <div class="usuarios-grid">
+
+                        <div class="usuarios-campo">
+
+                            <label for="username">
+                                Usuario
+                            </label>
+
+                            <input
+                                id="username"
+                                name="username"
+                                type="text"
+                                required
+                                autocomplete="off"
+                            >
+
+                        </div>
+
+
+                        <div class="usuarios-campo">
+
+                            <label for="colaborador_id">
+                                Colaborador
+                            </label>
+
+                            <select
+                                id="colaborador_id"
+                                name="colaborador_id"
+                            >
+
+                                <option value="">
+                                    Cuenta administrativa
+                                </option>
+
+                                {% for colaborador in colaboradores %}
+
+                                    <option
+                                        value="{{ colaborador.id }}"
+                                    >
+                                        {{ colaborador.numero_empleado }}
+                                        -
+                                        {{ colaborador.nombre }}
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="usuarios-campo">
+
+                            <label for="password">
+                                Contraseña inicial
+                            </label>
+
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                minlength="8"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="usuarios-campo">
+
+                            <label for="cuenta_admin">
+                                Tipo de cuenta
+                            </label>
+
+                            <select
+                                id="cuenta_admin"
+                                name="cuenta_admin"
+                            >
+
+                                <option value="normal">
+                                    Usuario normal
+                                </option>
+
+                                <option value="admin">
+                                    Administrador
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div style="margin-top:16px;">
+
+                        <button
+                            type="submit"
+                            class="boton boton-principal"
+                        >
+                            Crear usuario
+                        </button>
+
+                    </div>
+
+                </form>
+
+
+                <div class="usuarios-info">
+
+                    El rol de un usuario normal se obtiene del
+                    puesto vinculado a su colaborador.
+
+                </div>
+
+            </div>
+
+
+            <div class="usuarios-card">
+
+                <h2>
+                    Usuarios registrados
+                </h2>
+
+
+                <div class="usuarios-tabla-wrap">
+
+                    <table class="usuarios-tabla">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Usuario
+                                </th>
+
+                                <th>
+                                    Colaborador
+                                </th>
+
+                                <th>
+                                    Puesto
+                                </th>
+
+                                <th>
+                                    Departamento
+                                </th>
+
+                                <th>
+                                    Área
+                                </th>
+
+                                <th>
+                                    Rol
+                                </th>
+
+                                <th>
+                                    Estado
+                                </th>
+
+                                <th>
+                                    Acciones
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for usuario in usuarios %}
+
+                                <tr>
+
+                                    <td>
+
+                                        <strong>
+                                            {{ usuario.username }}
+                                        </strong>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if usuario.colaborador %}
+
+                                            {{ usuario.colaborador.numero_empleado }}
+                                            -
+                                            {{ usuario.colaborador.nombre }}
+
+                                        {% else %}
+
+                                            —
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if usuario.colaborador
+                                              and usuario.colaborador.puesto %}
+
+                                            {{ usuario.colaborador.puesto.nombre }}
+
+                                        {% else %}
+
+                                            —
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if usuario.colaborador
+                                              and usuario.colaborador.departamento %}
+
+                                            {{ usuario.colaborador.departamento.nombre }}
+
+                                        {% else %}
+
+                                            —
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if usuario.colaborador
+                                              and usuario.colaborador.departamento
+                                              and usuario.colaborador.departamento.area %}
+
+                                            {{ usuario.colaborador.departamento.area.nombre }}
+
+                                        {% else %}
+
+                                            —
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td class="rol-usuario">
+
+                                        {% if usuario.rol == "administrador" %}
+
+                                            Administrador
+
+                                        {% elif usuario.rol == "gerente_area" %}
+
+                                            Gerente de Área
+
+                                        {% elif usuario.rol == "supervisor" %}
+
+                                            Supervisor
+
+                                        {% elif usuario.rol == "rh" %}
+
+                                            RH
+
+                                        {% elif usuario.rol == "gerente_operaciones" %}
+
+                                            Gerente de Operaciones
+
+                                        {% else %}
+
+                                            Operador
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if usuario.activo %}
+
+                                            <span class="estado-activo">
+                                                Activo
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="estado-inactivo">
+                                                Inactivo
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <div class="acciones-usuario">
+
+                                            <form
+                                                method="POST"
+                                                action="{{ url_for(
+                                                    'toggle_usuario',
+                                                    usuario_id=usuario.id
+                                                ) }}"
+                                            >
+
+                                                <button
+                                                    type="submit"
+                                                    class="boton"
+                                                >
+
+                                                    {% if usuario.activo %}
+                                                        Desactivar
+                                                    {% else %}
+                                                        Activar
+                                                    {% endif %}
+
+                                                </button>
+
+                                            </form>
+
+
+                                            <form
+                                                method="POST"
+                                                action="{{ url_for(
+                                                    'restablecer_password_usuario',
+                                                    usuario_id=usuario.id
+                                                ) }}"
+                                            >
+
+                                                <input
+                                                    class="password-inline"
+                                                    type="password"
+                                                    name="nueva_password"
+                                                    minlength="8"
+                                                    placeholder="Nueva contraseña"
+                                                    required
+                                                >
+
+                                                <button
+                                                    type="submit"
+                                                    class="boton"
+                                                >
+                                                    Restablecer
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            {% else %}
+
+                                <tr>
+
+                                    <td colspan="8">
+                                        No hay usuarios registrados.
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
+

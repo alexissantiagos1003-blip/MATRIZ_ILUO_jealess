@@ -1,0 +1,284 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Detalle de evaluación
+    </title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 30px;
+            color: #222;
+        }
+
+        .contenedor {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .tarjeta {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.08);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        h2 {
+            margin-top: 30px;
+        }
+
+        .folio {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .datos {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .dato {
+            padding: 12px;
+            background: #f7f7f7;
+            border-radius: 8px;
+        }
+
+        .dato strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #f1f1f1;
+        }
+
+        .nivel {
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .boton {
+            display: inline-block;
+            padding: 11px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .boton-ver {
+            background: #333;
+            color: white;
+        }
+
+        .boton-pdf {
+            background: #b42318;
+            color: white;
+        }
+
+        .boton-regresar {
+            background: #e5e7eb;
+            color: #222;
+        }
+
+        @media (max-width: 700px) {
+
+            .datos {
+                grid-template-columns: 1fr;
+            }
+
+            body {
+                padding: 12px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <div class="tarjeta">
+
+        <h1>
+            Evaluación ILUO
+        </h1>
+
+        <div class="folio">
+            Folio:
+            {{ evaluacion.folio or "Sin folio" }}
+        </div>
+
+        <div class="datos">
+
+            <div class="dato">
+                <strong>Colaborador</strong>
+                {{ evaluacion.colaborador.nombre if evaluacion.colaborador else "—" }}
+            </div>
+
+            <div class="dato">
+                <strong>Puesto</strong>
+                {{ evaluacion.colaborador.puesto.nombre if evaluacion.colaborador and evaluacion.colaborador.puesto else "—" }}
+            </div>
+
+            <div class="dato">
+                <strong>Departamento</strong>
+                {{ evaluacion.colaborador.departamento.nombre if evaluacion.colaborador and evaluacion.colaborador.departamento else "—" }}
+            </div>
+
+            <div class="dato">
+                <strong>Área</strong>
+                {{ evaluacion.colaborador.departamento.area.nombre if evaluacion.colaborador and evaluacion.colaborador.departamento and evaluacion.colaborador.departamento.area else "—" }}
+            </div>
+
+            <div class="dato">
+                <strong>Fecha</strong>
+                {{ evaluacion.fecha_evaluacion or "—" }}
+            </div>
+
+            <div class="dato">
+                <strong>Evaluador</strong>
+                {{ evaluacion.evaluador or "—" }}
+            </div>
+
+            <div class="dato">
+                <strong>Rol del evaluador</strong>
+                {{ evaluacion.rol_evaluador or "—" }}
+            </div>
+
+            <div class="dato">
+                <strong>Firma</strong>
+                {% if evaluacion.firma_archivo %}
+                    ✓ Firmada
+                {% else %}
+                    Pendiente
+                {% endif %}
+            </div>
+
+        </div>
+
+        <h2>
+            Resultados
+        </h2>
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Habilidad
+                    </th>
+
+                    <th>
+                        Nivel ILUO
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for registro in evaluaciones %}
+
+                <tr>
+
+                    <td>
+                        {{ registro.habilidad.nombre if registro.habilidad else "—" }}
+                    </td>
+
+                    <td class="nivel">
+                        {{ registro.nivel }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+
+        <div class="comentario-general">
+
+            <h3>
+                Comentarios
+            </h3>
+
+            <p>
+                {{ evaluaciones[0].comentario or "Sin comentarios." }}
+            </p>
+
+        </div>
+
+
+        <div class="acciones">
+
+            <a
+                class="boton boton-pdf"
+                href="{{ url_for('pdf_evaluacion', evaluacion_id=evaluacion.id) }}"
+                target="_blank"
+            >
+                📄 Ver PDF
+            </a>
+
+            <a
+                class="boton boton-regresar"
+                href="{{ url_for('historial_evaluaciones') }}"
+            >
+                ← Regresar al historial
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
+

@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Departamentos - Matriz ILUO</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <aside class="menu">
+
+    {% include "_menu_principal.html" %}
+
+</aside>
+
+
+    <main class="contenido">
+
+        <div class="encabezado">
+
+            <h1>Departamentos</h1>
+
+            <p>
+                Administración de los departamentos de la empresa.
+            </p>
+
+        </div>
+
+
+        <div class="tarjeta">
+
+            <h2>Registrar departamento</h2>
+
+            <br>
+
+            <form method="POST"
+                  action="/departamentos/agregar">
+
+                <label>
+                    Nombre del departamento
+                </label>
+
+                <br>
+
+                <input
+                    type="text"
+                    name="nombre"
+                    required
+                    maxlength="100"
+                    placeholder="Ej. Producción"
+                >
+
+                <br><br>
+
+                <label>
+                    Área
+                </label>
+
+                <br>
+
+                <select
+                    name="area_id"
+                    required
+                >
+
+                    <option value="">
+                        Selecciona un área
+                    </option>
+
+                    {% for area in areas %}
+
+                        <option value="{{ area.id }}">
+                            {{ area.nombre }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+                <br><br>
+
+                <button type="submit">
+                    ➕ Registrar departamento
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <br>
+
+
+        <div class="tarjeta">
+
+            <h2>Departamentos registrados</h2>
+
+            <br>
+
+            {% if departamentos %}
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            ID
+                        </th>
+
+                        <th>
+                            Área
+                        </th>
+
+                        <th>
+                            Departamento
+                        </th>
+
+                        <th>
+                            Acción
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for departamento in departamentos %}
+
+                    <tr>
+
+                        <td>
+                            {{ departamento.id }}
+                        </td>
+
+                        <td>
+                            {% if departamento.area %}
+                                {{ departamento.area.nombre }}
+                            {% else %}
+                                Sin área
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {{ departamento.nombre }}
+                        </td>
+
+                        <td>
+
+                            <a href="/departamentos/eliminar/{{ departamento.id }}">
+                                🗑️ Eliminar
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% else %}
+
+            <p>
+                Todavía no hay departamentos registrados.
+            </p>
+
+            {% endif %}
+
+        </div>
+
+    </main>
+
+</div>
+
+
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+

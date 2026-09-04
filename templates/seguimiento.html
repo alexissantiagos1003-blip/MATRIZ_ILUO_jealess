@@ -1,0 +1,783 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Seguimiento | MATRIZ ILUO</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+
+        .seguimiento-contenedor {
+            max-width: 1450px;
+            margin: 0 auto;
+        }
+
+        .seguimiento-subtitulo {
+            color: #64748b;
+            margin-bottom: 22px;
+        }
+
+        .seguimiento-filtros {
+            display: grid;
+            grid-template-columns:
+                1fr
+                1fr
+                1fr
+                1.3fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .seguimiento-filtros label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .seguimiento-filtros select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .resumen-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .resumen-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 17px;
+        }
+
+        .resumen-label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .resumen-numero {
+            font-size: 27px;
+            font-weight: 800;
+            margin-top: 5px;
+        }
+
+        .seguimiento-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.06);
+            overflow-x: auto;
+        }
+
+        .seguimiento-tabla {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1050px;
+        }
+
+        .seguimiento-tabla th,
+        .seguimiento-tabla td {
+            padding: 11px 9px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .seguimiento-tabla th {
+            background: #172033;
+            color: white;
+            font-size: 12px;
+        }
+
+        .seguimiento-tabla tr:hover td {
+            background: #f8fafc;
+        }
+
+        .cumplimiento {
+            display: inline-block;
+            min-width: 70px;
+            padding: 5px 9px;
+            border-radius: 999px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 12px;
+        }
+
+        .cumplimiento.verde {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .cumplimiento.amarillo {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .cumplimiento.rojo {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .estado {
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .estado.ok {
+            color: #166534;
+        }
+
+        .estado.brecha {
+            color: #b45309;
+        }
+
+        .estado.pendiente {
+            color: #b91c1c;
+        }
+
+        .sin-registros {
+            padding: 32px 15px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .boton-detalle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 7px 11px;
+            border-radius: 7px;
+            background: #172033;
+            color: white;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+
+        .acciones-seguimiento {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: stretch;
+            min-width: 125px;
+        }
+
+        .acciones-seguimiento .boton-detalle {
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .boton-evaluacion {
+            background: linear-gradient(
+                135deg,
+                #0f766e,
+                #2563eb
+            );
+            color: white;
+        }
+
+        .boton-evaluacion:hover {
+            background: linear-gradient(
+                135deg,
+                #0d5f59,
+                #1d4ed8
+            );
+        }
+
+        .boton-seguimiento {
+            background: linear-gradient(
+                135deg,
+                #d97706,
+                #eab308
+            );
+            color: white;
+        }
+
+        .boton-seguimiento:hover {
+            background: linear-gradient(
+                135deg,
+                #b45309,
+                #ca8a04
+            );
+        }
+
+        .boton-detalle:hover {
+            background: #26344d;
+        }
+
+        .boton-limpiar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            padding: 8px 12px;
+            border-radius: 7px;
+            background: #f1f5f9;
+            color: #172033;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        @media (max-width: 1000px) {
+
+            .seguimiento-filtros {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .resumen-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+        }
+
+        @media (max-width: 650px) {
+
+            .seguimiento-filtros,
+            .resumen-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+
+<style>
+.boton-evaluacion,
+.boton-seguimiento {
+    color: #ffffff !important;
+}
+
+.boton-evaluacion *,
+.boton-seguimiento * {
+    color: #ffffff !important;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <aside class="menu">
+
+    {% include "_menu_principal.html" %}
+
+</aside>
+
+
+    <main class="contenido">
+
+        <div class="seguimiento-contenedor">
+
+            <div class="encabezado">
+
+                <h1>
+                    🎯 Seguimiento
+                </h1>
+
+                <p class="seguimiento-subtitulo">
+                    Seguimiento de evaluaciones, cumplimiento,
+                    brechas y pendientes de los colaboradores.
+                </p>
+
+            </div>
+
+
+            <div class="seguimiento-card">
+
+                <h2>
+                    🔎 Filtros
+                </h2>
+
+                <form
+                    method="GET"
+                    action="{{ url_for('seguimiento') }}"
+                >
+
+                    <div class="seguimiento-filtros">
+
+                        <div>
+
+                            <label>
+                                Área
+                            </label>
+
+                            <select
+                                name="area_id"
+                                onchange="this.form.submit()"
+                            >
+
+                                <option value="">
+                                    Todas las áreas
+                                </option>
+
+                                {% for area in areas %}
+
+                                    <option
+                                        value="{{ area.id }}"
+                                        {% if area_seleccionada == area.id %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        {{ area.nombre }}
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <div>
+
+                            <label>
+                                Departamento
+                            </label>
+
+                            <select
+                                name="departamento_id"
+                                onchange="this.form.submit()"
+                            >
+
+                                <option value="">
+                                    Todos los departamentos
+                                </option>
+
+                                {% for departamento in departamentos %}
+
+                                    <option
+                                        value="{{ departamento.id }}"
+                                        {% if departamento_seleccionado == departamento.id %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        {{ departamento.nombre }}
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <div>
+
+                            <label>
+                                Puesto
+                            </label>
+
+                            <select
+                                name="puesto_id"
+                                onchange="this.form.submit()"
+                            >
+
+                                <option value="">
+                                    Todos los puestos
+                                </option>
+
+                                {% for puesto in puestos %}
+
+                                    <option
+                                        value="{{ puesto.id }}"
+                                        {% if puesto_seleccionado == puesto.id %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        {{ puesto.nombre }}
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <div>
+
+                            <label>
+                                Colaborador
+                            </label>
+
+                            <select
+                                name="colaborador_id"
+                                onchange="this.form.submit()"
+                            >
+
+                                <option value="">
+                                    Todos los colaboradores
+                                </option>
+
+                                {% for colaborador in colaboradores_filtro %}
+
+                                    <option
+                                        value="{{ colaborador.id }}"
+                                        {% if colaborador_seleccionado == colaborador.id %}
+                                            selected
+                                        {% endif %}
+                                    >
+                                        {{ colaborador.numero_empleado }}
+                                        -
+                                        {{ colaborador.nombre }}
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+
+                <a
+                    href="{{ url_for('seguimiento') }}"
+                    class="boton-limpiar"
+                >
+                    Limpiar filtros
+                </a>
+
+            </div>
+
+
+            <div class="resumen-grid">
+
+                <div class="resumen-card">
+
+                    <div class="resumen-label">
+                        Colaboradores
+                    </div>
+
+                    <div class="resumen-numero">
+                        {{ total_colaboradores }}
+                    </div>
+
+                </div>
+
+
+                <div class="resumen-card">
+
+                    <div class="resumen-label">
+                        Con brechas
+                    </div>
+
+                    <div class="resumen-numero">
+                        {{ total_con_brecha }}
+                    </div>
+
+                </div>
+
+
+                <div class="resumen-card">
+
+                    <div class="resumen-label">
+                        Pendientes
+                    </div>
+
+                    <div class="resumen-numero">
+                        {{ total_pendientes }}
+                    </div>
+
+                </div>
+
+
+                <div class="resumen-card">
+
+                    <div class="resumen-label">
+                        Cumplimiento promedio
+                    </div>
+
+                    <div class="resumen-numero">
+                        {{ cumplimiento_promedio }}%
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="seguimiento-card">
+
+                <h2>
+                    📋 Seguimiento de colaboradores
+                </h2>
+
+
+                <table class="seguimiento-tabla">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Colaborador
+                            </th>
+
+                            <th>
+                                Puesto
+                            </th>
+
+                            <th>
+                                Departamento
+                            </th>
+
+                            <th>
+                                Área
+                            </th>
+
+                            <th>
+                                Última evaluación
+                            </th>
+
+                            <th>
+                                Cumplimiento
+                            </th>
+
+                            <th>
+                                Brechas
+                            </th>
+
+                            <th>
+                                Pendientes
+                            </th>
+
+                            <th>
+                                Estado
+                            </th>
+
+                            <th>
+                                Detalle
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for fila in filas %}
+
+                            <tr>
+
+                                <td>
+
+                                    <strong>
+                                        {{ fila.colaborador.numero_empleado }}
+                                    </strong>
+
+                                    <br>
+
+                                    {{ fila.colaborador.nombre }}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if fila.colaborador.puesto %}
+
+                                        {{ fila.colaborador.puesto.nombre }}
+
+                                    {% else %}
+
+                                        —
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if fila.colaborador.departamento %}
+
+                                        {{ fila.colaborador.departamento.nombre }}
+
+                                    {% else %}
+
+                                        —
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if fila.area %}
+
+                                        {{ fila.area.nombre }}
+
+                                    {% else %}
+
+                                        —
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if fila.ultima_evaluacion %}
+
+                                        {{ fila.ultima_evaluacion.strftime('%d/%m/%Y') }}
+
+                                    {% else %}
+
+                                        Sin evaluación
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    <span
+                                        class="
+                                            cumplimiento
+                                            {% if fila.cumplimiento >= 100 %}
+                                                verde
+                                            {% elif fila.cumplimiento >= 50 %}
+                                                amarillo
+                                            {% else %}
+                                                rojo
+                                            {% endif %}
+                                        "
+                                    >
+                                        {{ fila.cumplimiento }}%
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+                                    {{ fila.brechas }}
+                                </td>
+
+
+                                <td>
+                                    {{ fila.pendientes }}
+                                </td>
+
+
+                                <td>
+
+                                    {% if fila.pendientes > 0 %}
+
+                                        <span class="estado pendiente">
+                                            Pendiente de evaluación
+                                        </span>
+
+                                    {% elif fila.brechas > 0 %}
+
+                                        <span class="estado brecha">
+                                            Requiere desarrollo
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="estado ok">
+                                            Cumplimiento
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="acciones-seguimiento">
+
+    <a
+        href="{{ url_for(
+            'seguimiento_evaluacion',
+            colaborador_id=fila.colaborador.id
+        ) }}"
+        class="boton-detalle boton-evaluacion"
+    >
+        Ver evaluación
+    </a>
+
+    <a
+        href="{{ url_for(
+            'seguimiento_detalle',
+            colaborador_id=fila.colaborador.id
+        ) }}"
+        class="boton-detalle boton-seguimiento"
+    >
+        Ver seguimiento
+    </a>
+
+</div>
+
+                    </td>
+
+                            </tr>
+
+                        {% else %}
+
+                            <tr>
+
+                                <td
+                                    colspan="10"
+                                    class="sin-registros"
+                                >
+                                    No hay colaboradores que coincidan
+                                    con los filtros seleccionados.
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
+

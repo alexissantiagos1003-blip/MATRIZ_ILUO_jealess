@@ -1,0 +1,458 @@
+﻿<style>
+
+    .usuario-menu {
+
+        position:fixed;left:18px;bottom:16px;width:265px;
+
+        z-index: 9999;
+    }
+
+
+    .usuario-boton {
+
+        width: 100%;
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+
+        padding: 10px 12px;
+
+        border-radius: 10px;
+
+        border: 1px solid rgba(
+            255,
+            255,
+            255,
+            0.12
+        );
+
+        background: rgba(
+            255,
+            255,
+            255,
+            0.08
+        );
+
+        color: #ffffff;
+
+        cursor: pointer;
+
+        box-shadow:
+            0 4px 12px
+            rgba(
+                0,
+                0,
+                0,
+                0.15
+            );
+
+        transition:
+            background 0.15s ease,
+            transform 0.15s ease;
+    }
+
+
+    .usuario-boton:hover {
+
+        background: rgba(
+            255,
+            255,
+            255,
+            0.14
+        );
+
+        transform: translateY(
+            -1px
+        );
+    }
+
+
+    .usuario-avatar {
+
+        width: 38px;
+
+        height: 38px;
+
+        min-width: 38px;
+
+        border-radius: 50%;
+
+        background: #ffffff;
+
+        color: #172033;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        font-size: 15px;
+
+        font-weight: 800;
+    }
+
+
+    .usuario-identidad {
+
+        flex: 1;
+
+        min-width: 0;
+
+        text-align: left;
+
+        line-height: 1.15;
+    }
+
+
+    .usuario-nombre {
+
+        display: block;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+
+        white-space: nowrap;
+
+        font-size: 14px;
+
+        font-weight: 700;
+
+        color: #ffffff;
+    }
+
+
+    .usuario-rol {
+
+        display: block;
+
+        margin-top: 4px;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+
+        white-space: nowrap;
+
+        font-size: 11px;
+
+        color: rgba(
+            255,
+            255,
+            255,
+            0.70
+        );
+    }
+
+
+    .usuario-flecha {
+
+        font-size: 13px;
+
+        color: rgba(
+            255,
+            255,
+            255,
+            0.75
+        );
+
+        transition:
+            transform 0.15s ease;
+    }
+
+
+    .usuario-menu:hover
+    .usuario-flecha {
+
+        transform:
+            rotate(180deg);
+    }
+
+
+    .usuario-panel {
+
+        position: absolute;
+
+        left: 0;
+
+        bottom: 58px;
+
+        width: 265px;
+
+        padding: 8px;
+
+        background: #ffffff;
+
+        border:
+            1px solid #e2e6ed;
+
+        border-radius: 12px;
+
+        box-shadow:
+            0 12px 28px
+            rgba(
+                0,
+                0,
+                0,
+                0.18
+            );
+
+        display:none;
+    }
+
+
+    .usuario-menu:hover
+    .usuario-panel {
+
+        display: block;
+    }
+
+
+    .usuario-panel-cabecera {
+
+        padding: 11px 12px;
+
+        margin-bottom: 5px;
+
+        border-bottom:
+            1px solid #edf0f4;
+    }
+
+
+    .usuario-panel-nombre {
+
+        font-size: 14px;
+
+        font-weight: 800;
+
+        color: #172033;
+    }
+
+
+    .usuario-panel-puesto {
+
+        margin-top: 4px;
+
+        font-size: 12px;
+
+        color: #6b7280;
+    }
+
+
+    .usuario-enlace {
+
+        display: block;
+
+        padding: 10px 12px;
+
+        border-radius: 8px;
+
+        color: #172033;
+
+        text-decoration: none;
+
+        font-size: 13px;
+
+        font-weight: 700;
+    }
+
+
+    .usuario-enlace:hover {
+
+        background: #f2f4f7;
+    }
+
+
+    .usuario-enlace-salir {
+
+        color: #a61b1b;
+    }
+
+
+    .usuario-enlace-salir:hover {
+
+        background: #fbeaea;
+    }
+
+
+    @media (max-width: 700px) {
+
+        .usuario-menu {
+
+            left: 10px;
+
+            bottom: 10px;
+
+            width: 220px;
+        }
+
+
+        .usuario-panel {
+
+            width: 220px;
+        }
+
+    }
+
+</style>
+
+
+{% if usuario_sesion %}
+
+<div class="usuario-menu">
+
+
+    <div class="usuario-boton">
+
+
+        <div class="usuario-avatar">
+
+            {% if usuario_sesion.colaborador %}
+
+                {{ usuario_sesion.colaborador.nombre[:1] | upper }}
+
+            {% else %}
+
+                {{ usuario_sesion.username[:1] | upper }}
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="usuario-identidad">
+
+
+            <span class="usuario-nombre">
+
+                {% if usuario_sesion.colaborador %}
+
+                    {{ usuario_sesion.colaborador.nombre }}
+
+                {% else %}
+
+                    {{ usuario_sesion.username }}
+
+                {% endif %}
+
+            </span>
+
+
+            <span class="usuario-rol">
+
+                {% if usuario_sesion.rol == "administrador" %}
+
+                    Administrador
+
+                {% elif usuario_sesion.rol == "gerente_area" %}
+
+                    Gerente de Área
+
+                {% elif usuario_sesion.rol == "gerente_operaciones" %}
+
+                    Gerente de Operaciones
+
+                {% elif usuario_sesion.rol == "supervisor" %}
+
+                    Supervisor
+
+                {% elif usuario_sesion.rol == "rh" %}
+
+                    RH
+
+                {% elif usuario_sesion.rol == "colaborador" %}
+
+                    Colaborador
+
+                {% else %}
+
+                    {{ usuario_sesion.rol }}
+
+                {% endif %}
+
+            </span>
+
+
+        </div>
+
+
+        <span class="usuario-flecha">
+            ▴
+        </span>
+
+    </div>
+
+
+    <div class="usuario-panel">
+
+
+        <div class="usuario-panel-cabecera">
+
+
+            <div class="usuario-panel-nombre">
+
+                {% if usuario_sesion.colaborador %}
+
+                    {{ usuario_sesion.colaborador.nombre }}
+
+                {% else %}
+
+                    {{ usuario_sesion.username }}
+
+                {% endif %}
+
+            </div>
+
+
+            {% if usuario_sesion.colaborador
+                  and usuario_sesion.colaborador.puesto %}
+
+
+                <div class="usuario-panel-puesto">
+
+                    {{ usuario_sesion.colaborador.puesto.nombre }}
+
+                </div>
+
+
+            {% endif %}
+
+
+        </div>
+
+
+        <a
+            href="{{ url_for('perfil') }}"
+            class="usuario-enlace"
+        >
+            👤 Mi perfil
+        </a>
+
+
+        <a
+            href="{{ url_for('cambiar_contrasena') }}"
+            class="usuario-enlace"
+        >
+            🔑 Cambiar contraseña
+        </a>
+
+
+        <a
+            href="{{ url_for('logout') }}"
+            class="usuario-enlace usuario-enlace-salir"
+        >
+            🚪 Cerrar sesión
+        </a>
+
+
+    </div>
+
+
+</div>
+
+{% endif %}
+

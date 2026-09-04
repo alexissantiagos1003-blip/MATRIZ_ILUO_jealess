@@ -1,0 +1,361 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Cambiar contraseña - MATRIZ ILUO</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f3f4f6;
+
+            color: #172033;
+        }
+
+
+        .contenedor {
+
+            max-width: 680px;
+
+            margin: 60px auto;
+
+            padding: 0 24px;
+        }
+
+
+        .tarjeta {
+
+            background: white;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 8px 28px
+                rgba(0, 0, 0, 0.08);
+
+            padding: 32px;
+        }
+
+
+        h1 {
+
+            margin: 0 0 8px 0;
+
+            font-size: 28px;
+        }
+
+
+        .descripcion {
+
+            margin: 0 0 28px 0;
+
+            color: #6b7280;
+
+            line-height: 1.5;
+        }
+
+
+        .campo {
+
+            margin-bottom: 20px;
+        }
+
+
+        label {
+
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-size: 14px;
+
+            font-weight: 700;
+        }
+
+
+        input {
+
+            width: 100%;
+
+            padding: 13px 14px;
+
+            border:
+                1px solid #d7dce5;
+
+            border-radius: 9px;
+
+            font-size: 15px;
+
+            outline: none;
+        }
+
+
+        input:focus {
+
+            border-color: #172033;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(
+                    23,
+                    32,
+                    51,
+                    0.08
+                );
+        }
+
+
+        .mensaje {
+
+            padding: 13px 15px;
+
+            border-radius: 9px;
+
+            margin-bottom: 22px;
+
+            font-size: 14px;
+        }
+
+
+        .error {
+
+            background: #fcecec;
+
+            color: #9b1c1c;
+
+            border:
+                1px solid #f2c5c5;
+        }
+
+
+        .exito {
+
+            background: #edf8ef;
+
+            color: #1f6b2d;
+
+            border:
+                1px solid #c6e7cc;
+        }
+
+
+        .acciones {
+
+            display: flex;
+
+            gap: 12px;
+
+            flex-wrap: wrap;
+
+            margin-top: 28px;
+        }
+
+
+        .boton {
+
+            display: inline-flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            padding: 12px 20px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            text-decoration: none;
+
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+
+        .guardar {
+
+            background: #172033;
+
+            color: white;
+        }
+
+
+        .volver {
+
+            background: #eef0f4;
+
+            color: #172033;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="contenedor">
+
+
+    <div class="tarjeta">
+
+
+        <h1>
+            Cambiar contraseña
+        </h1>
+
+
+        <p class="descripcion">
+
+            Actualiza la contraseña de tu cuenta.
+            Necesitarás confirmar tu contraseña actual.
+
+        </p>
+
+
+        {% if error %}
+
+        <div class="mensaje error">
+
+            {{ error }}
+
+        </div>
+
+        {% endif %}
+
+
+        {% if exito %}
+
+        <div class="mensaje exito">
+
+            {{ exito }}
+
+        </div>
+
+        {% endif %}
+
+
+        <form
+            method="POST"
+            action="{{ url_for('cambiar_contrasena') }}"
+            autocomplete="off"
+        >
+
+
+            <div class="campo">
+
+                <label
+                    for="password_actual"
+                >
+                    Contraseña actual
+                </label>
+
+
+                <input
+                    type="password"
+                    id="password_actual"
+                    name="password_actual"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <div class="campo">
+
+                <label
+                    for="password_nueva"
+                >
+                    Nueva contraseña
+                </label>
+
+
+                <input
+                    type="password"
+                    id="password_nueva"
+                    name="password_nueva"
+                    autocomplete="new-password"
+                    minlength="8"
+                    required
+                >
+
+            </div>
+
+
+            <div class="campo">
+
+                <label
+                    for="password_confirmacion"
+                >
+                    Confirmar nueva contraseña
+                </label>
+
+
+                <input
+                    type="password"
+                    id="password_confirmacion"
+                    name="password_confirmacion"
+                    autocomplete="new-password"
+                    minlength="8"
+                    required
+                >
+
+            </div>
+
+
+            <div class="acciones">
+
+
+                <button
+                    type="submit"
+                    class="boton guardar"
+                >
+                    Guardar nueva contraseña
+                </button>
+
+
+                <a
+                    href="{{ url_for('perfil') }}"
+                    class="boton volver"
+                >
+                    Cancelar
+                </a>
+
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

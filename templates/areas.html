@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Áreas - MATRIZ ILUO</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f5f8;
+            margin: 0;
+            padding: 40px;
+            color: #1f2937;
+        }
+
+        .contenedor {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .encabezado {
+            background: #1f2d45;
+            color: white;
+            border-radius: 18px;
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+
+        .tarjeta {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 18px rgba(0,0,0,.06);
+        }
+
+        h1,
+        h2 {
+            margin-top: 0;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 12px 18px;
+            border: 0;
+            border-radius: 10px;
+            background: #1f2d45;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <div class="encabezado">
+        <h1>🏢 Áreas</h1>
+        <p>
+            Administra las áreas de la organización.
+        </p>
+    </div>
+
+    <div class="tarjeta">
+
+        <h2>➕ Registrar nueva área</h2>
+
+        <form method="POST"
+              action="/areas">
+
+            <label>
+                Nombre del área
+            </label>
+
+            <input
+                type="text"
+                name="nombre"
+                placeholder="Ej. Recursos Humanos"
+                required
+            >
+
+            <button type="submit">
+                💾 Registrar área
+            </button>
+
+        </form>
+
+    </div>
+
+    <div class="tarjeta">
+
+        <h2>📋 Áreas registradas</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Área</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for area in areas %}
+
+                    <tr>
+                        <td>{{ area.id }}</td>
+                        <td>{{ area.nombre }}</td>
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+</html>

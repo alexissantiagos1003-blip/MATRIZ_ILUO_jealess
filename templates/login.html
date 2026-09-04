@@ -1,0 +1,441 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Iniciar sesión - MATRIZ ILUO</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            min-height: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f5f6f7;
+            color: #252a2d;
+        }
+
+        .login-layout {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: minmax(420px, 46%) 1fr;
+        }
+
+        /* =========================================
+           PANEL DE MARCA
+           ========================================= */
+
+        .login-marca {
+            min-height: 100vh;
+            padding: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background:
+                #EA3F1A;
+        }
+
+        .login-marca-contenido {
+            width: min(100%, 620px);
+            text-align: center;
+        }
+
+        .login-logo {
+            display: block;
+            width: 100%;
+            max-width: 560px;
+            height: auto;
+            margin: 0 auto;
+
+            object-fit: contain;
+        }
+
+        .login-marca-titulo {
+            margin-top: 28px;
+
+            color: #ffffff;
+
+            font-size: 42px;
+            line-height: 1.1;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .login-marca-linea {
+            width: 95px;
+            height: 5px;
+
+            margin: 18px auto 0;
+
+            border-radius: 999px;
+
+            background: #ffffff;
+        }
+
+        /* =========================================
+           PANEL DEL FORMULARIO
+           ========================================= */
+
+        .login-form-panel {
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 50px;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 500px;
+
+            background: #ffffff;
+
+            padding: 48px;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 18px 45px rgba(37, 42, 45, 0.10);
+
+            border: 1px solid #e2e6e9;
+        }
+
+        .login-card-header {
+            margin-bottom: 34px;
+        }
+
+        .login-card-header h1 {
+            margin: 0;
+
+            color: #252a2d;
+
+            font-size: 34px;
+            line-height: 1.15;
+            font-weight: 800;
+        }
+
+        .login-card-header p {
+            margin: 9px 0 0;
+
+            color: #687078;
+
+            font-size: 15px;
+        }
+
+        /* =========================================
+           CAMPOS
+           ========================================= */
+
+        .campo {
+            margin-bottom: 22px;
+        }
+
+        .campo label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: #252a2d;
+
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .campo input {
+            width: 100%;
+
+            padding: 14px 15px;
+
+            border:
+                1px solid #d5dadd;
+
+            border-radius: 9px;
+
+            background: #ffffff;
+
+            color: #252a2d;
+
+            font-size: 16px;
+
+            outline: none;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .campo input:focus {
+            border-color: #EA3F1A;
+
+            box-shadow:
+                0 0 0 3px rgba(234, 63, 26, 0.12);
+        }
+
+        /* =========================================
+           BOTON
+           ========================================= */
+
+        .boton {
+            width: 100%;
+
+            padding: 14px 18px;
+
+            border: none;
+            border-radius: 9px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #EA3F1A,
+                    #FF5A2F
+                );
+
+            color: #ffffff;
+
+            font-size: 16px;
+            font-weight: 800;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 7px 18px rgba(234, 63, 26, 0.20);
+        }
+
+        .boton:hover {
+            background:
+                linear-gradient(
+                    90deg,
+                    #d93616,
+                    #ef4c25
+                );
+        }
+
+        .boton:active {
+            transform: translateY(1px);
+        }
+
+        /* =========================================
+           ERROR
+           ========================================= */
+
+        .error {
+            margin-bottom: 20px;
+
+            padding: 12px 14px;
+
+            border-radius: 9px;
+
+            background: #fff1ef;
+
+            border:
+                1px solid #ffc7bf;
+
+            color: #b52d16;
+
+            font-size: 14px;
+        }
+
+        /* =========================================
+           AYUDA
+           ========================================= */
+
+        .ayuda {
+            margin-top: 20px;
+
+            text-align: center;
+
+            color: #687078;
+
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* =========================================
+           RESPONSIVE
+           ========================================= */
+
+        @media (max-width: 900px) {
+
+            .login-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .login-marca {
+                min-height: auto;
+                padding: 35px 25px;
+            }
+
+            .login-logo {
+                max-width: 420px;
+            }
+
+            .login-marca-titulo {
+                font-size: 32px;
+            }
+
+            .login-form-panel {
+                min-height: auto;
+                padding: 30px 20px 45px;
+            }
+
+            .login-card {
+                max-width: 520px;
+            }
+        }
+
+        @media (max-width: 520px) {
+
+            .login-marca {
+                padding: 25px 18px;
+            }
+
+            .login-card {
+                padding: 30px 22px;
+                border-radius: 14px;
+            }
+
+            .login-card-header h1 {
+                font-size: 28px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="login-layout">
+
+        <section class="login-marca">
+
+            <div class="login-marca-contenido">
+
+                <img
+                    src="{{ url_for('static', filename='img/LOGO OFICIAL EMBBA.png') }}"
+                    alt="embba.com"
+                    class="login-logo"
+                >
+
+                <div class="login-marca-titulo">
+                    MATRIZ ILUO
+                </div>
+
+                <div class="login-marca-linea"></div>
+
+            </div>
+
+        </section>
+
+
+        <main class="login-form-panel">
+
+            <div class="login-card">
+
+                <div class="login-card-header">
+
+                    <h1>
+                        MATRIZ ILUO
+                    </h1>
+
+                    <p>
+                        Sistema de gestión y evaluación de habilidades
+                    </p>
+
+                </div>
+
+
+                {% if error %}
+
+                <div class="error">
+                    {{ error }}
+                </div>
+
+                {% endif %}
+
+
+                <form
+                    method="POST"
+                    action="/login"
+                >
+
+                    <div class="campo">
+
+                        <label>
+                            Número de empleado / Usuario
+                        </label>
+
+                        <input
+                            type="text"
+                            name="username"
+                            autocomplete="username"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="campo">
+
+                        <label>
+                            Contraseña
+                        </label>
+
+                        <input
+                            type="password"
+                            name="password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="boton"
+                    >
+                        Iniciar sesión
+                    </button>
+
+                </form>
+
+
+                <div class="ayuda">
+                    El acceso está restringido a usuarios autorizados.
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>
+

@@ -1,0 +1,360 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Editar habilidad - Matriz ILUO</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            max-width: 900px;
+        }
+
+        .campo {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .campo label {
+            font-weight: 600;
+        }
+
+        .campo input,
+        .campo select {
+            padding: 11px;
+            border: 1px solid #dfe3e6;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 14px;
+        }
+
+        .acciones-form {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-cancelar {
+            display: inline-block;
+            padding: 10px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            border: 1px solid #dfe3e6;
+            color: #252a2d;
+            background: #fff;
+        }
+
+        .error {
+            margin-bottom: 18px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            background: #fdecec;
+            color: #b42318;
+            border: 1px solid #f5c2c0;
+        }
+
+        @media (max-width: 700px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <aside class="menu">
+
+        <h2>MATRIZ ILUO</h2>
+
+        <a href="/">🏠 Inicio</a>
+
+        <a href="/puestos">🏭 Puestos</a>
+
+        <a href="/colaboradores">👥 Empleados</a>
+
+        <a href="/habilidades">🛠️ Habilidades</a>
+
+        <a href="/evaluaciones">📝 Evaluaciones</a>
+
+        <a href="/seguimiento">🎯 Seguimiento</a>
+
+        <a href="/matriz">📊 Matriz ILUO</a>
+
+        <a href="/">📈 Dashboard</a>
+
+        {% include "_usuario_menu.html" %}
+
+    </aside>
+
+    <main class="contenido">
+
+        <div class="encabezado">
+
+            <h1>Editar habilidad</h1>
+
+            <p>
+                Modifica el nombre y el alcance de la habilidad.
+            </p>
+
+        </div>
+
+        <div class="tarjeta">
+
+            {% if error %}
+
+            <div class="error">
+                {{ error }}
+            </div>
+
+            {% endif %}
+
+            <form
+                method="POST"
+                action="/habilidades/editar/{{ habilidad.id }}"
+            >
+
+                <div class="form-grid">
+
+                    <div class="campo">
+
+                        <label>
+                            Nombre de la habilidad
+                        </label>
+
+                        <input
+                            type="text"
+                            name="nombre"
+                            value="{{ habilidad.nombre }}"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="campo">
+
+                        <label>
+                            Alcance
+                        </label>
+
+                        <select
+                            name="alcance"
+                            id="alcance"
+                            required
+                        >
+
+                            <option value="">
+                                Seleccionar
+                            </option>
+
+                            <option
+                                value="empresa"
+                                {% if habilidad.alcance == "empresa" %}
+                                selected
+                                {% endif %}
+                            >
+                                Empresa
+                            </option>
+
+                            <option
+                                value="area"
+                                {% if habilidad.alcance == "area" %}
+                                selected
+                                {% endif %}
+                            >
+                                Área
+                            </option>
+
+                            <option
+                                value="departamento"
+                                {% if habilidad.alcance == "departamento" %}
+                                selected
+                                {% endif %}
+                            >
+                                Departamento
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="campo">
+
+                        <label>
+                            Área
+                        </label>
+
+                        <select
+                            name="area_id"
+                            id="area_id"
+                        >
+
+                            <option value="">
+                                Seleccionar área
+                            </option>
+
+                            {% for area in areas %}
+
+                            <option
+                                value="{{ area.id }}"
+                                {% if habilidad.area_id == area.id %}
+                                selected
+                                {% endif %}
+                            >
+                                {{ area.nombre }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="campo">
+
+                        <label>
+                            Departamento
+                        </label>
+
+                        <select
+                            name="departamento_id"
+                            id="departamento_id"
+                        >
+
+                            <option value="">
+                                Seleccionar departamento
+                            </option>
+
+                            {% for departamento in departamentos %}
+
+                            <option
+                                value="{{ departamento.id }}"
+                                data-area="{{ departamento.area_id }}"
+                                {% if habilidad.departamento_id == departamento.id %}
+                                selected
+                                {% endif %}
+                            >
+                                {{ departamento.nombre }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <div class="acciones-form">
+
+                    <button type="submit">
+                        💾 Guardar cambios
+                    </button>
+
+                    <a
+                        href="/habilidades"
+                        class="btn-cancelar"
+                    >
+                        Cancelar
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script>
+
+    function actualizarCampos() {
+
+        const alcance =
+            document.getElementById("alcance");
+
+        const area =
+            document.getElementById("area_id");
+
+        const departamento =
+            document.getElementById("departamento_id");
+
+        if (!alcance || !area || !departamento) {
+            return;
+        }
+
+        const tipo = alcance.value;
+
+        area.disabled =
+            tipo === "empresa";
+
+        departamento.disabled =
+            tipo === "empresa" ||
+            tipo === "area";
+
+        if (tipo === "empresa") {
+            area.value = "";
+            departamento.value = "";
+        }
+
+        if (tipo === "area") {
+            departamento.value = "";
+        }
+
+        const areaSeleccionada =
+            area.value;
+
+        for (const opcion of departamento.options) {
+
+            if (!opcion.value) {
+                continue;
+            }
+
+            opcion.hidden =
+                !areaSeleccionada ||
+                opcion.dataset.area !== areaSeleccionada;
+        }
+    }
+
+    document
+        .getElementById("alcance")
+        .addEventListener(
+            "change",
+            actualizarCampos
+        );
+
+    document
+        .getElementById("area_id")
+        .addEventListener(
+            "change",
+            actualizarCampos
+        );
+
+    actualizarCampos();
+
+</script>
+
+</body>
+
+</html>

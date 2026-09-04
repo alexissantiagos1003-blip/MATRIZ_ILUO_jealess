@@ -1,0 +1,640 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Mi perfil - MATRIZ ILUO</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f3f4f6;
+
+            color: #172033;
+        }
+
+
+        .contenedor {
+
+            max-width: 1100px;
+
+            margin: 40px auto;
+
+            padding: 0 24px;
+        }
+
+
+        .encabezado {
+
+            margin-bottom: 24px;
+        }
+
+
+        .encabezado h1 {
+
+            margin: 0 0 8px 0;
+
+            font-size: 32px;
+
+            color: #172033;
+        }
+
+
+        .encabezado p {
+
+            margin: 0;
+
+            color: #6b7280;
+
+            font-size: 16px;
+        }
+
+
+        .perfil {
+
+            background: white;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 8px 28px
+                rgba(0, 0, 0, 0.08);
+
+            overflow: hidden;
+        }
+
+
+        .perfil-superior {
+
+            padding: 32px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #172033,
+                    #27364f
+                );
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 24px;
+        }
+
+
+        .avatar {
+
+            width: 96px;
+
+            height: 96px;
+
+            border-radius: 50%;
+
+            background: white;
+
+            color: #172033;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 34px;
+
+            font-weight: 700;
+
+            flex-shrink: 0;
+        }
+
+
+        .nombre {
+
+            margin: 0 0 6px 0;
+
+            font-size: 28px;
+        }
+
+
+        .rol {
+
+            margin: 0;
+
+            font-size: 16px;
+
+            opacity: 0.90;
+        }
+
+
+        .contenido {
+
+            padding: 32px;
+        }
+
+
+        .titulo-seccion {
+
+            margin: 0 0 20px 0;
+
+            font-size: 20px;
+        }
+
+
+        .grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    2,
+                    minmax(0, 1fr)
+                );
+
+            gap: 18px;
+        }
+
+
+        .dato {
+
+            border:
+                1px solid #e5e7eb;
+
+            border-radius: 12px;
+
+            padding: 18px;
+
+            background: #fafafa;
+        }
+
+
+        .etiqueta {
+
+            display: block;
+
+            margin-bottom: 7px;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            color: #6b7280;
+
+            letter-spacing: 0.4px;
+        }
+
+
+        .valor {
+
+            display: block;
+
+            font-size: 17px;
+
+            font-weight: 700;
+
+            color: #111827;
+        }
+
+
+        .sin-dato {
+
+            color: #9ca3af;
+
+            font-weight: 400;
+        }
+
+
+        .acciones {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 12px;
+
+            margin-top: 30px;
+
+            padding-top: 24px;
+
+            border-top:
+                1px solid #e5e7eb;
+        }
+
+
+        .boton {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 12px 20px;
+
+            border-radius: 9px;
+
+            text-decoration: none;
+
+            font-weight: 700;
+        }
+
+
+        .boton-principal {
+
+            background: #172033;
+
+            color: white;
+        }
+
+
+        .boton-secundario {
+
+            background: #eef0f4;
+
+            color: #172033;
+        }
+
+
+        .boton-salir {
+
+            background: #f3e8e8;
+
+            color: #a61b1b;
+        }
+
+
+        @media (max-width: 700px) {
+
+            .grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .perfil-superior {
+
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+
+            .avatar {
+
+                width: 80px;
+
+                height: 80px;
+            }
+
+
+            .nombre {
+
+                font-size: 24px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="contenedor">
+
+
+    <div class="encabezado">
+
+        <h1>
+            Mi perfil
+        </h1>
+
+        <p>
+            Información de tu cuenta y puesto dentro de MATRIZ ILUO.
+        </p>
+
+    </div>
+
+
+    <div class="perfil">
+
+
+        <div class="perfil-superior">
+
+
+            <div class="avatar">
+
+                {% if colaborador %}
+
+                    {{ colaborador.nombre[:1] | upper }}
+
+                {% else %}
+
+                    {{ usuario.username[:1] | upper }}
+
+                {% endif %}
+
+            </div>
+
+
+            <div>
+
+                <h2 class="nombre">
+
+                    {% if colaborador %}
+
+                        {{ colaborador.nombre }}
+
+                    {% else %}
+
+                        {{ usuario.username }}
+
+                    {% endif %}
+
+                </h2>
+
+
+                <p class="rol">
+
+                    {{ usuario.rol }}
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="contenido">
+
+
+            <h2 class="titulo-seccion">
+
+                Información del usuario
+
+            </h2>
+
+
+            <div class="grid">
+
+
+                <div class="dato">
+
+                    <span class="etiqueta">
+                        Usuario
+                    </span>
+
+                    <span class="valor">
+                        {{ usuario.username }}
+                    </span>
+
+                </div>
+
+
+                <div class="dato">
+
+                    <span class="etiqueta">
+                        Rol del sistema
+                    </span>
+
+                    <span class="valor">
+
+                        {% if usuario.rol == "administrador" %}
+                            Administrador
+
+                        {% elif usuario.rol == "gerente_area" %}
+                            Gerente de Área
+
+                        {% elif usuario.rol == "gerente_operaciones" %}
+                            Gerente de Operaciones
+
+                        {% elif usuario.rol == "supervisor" %}
+                            Supervisor
+
+                        {% elif usuario.rol == "rh" %}
+                            RH
+
+                        {% elif usuario.rol == "colaborador" %}
+                            Colaborador
+
+                        {% else %}
+                            {{ usuario.rol }}
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <div class="dato">
+
+                    <span class="etiqueta">
+                        Nombre
+                    </span>
+
+                    <span class="valor">
+
+                        {% if colaborador %}
+
+                            {{ colaborador.nombre }}
+
+                        {% else %}
+
+                            <span class="sin-dato">
+                                No asociado a colaborador
+                            </span>
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <div class="dato">
+
+                    <span class="etiqueta">
+                        No. de colaborador
+                    </span>
+
+                    <span class="valor">
+
+                        {% if colaborador %}
+
+                            {{ colaborador.numero_empleado }}
+
+                        {% else %}
+
+                            <span class="sin-dato">
+                                No aplica
+                            </span>
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <div class="dato">
+
+                    <span class="etiqueta">
+                        Puesto
+                    </span>
+
+                    <span class="valor">
+
+                        {% if puesto %}
+
+                            {{ puesto.nombre }}
+
+                        {% else %}
+
+                            <span class="sin-dato">
+                                No asignado
+                            </span>
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <div class="dato">
+
+                    <span class="etiqueta">
+                        Departamento
+                    </span>
+
+                    <span class="valor">
+
+                        {% if departamento %}
+
+                            {{ departamento.nombre }}
+
+                        {% else %}
+
+                            <span class="sin-dato">
+                                No asignado
+                            </span>
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <div class="dato">
+
+                    <span class="etiqueta">
+                        Área
+                    </span>
+
+                    <span class="valor">
+
+                        {% if area %}
+
+                            {{ area.nombre }}
+
+                        {% else %}
+
+                            <span class="sin-dato">
+                                No asignada
+                            </span>
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+                <div class="dato">
+
+                    <span class="etiqueta">
+                        Estado de cuenta
+                    </span>
+
+                    <span class="valor">
+
+                        {% if usuario.activo %}
+
+                            Activa
+
+                        {% else %}
+
+                            Inactiva
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="acciones">
+
+
+                <a
+                    href="{{ url_for('inicio_principal') }}"
+                    class="boton boton-principal"
+                >
+                    ← Volver al inicio
+                </a>
+
+
+                <a
+                    href="{{ url_for('logout') }}"
+                    class="boton boton-salir"
+                >
+                    🚪 Cerrar sesión
+                </a>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+{% include "_usuario_menu.html" %}
+</body>
+
+</html>
+

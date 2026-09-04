@@ -1,0 +1,858 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Colaboradores - Matriz ILUO</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+
+<style>
+.btn-editar-colaborador {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    padding: 8px 12px;
+
+    border-radius: 8px;
+
+    background: #2563eb !important;
+    color: #ffffff !important;
+
+    border: 1px solid #1d4ed8 !important;
+
+    text-decoration: none !important;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        transform 0.15s ease;
+}
+
+.btn-editar-colaborador:hover {
+    background: #1d4ed8 !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+}
+
+.btn-editar-colaborador:active {
+    background: #1e40af !important;
+    transform: translateY(0);
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <aside class="menu">
+
+        <h2>MATRIZ ILUO</h2>
+
+        <a href="/">
+            🏠 Inicio
+        </a>
+
+
+
+        <a href="/colaboradores">
+            👥 Colaboradores
+        </a>
+
+        <a href="/habilidades">
+            🛠️ Habilidades
+        </a>
+
+        <a href="/puesto-habilidades">
+            🔗 Habilidades por puesto
+        </a>
+
+        <a href="/evaluaciones">
+            📝 Evaluaciones
+        </a>
+
+        <a href="/matriz">
+            📊 Matriz ILUO
+        </a>
+
+        <a href="/">
+            📈 Dashboard
+        </a>
+
+    
+{% include "_usuario_menu.html" %}
+</aside>
+
+
+    <main class="contenido">
+
+        <div class="encabezado">
+
+            <h1>Colaboradores</h1>
+
+            <p>
+                Registro y administración de colaboradores.
+            </p>
+
+        </div>
+
+
+        <div class="tarjeta">
+
+            <h2>Registrar colaborador</h2>
+
+            <br>
+
+            <form method="POST"
+      action="/colaboradores/agregar">
+
+    <div class="campo">
+        <label for="numero_empleado">
+            Número de empleado
+        </label>
+
+        <input
+            type="text"
+            id="numero_empleado"
+            name="numero_empleado"
+            required
+        >
+    </div>
+
+
+    <div class="campo">
+        <label for="nombre">
+            Nombre completo
+        </label>
+
+        <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            required
+        >
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- AREA -->
+    <!-- ================================================= -->
+
+    <div class="campo">
+
+        <label for="area_id">
+            Área
+        </label>
+
+        <select
+            id="area_id"
+            name="area_id"
+            required
+        >
+
+            <option value="">
+                Selecciona un área
+            </option>
+
+            {% for area in areas %}
+
+                <option
+                    value="{{ area.id }}"
+                >
+                    {{ area.nombre }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- DEPARTAMENTO -->
+    <!-- ================================================= -->
+
+    <div class="campo">
+
+        <label for="departamento_id">
+            Departamento
+        </label>
+
+        <select
+            id="departamento_id"
+            name="departamento_id"
+            required
+            disabled
+        >
+
+            <option value="">
+                Selecciona primero un área
+            </option>
+
+            {% for departamento in departamentos %}
+
+                <option
+                    value="{{ departamento.id }}"
+                    data-area-id="{{ departamento.area_id }}"
+                >
+                    {{ departamento.nombre }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- PUESTO -->
+    <!-- ================================================= -->
+
+    <div class="campo">
+
+        <label for="puesto_id">
+            Puesto
+        </label>
+
+        <select
+            id="puesto_id"
+            name="puesto_id"
+            required
+            disabled
+        >
+
+            <option value="">
+                Selecciona primero un departamento
+            </option>
+
+            {% for puesto in puestos %}
+
+                <option
+                    value="{{ puesto.id }}"
+                    data-departamento-id="{{ puesto.departamento_id }}"
+                >
+                    {{ puesto.nombre }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+
+    <div class="campo">
+
+        <button
+            type="submit"
+        >
+            Registrar colaborador
+        </button>
+
+    </div>
+
+</form>
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const areaSelect =
+            document.getElementById(
+                "area_id"
+            );
+
+        const departamentoSelect =
+            document.getElementById(
+                "departamento_id"
+            );
+
+        const puestoSelect =
+            document.getElementById(
+                "puesto_id"
+            );
+
+
+        if (
+            !areaSelect ||
+            !departamentoSelect ||
+            !puestoSelect
+        ) {
+
+            return;
+        }
+
+
+        // -------------------------------------------------
+        // GUARDAR OPCIONES ORIGINALES
+        // -------------------------------------------------
+
+        const departamentos =
+            Array.from(
+                departamentoSelect.querySelectorAll(
+                    "option[data-area-id]"
+                )
+            ).map(
+                function (opcion) {
+
+                    return {
+                        value:
+                            opcion.value,
+
+                        texto:
+                            opcion.textContent.trim(),
+
+                        areaId:
+                            opcion.dataset.areaId
+                    };
+                }
+            );
+
+
+        const puestos =
+            Array.from(
+                puestoSelect.querySelectorAll(
+                    "option[data-departamento-id]"
+                )
+            ).map(
+                function (opcion) {
+
+                    return {
+                        value:
+                            opcion.value,
+
+                        texto:
+                            opcion.textContent.trim(),
+
+                        departamentoId:
+                            opcion.dataset.departamentoId
+                    };
+                }
+            );
+
+
+        // -------------------------------------------------
+        // DEPARTAMENTOS
+        // -------------------------------------------------
+
+        function cargarDepartamentos() {
+
+            departamentoSelect.innerHTML =
+                '<option value="">Selecciona un departamento</option>';
+
+            departamentoSelect.disabled =
+                true;
+
+
+            puestoSelect.innerHTML =
+                '<option value="">Selecciona primero un departamento</option>';
+
+            puestoSelect.disabled =
+                true;
+
+
+            const areaId =
+                areaSelect.value;
+
+
+            if (!areaId) {
+
+                return;
+            }
+
+
+            departamentos
+                .filter(
+                    function (departamento) {
+
+                        return (
+                            departamento.areaId
+                            ===
+                            areaId
+                        );
+                    }
+                )
+                .forEach(
+                    function (departamento) {
+
+                        const opcion =
+                            document.createElement(
+                                "option"
+                            );
+
+
+                        opcion.value =
+                            departamento.value;
+
+
+                        opcion.textContent =
+                            departamento.texto;
+
+
+                        opcion.dataset.areaId =
+                            departamento.areaId;
+
+
+                        departamentoSelect.appendChild(
+                            opcion
+                        );
+                    }
+                );
+
+
+            if (
+                departamentoSelect.options.length
+                >
+                1
+            ) {
+
+                departamentoSelect.disabled =
+                    false;
+            }
+
+        }
+
+
+        // -------------------------------------------------
+        // PUESTOS
+        // -------------------------------------------------
+
+        function cargarPuestos() {
+
+            puestoSelect.innerHTML =
+                '<option value="">Selecciona un puesto</option>';
+
+            puestoSelect.disabled =
+                true;
+
+
+            const departamentoId =
+                departamentoSelect.value;
+
+
+            if (!departamentoId) {
+
+                return;
+            }
+
+
+            puestos
+                .filter(
+                    function (puesto) {
+
+                        return (
+                            puesto.departamentoId
+                            ===
+                            departamentoId
+                        );
+                    }
+                )
+                .forEach(
+                    function (puesto) {
+
+                        const opcion =
+                            document.createElement(
+                                "option"
+                            );
+
+
+                        opcion.value =
+                            puesto.value;
+
+
+                        opcion.textContent =
+                            puesto.texto;
+
+
+                        opcion.dataset.departamentoId =
+                            puesto.departamentoId;
+
+
+                        puestoSelect.appendChild(
+                            opcion
+                        );
+                    }
+                );
+
+
+            if (
+                puestoSelect.options.length
+                >
+                1
+            ) {
+
+                puestoSelect.disabled =
+                    false;
+            }
+
+        }
+
+
+        // -------------------------------------------------
+        // EVENTOS
+        // -------------------------------------------------
+
+        areaSelect.addEventListener(
+            "change",
+            cargarDepartamentos
+        );
+
+
+        departamentoSelect.addEventListener(
+            "change",
+            cargarPuestos
+        );
+
+    }
+);
+
+</script>
+
+        </div>
+
+
+        <br>
+
+
+        <div class="tarjeta">
+
+            <h2>Colaboradores registrados</h2>
+
+            <br>
+
+
+            {% if colaboradores %}
+
+            <div class="card mb-4">
+
+    <div class="card-header">
+        <strong>Buscar colaboradores</strong>
+    </div>
+
+    <div class="card-body">
+
+        <form method="GET" action="{{ url_for('colaboradores') }}">
+
+            <div class="row g-3">
+
+                <div class="col-md-3">
+
+                    <label
+                        for="filtro-numero-empleado"
+                        class="form-label"
+                    >
+                        No. de empleado
+                    </label>
+
+                    <input
+                        type="text"
+                        id="filtro-numero-empleado"
+                        name="numero_empleado"
+                        class="form-control"
+                        value="{{ filtro_numero_empleado or '' }}"
+                        placeholder="Ej. 0001"
+                    >
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <label
+                        for="filtro-area"
+                        class="form-label"
+                    >
+                        Área
+                    </label>
+
+                    <select
+                        id="filtro-area"
+                        name="area_id"
+                        class="form-select"
+                    >
+
+                        <option value="">
+                            Todas las áreas
+                        </option>
+
+                        {% for area in areas %}
+
+                        <option
+                            value="{{ area.id }}"
+                            {% if filtro_area_id == area.id|string %}selected{% endif %}
+                        >
+                            {{ area.nombre }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <label
+                        for="filtro-departamento"
+                        class="form-label"
+                    >
+                        Departamento
+                    </label>
+
+                    <select
+                        id="filtro-departamento"
+                        name="departamento_id"
+                        class="form-select"
+                    >
+
+                        <option value="">
+                            Todos los departamentos
+                        </option>
+
+                        {% for departamento in departamentos %}
+
+                        <option
+                            value="{{ departamento.id }}"
+                            data-area-id="{{ departamento.area_id }}"
+                            {% if filtro_departamento_id == departamento.id|string %}selected{% endif %}
+                        >
+                            {{ departamento.nombre }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <label
+                        for="filtro-puesto"
+                        class="form-label"
+                    >
+                        Puesto
+                    </label>
+
+                    <select
+                        id="filtro-puesto"
+                        name="puesto_id"
+                        class="form-select"
+                    >
+
+                        <option value="">
+                            Todos los puestos
+                        </option>
+
+                        {% for puesto in puestos %}
+
+                        <option
+                            value="{{ puesto.id }}"
+                            data-departamento-id="{{ puesto.departamento_id }}"
+                            {% if filtro_puesto_id == puesto.id|string %}selected{% endif %}
+                        >
+                            {{ puesto.nombre }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="mt-3">
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    🔎 Buscar
+                </button>
+
+                <a
+                    href="{{ url_for('colaboradores') }}"
+                    class="btn btn-secondary ms-2"
+                >
+                    Limpiar filtros
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+<table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            ID
+                        </th>
+
+                        <th>
+                            Número de empleado
+                        </th>
+
+                        <th>
+                            Nombre
+                        </th>
+
+                        <th>
+    Área
+</th>
+
+<th>
+    Departamento
+</th>
+
+                        <th>
+                            Puesto
+                        </th>
+
+                        <th>
+                            Acción
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for colaborador in colaboradores %}
+
+                    <tr>
+
+                        <td>
+                            {{ colaborador.id }}
+                        </td>
+
+                        <td>
+                            {{ colaborador.numero_empleado }}
+                        </td>
+
+                        <td>
+                            {{ colaborador.nombre }}
+                        </td>
+
+                        <td>
+
+    {% if colaborador.departamento and colaborador.departamento.area %}
+
+        {{ colaborador.departamento.area.nombre }}
+
+    {% else %}
+
+        Sin área
+
+    {% endif %}
+
+</td>
+
+<td>
+                            {% if colaborador.departamento %}
+                                {{ colaborador.departamento.nombre }}
+                            {% else %}
+                                Sin departamento
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {{ colaborador.puesto.nombre }}
+                        </td>
+
+                        <td>
+
+                            <a href="/colaboradores/baja/{{ colaborador.id }}">
+                                🔴 Dar de baja
+                            </a>
+
+                        
+<a
+    href="{{ url_for('editar_colaborador', id=colaborador.id) }}"
+    class="btn-editar-colaborador"
+>
+    ✏️ Editar
+</a>
+<a
+    href="{{ url_for('historial_colaborador', id=colaborador.id) }}"
+    class="btn-historial-colaborador"
+>
+    📋 Historial
+</a>
+</td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% else %}
+
+            <p>
+                Todavía no hay colaboradores registrados.
+            </p>
+
+            {% endif %}
+
+        </div>
+
+    </main>
+
+</div>
+
+
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,250 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Puestos - Matriz ILUO</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <aside class="menu">
+
+        <h2>MATRIZ ILUO</h2>
+
+        <a href="/">🏠 Inicio</a>
+
+        <a href="/puestos">🏭 Puestos</a>
+
+        <a href="/colaboradores">👥 Empleados</a>
+
+        <a href="/habilidades">🛠️ Habilidades</a>
+
+        <a href="/puesto-habilidades">
+            🔗 Habilidades por puesto
+        </a>
+
+        <a href="/evaluaciones">📝 Evaluaciones</a>
+
+        <a href="/matriz">📊 Matriz ILUO</a>
+
+        <a href="/">📈 Dashboard</a>
+
+    </aside>
+
+
+    <main class="contenido">
+
+        <div class="encabezado">
+
+            <h1>Puestos</h1>
+
+            <p>
+                Administra los puestos y departamentos
+                de la empresa.
+            </p>
+
+        </div>
+
+
+        <div class="tarjeta">
+
+            <h2>Agregar puesto</h2>
+
+            <br>
+
+            <form method="POST"
+                  action="/puestos/agregar">
+
+                <div style="margin-bottom: 15px;">
+
+                    <label>
+                        Nombre del puesto
+                    </label>
+
+                    <br>
+
+                    <input
+                        type="text"
+                        name="nombre"
+                        placeholder="Ej. Operador"
+                        required
+                    >
+
+                </div>
+
+
+                <div style="margin-bottom: 15px;">
+
+                    <label>
+                        Departamento
+                    </label>
+
+                    <br>
+
+                    <select
+                        name="departamento_id"
+                        required
+                    >
+
+                        <option value="">
+                            Selecciona un departamento
+                        </option>
+
+                        {% for departamento in departamentos %}
+
+                            <option value="{{ departamento.id }}">
+                                {{ departamento.nombre }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <button type="submit">
+                    ➕ Agregar puesto
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <br>
+
+
+        <div class="tarjeta">
+
+            <h2>Puestos registrados</h2>
+
+            <br>
+
+            {% if puestos %}
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Área</th>
+
+                            <th>Departamento</th>
+
+                            <th>Puesto</th>
+
+                            <th>Acciones</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for puesto in puestos %}
+
+                        <tr>
+
+                            <td>
+                                {{ puesto.id }}
+                            </td>
+
+
+                            <td>
+                                {% if puesto.departamento and puesto.departamento.area %}
+                                    {{ puesto.departamento.area.nombre }}
+                                {% else %}
+                                    Sin área
+                                {% endif %}
+                            </td>
+
+
+                            <td>
+
+                                <form method="POST"
+                                      action="/puestos/editar/{{ puesto.id }}">
+
+                                    <select name="departamento_id"
+                                            onchange="this.form.submit()">
+
+                                        <option value="">
+                                            Sin departamento
+                                        </option>
+
+                                        {% for departamento in departamentos %}
+
+                                            <option value="{{ departamento.id }}"
+                                                {% if puesto.departamento_id == departamento.id %}
+                                                    selected
+                                                {% endif %}
+                                            >
+                                                {{ departamento.nombre }}
+                                            </option>
+
+                                        {% endfor %}
+
+                                    </select>
+
+                                </form>
+
+                            </td>
+
+
+                            <td>
+                                {{ puesto.nombre }}
+                            </td>
+
+
+                            <td>
+
+                                <a href="/puestos/eliminar/{{ puesto.id }}">
+                                    🗑️ Eliminar
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            {% else %}
+
+                <p>
+                    Todavía no hay puestos registrados.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
+
+
+
+

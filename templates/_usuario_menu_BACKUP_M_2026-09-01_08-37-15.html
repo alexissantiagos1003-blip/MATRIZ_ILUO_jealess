@@ -1,0 +1,480 @@
+﻿<style>
+
+    /* =====================================================
+       CONTENEDOR DEL USUARIO
+       ===================================================== */
+
+    aside.menu {
+
+        position: relative !important;
+
+    }
+
+
+    .usuario-menu {
+
+        position: absolute !important;
+
+        left: 12px !important;
+
+        right: 12px !important;
+
+        bottom: 14px !important;
+
+        width: auto !important;
+
+        z-index: 9999;
+
+    }
+
+
+    /* =====================================================
+       BOTON PRINCIPAL
+       ===================================================== */
+
+    .usuario-boton {
+
+        width: 100% !important;
+
+        min-height: 56px;
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+
+        padding: 8px 10px;
+
+        border-radius: 10px;
+
+        border: 1px solid rgba(
+            255,
+            255,
+            255,
+            0.18
+        );
+
+        background: rgba(
+            255,
+            255,
+            255,
+            0.10
+        );
+
+        color: #ffffff;
+
+        box-sizing: border-box;
+
+        cursor: pointer;
+
+        box-shadow:
+            0 3px 10px
+            rgba(
+                0,
+                0,
+                0,
+                0.18
+            );
+
+    }
+
+
+    .usuario-boton:hover {
+
+        background: rgba(
+            255,
+            255,
+            255,
+            0.16
+        );
+
+    }
+
+
+    /* =====================================================
+       AVATAR
+       ===================================================== */
+
+    .usuario-avatar {
+
+        width: 36px;
+
+        height: 36px;
+
+        min-width: 36px;
+
+        border-radius: 50%;
+
+        background: #ffffff;
+
+        color: #172033;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        font-size: 14px;
+
+        font-weight: 800;
+
+    }
+
+
+    /* =====================================================
+       IDENTIDAD
+       ===================================================== */
+
+    .usuario-identidad {
+
+        min-width: 0;
+
+        flex: 1;
+
+        text-align: left;
+
+    }
+
+
+    .usuario-nombre {
+
+        display: block;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+
+        white-space: nowrap;
+
+        color: #ffffff;
+
+        font-size: 13px;
+
+        font-weight: 800;
+
+    }
+
+
+    .usuario-rol {
+
+        display: block;
+
+        margin-top: 3px;
+
+        color: rgba(
+            255,
+            255,
+            255,
+            0.70
+        );
+
+        font-size: 11px;
+
+    }
+
+
+    .usuario-flecha {
+
+        color: rgba(
+            255,
+            255,
+            255,
+            0.75
+        );
+
+        font-size: 12px;
+
+    }
+
+
+    /* =====================================================
+       PANEL
+       ===================================================== */
+
+    .usuario-panel {
+
+        position: absolute !important;
+
+        left: 0 !important;
+
+        bottom: 62px !important;
+
+        top: auto !important;
+
+        width: 100% !important;
+
+        padding: 7px;
+
+        background: #ffffff;
+
+        border: 1px solid #e1e5eb;
+
+        border-radius: 11px;
+
+        box-shadow:
+            0 12px 28px
+            rgba(
+                0,
+                0,
+                0,
+                0.22
+            );
+
+        box-sizing: border-box;
+
+        display: none;
+
+    }
+
+
+    .usuario-menu:hover
+    .usuario-panel {
+
+        display: block;
+
+    }
+
+
+    /* =====================================================
+       CABECERA DEL PANEL
+       ===================================================== */
+
+    .usuario-panel-cabecera {
+
+        padding: 9px 10px;
+
+        border-bottom:
+            1px solid #eceff3;
+
+        margin-bottom: 4px;
+
+    }
+
+
+    .usuario-panel-nombre {
+
+        color: #172033;
+
+        font-size: 13px;
+
+        font-weight: 800;
+
+    }
+
+
+    .usuario-panel-puesto {
+
+        color: #6b7280;
+
+        font-size: 11px;
+
+        margin-top: 3px;
+
+    }
+
+
+    /* =====================================================
+       ENLACES
+       ===================================================== */
+
+    .usuario-enlace {
+
+        display: block;
+
+        width: 100%;
+
+        padding: 9px 10px;
+
+        border-radius: 7px;
+
+        color: #172033;
+
+        text-decoration: none;
+
+        font-size: 13px;
+
+        font-weight: 700;
+
+        box-sizing: border-box;
+
+    }
+
+
+    .usuario-enlace:hover {
+
+        background: #f2f4f7;
+
+    }
+
+
+    .usuario-enlace-salir {
+
+        color: #a61b1b;
+
+    }
+
+
+    .usuario-enlace-salir:hover {
+
+        background: #fcecec;
+
+    }
+
+
+</style>
+
+
+{% if usuario_sesion %}
+
+<div class="usuario-menu">
+
+
+    <div class="usuario-boton">
+
+
+        <div class="usuario-avatar">
+
+            {% if usuario_sesion.colaborador %}
+
+                {{ usuario_sesion.colaborador.nombre[:1] | upper }}
+
+            {% else %}
+
+                {{ usuario_sesion.username[:1] | upper }}
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="usuario-identidad">
+
+
+            <span class="usuario-nombre">
+
+                {% if usuario_sesion.colaborador %}
+
+                    {{ usuario_sesion.colaborador.nombre }}
+
+                {% else %}
+
+                    {{ usuario_sesion.username }}
+
+                {% endif %}
+
+            </span>
+
+
+            <span class="usuario-rol">
+
+                {% if usuario_sesion.rol == "administrador" %}
+
+                    Administrador
+
+                {% elif usuario_sesion.rol == "gerente_area" %}
+
+                    Gerente de Área
+
+                {% elif usuario_sesion.rol == "gerente_operaciones" %}
+
+                    Gerente de Operaciones
+
+                {% elif usuario_sesion.rol == "supervisor" %}
+
+                    Supervisor
+
+                {% elif usuario_sesion.rol == "rh" %}
+
+                    RH
+
+                {% elif usuario_sesion.rol == "colaborador" %}
+
+                    Colaborador
+
+                {% else %}
+
+                    {{ usuario_sesion.rol }}
+
+                {% endif %}
+
+            </span>
+
+
+        </div>
+
+
+        <span class="usuario-flecha">
+            ▲
+        </span>
+
+    </div>
+
+
+    <div class="usuario-panel">
+
+
+        <div class="usuario-panel-cabecera">
+
+
+            <div class="usuario-panel-nombre">
+
+                {% if usuario_sesion.colaborador %}
+
+                    {{ usuario_sesion.colaborador.nombre }}
+
+                {% else %}
+
+                    {{ usuario_sesion.username }}
+
+                {% endif %}
+
+            </div>
+
+
+            {% if usuario_sesion.colaborador
+                  and usuario_sesion.colaborador.puesto %}
+
+                <div class="usuario-panel-puesto">
+
+                    {{ usuario_sesion.colaborador.puesto.nombre }}
+
+                </div>
+
+            {% endif %}
+
+
+        </div>
+
+
+        <a
+            href="{{ url_for('perfil') }}"
+            class="usuario-enlace"
+        >
+            👤 Mi perfil
+        </a>
+
+
+        <a
+            href="{{ url_for('cambiar_contrasena') }}"
+            class="usuario-enlace"
+        >
+            🔑 Cambiar contraseña
+        </a>
+
+
+        <a
+            href="{{ url_for('logout') }}"
+            class="usuario-enlace usuario-enlace-salir"
+        >
+            🚪 Cerrar sesión
+        </a>
+
+
+    </div>
+
+
+</div>
+
+{% endif %}

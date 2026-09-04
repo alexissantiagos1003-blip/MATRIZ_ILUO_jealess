@@ -1,0 +1,270 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Iniciar sesión - MATRIZ ILUO</title>
+
+    <style>
+
+        body {
+
+            margin: 0;
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #f3f4f6;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+        }
+
+
+        .login-card {
+
+            width: 100%;
+            max-width: 420px;
+
+            background: white;
+
+            padding: 40px;
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 10px 30px
+                rgba(0, 0, 0, 0.10);
+
+            box-sizing: border-box;
+        }
+
+
+        .marca {
+
+            text-align: center;
+
+            margin-bottom: 30px;
+        }
+
+
+        .marca h1 {
+
+            margin: 0;
+
+            font-size: 30px;
+            color: #172033;
+        }
+
+
+        .marca p {
+
+            margin-top: 8px;
+
+            color: #6b7280;
+
+            font-size: 14px;
+        }
+
+
+        .campo {
+
+            margin-bottom: 20px;
+        }
+
+
+        .campo label {
+
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-weight: 700;
+
+            color: #374151;
+        }
+
+
+        .campo input {
+
+            width: 100%;
+
+            box-sizing: border-box;
+
+            padding: 13px 14px;
+
+            border:
+                1px solid #d1d5db;
+
+            border-radius: 8px;
+
+            font-size: 15px;
+        }
+
+
+        .campo input:focus {
+
+            outline: none;
+
+            border-color: #4f46e5;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(79, 70, 229, 0.12);
+        }
+
+
+        .boton {
+
+            width: 100%;
+
+            padding: 13px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #172033;
+
+            color: white;
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+
+        .boton:hover {
+
+            background: #111827;
+        }
+
+
+        .error {
+
+            margin-bottom: 18px;
+
+            padding: 12px;
+
+            border-radius: 8px;
+
+            background: #fef2f2;
+
+            color: #b91c1c;
+
+            font-size: 14px;
+        }
+
+
+        .ayuda {
+
+            margin-top: 18px;
+
+            text-align: center;
+
+            color: #6b7280;
+
+            font-size: 13px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="login-card">
+
+
+        <div class="marca">
+
+            <h1>MATRIZ ILUO</h1>
+
+            <p>
+                Sistema de gestión de habilidades
+            </p>
+
+        </div>
+
+
+        {% if error %}
+
+        <div class="error">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+
+        <form
+            method="POST"
+            action="/login"
+        >
+
+
+            <div class="campo">
+
+                <label>
+                    Número de empleado / Usuario
+                </label>
+
+                <input
+                    type="text"
+                    name="username"
+                    autocomplete="username"
+                    required
+                >
+
+            </div>
+
+
+            <div class="campo">
+
+                <label>
+                    Contraseña
+                </label>
+
+                <input
+                    type="password"
+                    name="password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="boton"
+            >
+                Iniciar sesión
+            </button>
+
+        </form>
+
+
+        <div class="ayuda">
+            El acceso está restringido a usuarios autorizados.
+        </div>
+
+
+    </div>
+
+</body>
+
+</html>

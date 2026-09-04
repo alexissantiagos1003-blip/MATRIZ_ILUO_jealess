@@ -1,0 +1,7048 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Dashboard ILUO
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+
+        /* =====================================================
+           DASHBOARD
+           ===================================================== */
+
+        .dashboard-page {
+
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+
+        .dashboard-header {
+
+            margin-bottom: 25px;
+        }
+
+
+        .dashboard-header h1 {
+
+            margin: 0;
+            font-size: 34px;
+            color: #172033;
+        }
+
+
+        .dashboard-header p {
+
+            margin-top: 8px;
+            color: #667085;
+            font-size: 16px;
+        }
+
+
+        /* =====================================================
+           FILTROS
+           ===================================================== */
+
+        .dashboard-filtros {
+
+            background: white;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+
+            display: flex;
+            align-items: end;
+            gap: 25px;
+
+            box-shadow:
+                0 4px 18px rgba(0,0,0,.07);
+        }
+
+
+        .filtro {
+
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+
+        .filtro label {
+
+            font-size: 13px;
+            font-weight: 700;
+            color: #344054;
+        }
+
+
+        .filtro select {
+
+            min-width: 240px;
+            padding: 11px 14px;
+
+            border: 1px solid #d0d5dd;
+            border-radius: 9px;
+
+            background: white;
+            font-size: 15px;
+        }
+
+
+        .filtro button {
+
+            padding: 12px 22px;
+
+            border: none;
+            border-radius: 9px;
+
+            background: #172033;
+            color: white;
+
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+
+        /* =====================================================
+           CARD PRINCIPAL
+           ===================================================== */
+
+        .dashboard-card {
+
+            background: white;
+            border-radius: 18px;
+
+            padding: 28px;
+
+            margin-bottom: 24px;
+
+            box-shadow:
+                0 5px 20px rgba(0,0,0,.07);
+        }
+
+
+        .dashboard-card-header {
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 20px;
+        }
+
+
+        .dashboard-card-header h2 {
+
+            margin: 0;
+            color: #172033;
+        }
+
+
+        .dashboard-card-header p {
+
+            margin: 5px 0 0;
+            color: #667085;
+        }
+
+
+        /* =====================================================
+           VELOCIMETRO
+           ===================================================== */
+
+        .dominio-layout {
+
+            display: grid;
+            grid-template-columns: 1.4fr .8fr;
+
+            gap: 40px;
+            align-items: center;
+        }
+
+
+        .gauge-container {
+
+            text-align: center;
+        }
+
+
+        .gauge {
+
+            width: 390px;
+            height: 205px;
+
+            margin: 10px auto 0;
+
+            position: relative;
+            overflow: hidden;
+        }
+
+
+        .gauge-arc {
+
+            position: absolute;
+
+            width: 390px;
+            height: 390px;
+
+            left: 0;
+            top: 0;
+
+            border-radius: 50%;
+
+            background:
+
+                conic-gradient(
+
+                    from 270deg,
+
+                    #dc2626 0deg 126deg,
+
+                    #f2c94c 126deg 153deg,
+
+                    #16a34a 153deg 180deg,
+
+                    transparent 180deg 360deg
+                );
+        }
+
+
+        .gauge-arc::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 275px;
+            height: 275px;
+
+            left: 57px;
+            top: 57px;
+
+            background: white;
+            border-radius: 50%;
+        }
+
+
+        .gauge-center {
+
+            position: absolute;
+
+            left: 50%;
+            bottom: 0;
+
+            transform:
+                translateX(-50%);
+
+            width: 145px;
+            height: 78px;
+
+            background: white;
+
+            border-radius:
+                145px 145px 0 0;
+
+            z-index: 3;
+        }
+
+
+        .gauge-value {
+
+            position: absolute;
+
+            bottom: 5px;
+            left: 0;
+            right: 0;
+
+            z-index: 5;
+
+            font-size: 40px;
+            font-weight: 800;
+
+            color: #172033;
+        }
+
+
+        .gauge-label {
+
+            margin-top: 8px;
+
+            color: #667085;
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           AGUJA
+           ===================================================== */
+
+        .needle {
+    transform-origin: 0% 50% !important;
+
+            position: absolute;
+
+            width: 150px;
+            height: 5px;
+
+            left: 50%;
+            bottom: 28px;
+
+            transform-origin:
+                0% 50%;
+
+            transform:
+                rotate(
+                    {{ ((porcentaje|default(0)|float) * 1.8) - 180 }}deg
+                );
+
+            background: #172033;
+
+            border-radius: 5px;
+
+            z-index: 6;
+        }
+
+
+        .needle::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 17px;
+            height: 17px;
+
+            right: -8px;
+            top: -6px;
+
+            background: #172033;
+
+            border-radius: 50%;
+        }
+
+
+        /* =====================================================
+           LEYENDA
+           ===================================================== */
+
+        .semaforo-leyenda {
+
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+
+        .semaforo-item {
+
+            padding: 17px 20px;
+
+            border-radius: 12px;
+
+            border: 1px solid #eaecf0;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+
+        .semaforo-dot {
+
+            width: 15px;
+            height: 15px;
+
+            border-radius: 50%;
+
+            flex-shrink: 0;
+        }
+
+
+        .rojo {
+            background: #dc2626;
+        }
+
+
+        .amarillo {
+            background: #f2c94c;
+        }
+
+
+        .verde {
+            background: #16a34a;
+        }
+
+
+        .semaforo-item strong {
+
+            display: block;
+            color: #172033;
+        }
+
+
+        .semaforo-item span {
+
+            font-size: 13px;
+            color: #667085;
+        }
+
+
+        /* =====================================================
+           INDICADORES
+           ===================================================== */
+
+        .metricas {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 18px;
+        }
+
+
+        .metrica {
+
+            padding: 22px;
+
+            border-radius: 14px;
+
+            background: #f8fafc;
+
+            border: 1px solid #eaecf0;
+        }
+
+
+        .metrica-titulo {
+
+            color: #667085;
+            font-size: 14px;
+        }
+
+
+        .metrica-numero {
+
+            font-size: 30px;
+            font-weight: 800;
+
+            margin-top: 7px;
+
+            color: #172033;
+        }
+
+
+        /* =====================================================
+           ILUO
+           ===================================================== */
+
+        .iluos {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 14px;
+        }
+
+
+        .iluo-item {
+
+            border-radius: 12px;
+
+            padding: 18px;
+
+            background: #f8fafc;
+
+            border: 1px solid #eaecf0;
+        }
+
+
+        .iluo-letra {
+
+            font-size: 28px;
+            font-weight: 800;
+
+            color: #172033;
+        }
+
+
+        .iluo-nombre {
+
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+
+        .iluo-numero {
+
+            font-size: 24px;
+            font-weight: 800;
+
+            margin-top: 10px;
+        }
+
+
+        .barra {
+
+            height: 8px;
+
+            background: #e5e7eb;
+
+            border-radius: 10px;
+
+            margin-top: 12px;
+
+            overflow: hidden;
+        }
+
+
+        .barra span {
+
+            display: block;
+
+            height: 100%;
+
+            background: #172033;
+
+            border-radius: 10px;
+        }
+
+
+        /* =====================================================
+           NECESIDADES
+           ===================================================== */
+
+        .diagnostico-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 22px;
+        }
+
+
+        .diagnostico-card {
+
+            border-radius: 15px;
+
+            padding: 23px;
+
+            border: 1px solid #eaecf0;
+
+            background: #fff;
+        }
+
+
+        .diagnostico-card h3 {
+
+            margin-top: 0;
+        }
+
+
+        .diagnostico-card.capacitacion {
+
+            border-left:
+                5px solid #dc2626;
+        }
+
+
+        .diagnostico-card.fortaleza {
+
+            border-left:
+                5px solid #16a34a;
+        }
+
+
+        .necesidad {
+
+            padding: 13px 0;
+
+            border-bottom:
+                1px solid #eaecf0;
+        }
+
+
+        .necesidad:last-child {
+
+            border-bottom: none;
+        }
+
+
+        .necesidad-nombre {
+
+            font-weight: 700;
+            color: #172033;
+        }
+
+
+        .necesidad-meta {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            margin-top: 5px;
+
+            font-size: 13px;
+
+            color: #667085;
+        }
+
+
+        .badge {
+
+            display: inline-block;
+
+            padding: 4px 9px;
+
+            border-radius: 20px;
+
+            background: #f2f4f7;
+
+            font-weight: 700;
+        }
+
+
+        /* =====================================================
+           RESPONSIVO
+           ===================================================== */
+
+        @media(max-width: 950px) {
+
+            .dominio-layout,
+            .diagnostico-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+            .metricas,
+            .iluos {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+        }
+
+
+        @media(max-width: 650px) {
+
+            .dashboard-page {
+
+                padding: 15px;
+            }
+
+            .dashboard-filtros {
+
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filtro select {
+
+                width: 100%;
+            }
+
+            .gauge {
+
+                transform:
+                    scale(.82);
+
+                transform-origin:
+                    top center;
+
+                margin-bottom: -35px;
+            }
+
+            .metricas,
+            .iluos {
+
+                grid-template-columns: 1fr;
+            }
+        }
+
+    
+/* ============================================================
+   CORRECCION DEFINITIVA DE POSICION DE AGUJA
+   ============================================================ */
+
+.needle {
+    transform-origin: 0% 50% !important;
+}
+
+/* ============================================================
+   CORRECCION GAUGE - MEDIO CIRCULO CENTRAL
+   ============================================================ */
+
+/*
+   CONTENEDOR
+   Mantiene el gauge en su posicion original.
+*/
+.gauge {
+    position: relative !important;
+    overflow: visible !important;
+}
+
+/*
+   AGUJA
+   Queda detras del centro blanco.
+*/
+.gauge .needle {
+    z-index: 5 !important;
+}
+
+/*
+   MEDIO CIRCULO CENTRAL
+
+   Se coloca exactamente en el centro inferior
+   del gauge.
+
+   Tamaño:
+   180 x 90 px
+
+   Su funcion es cubrir la base de la aguja
+   sin ocultar la parte superior de la aguja.
+*/
+.gauge .gauge-center {
+
+    position: absolute !important;
+
+    width: 180px !important;
+    height: 90px !important;
+
+    left: 50% !important;
+    bottom: 0 !important;
+
+    transform: translateX(-50%) !important;
+
+    background: #ffffff !important;
+
+    border-radius: 180px 180px 0 0 !important;
+
+    z-index: 10 !important;
+
+    pointer-events: none !important;
+
+    box-sizing: border-box !important;
+}
+
+/*
+   PORCENTAJE
+
+   Siempre por encima del medio circulo
+   y de la aguja.
+*/
+.gauge .gauge-value {
+
+    position: absolute !important;
+
+    left: 50% !important;
+    bottom: 25px !important;
+
+    transform: translateX(-50%) !important;
+
+    z-index: 30 !important;
+
+    background: #ffffff !important;
+
+    padding: 2px 10px !important;
+
+    border-radius: 8px !important;
+
+    white-space: nowrap !important;
+
+    line-height: 1 !important;
+
+    box-sizing: border-box !important;
+
+    text-align: center !important;
+}
+
+/*
+   ESTADO
+
+   Permanece debajo del porcentaje.
+*/
+.gauge .gauge-label {
+
+    position: relative !important;
+
+    z-index: 31 !important;
+
+    text-align: center !important;
+}
+
+/*
+   EVITAR QUE ELEMENTOS INTERNOS
+   INTERFIERAN CON EL CENTRO.
+*/
+.gauge .gauge-center::before,
+.gauge .gauge-center::after {
+
+    display: none !important;
+
+}
+
+/* ============================================================
+   FIN CORRECCION GAUGE - MEDIO CIRCULO CENTRAL
+   ============================================================ */
+
+
+
+/* ============================================================
+   CENTRO VISUAL DEL GAUGE ILUO
+   ============================================================ */
+
+.gauge {
+    position: relative !important;
+    isolation: isolate !important;
+}
+
+/* ------------------------------------------------------------
+   ARCO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-arc {
+    position: absolute !important;
+    z-index: 1 !important;
+}
+
+/* ------------------------------------------------------------
+   AGUJA
+   ------------------------------------------------------------ */
+
+.gauge .needle {
+    position: absolute !important;
+    z-index: 2 !important;
+
+    transform-origin: 50% 100% !important;
+}
+
+/* ------------------------------------------------------------
+   CENTRO BLANCO
+   ------------------------------------------------------------
+
+   Este elemento funciona como mascara blanca.
+
+   Oculta la BASE de la aguja.
+
+   NO tapa el arco.
+
+   NO tapa el porcentaje porque el porcentaje
+   tendra un z-index superior.
+   ------------------------------------------------------------ */
+
+.gauge .gauge-center {
+    position: absolute !important;
+
+    left: 50% !important;
+    bottom: 0 !important;
+
+    width: 130px !important;
+    height: 65px !important;
+
+    transform: translateX(-50%) !important;
+
+    background: #ffffff !important;
+
+    border-radius: 130px 130px 0 0 !important;
+
+    z-index: 3 !important;
+
+    pointer-events: none !important;
+
+    box-sizing: border-box !important;
+}
+
+/* ------------------------------------------------------------
+   NUMERO
+   ------------------------------------------------------------
+
+   El numero queda completamente encima del centro blanco.
+
+   El fondo blanco evita que la aguja se vea atravesandolo.
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value {
+    position: absolute !important;
+
+    left: 50% !important;
+    bottom: 22px !important;
+
+    transform: translateX(-50%) !important;
+
+    z-index: 10 !important;
+
+    background: #ffffff !important;
+
+    padding: 4px 12px !important;
+
+    border-radius: 10px !important;
+
+    line-height: 1 !important;
+
+    white-space: nowrap !important;
+
+    box-sizing: border-box !important;
+
+    isolation: isolate !important;
+}
+
+/* ------------------------------------------------------------
+   ESTADO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-label {
+    position: absolute !important;
+
+    left: 50% !important;
+    bottom: -4px !important;
+
+    transform: translateX(-50%) !important;
+
+    z-index: 11 !important;
+
+    white-space: nowrap !important;
+}
+
+/* ------------------------------------------------------------
+   PUNTO CENTRAL DE LA AGUJA
+   ------------------------------------------------------------
+
+   Si el elemento original tiene un punto central,
+   queda visualmente integrado con la mascara.
+   ------------------------------------------------------------ */
+
+.gauge .needle::after {
+    z-index: 12 !important;
+}
+
+</style>
+
+
+<!-- ============================================================
+     GAUGE ILUO - BARRA HORIZONTAL FINAL
+     ============================================================ -->
+
+<style>
+
+/* ============================================================
+   CONTENEDOR GENERAL
+   ============================================================ */
+
+.gauge {
+    position: relative !important;
+
+    width: 100% !important;
+    max-width: 650px !important;
+
+    height: 175px !important;
+
+    margin: 80px auto 10px !important;
+
+    overflow: visible !important;
+
+    box-sizing: border-box !important;
+
+    text-align: center !important;
+}
+
+
+/* ============================================================
+   ELIMINAR EL GAUGE CIRCULAR ANTERIOR
+   ============================================================ */
+
+.gauge-arc {
+    position: absolute !important;
+
+    left: 0 !important;
+    top: 95px !important;
+
+    width: 100% !important;
+    height: 34px !important;
+
+    border-radius: 999px !important;
+
+    background:
+        linear-gradient(
+            to right,
+            #dc2626 0%,
+            #dc2626 70%,
+            #f2c94c 70%,
+            #f2c94c 85%,
+            #16a34a 85%,
+            #16a34a 100%
+        ) !important;
+
+    overflow: visible !important;
+
+    z-index: 2 !important;
+}
+
+
+/* Quitar el circulo interior que tenia el gauge */
+
+.gauge-arc::after {
+    display: none !important;
+    content: none !important;
+}
+
+
+/* ============================================================
+   ELIMINAR CENTRO BLANCO ANTIGUO
+   ============================================================ */
+
+.gauge-center {
+    display: none !important;
+}
+
+
+/* ============================================================
+   ELIMINAR MASCARAS BLANCAS QUE AGREGAMOS ANTES
+   ============================================================ */
+
+#fondo-centro-gauge {
+    display: none !important;
+}
+
+
+/* ============================================================
+   AGUJA NEGRA
+   ============================================================ */
+
+.gauge .needle,
+.needle {
+
+    display: block !important;
+
+    position: absolute !important;
+
+    top: 79px !important;
+
+    left: {{ porcentaje|default(0)|float }}% !important;
+
+    width: 5px !important;
+
+    height: 66px !important;
+
+    margin-left: -2.5px !important;
+
+    background: #172033 !important;
+
+    border-radius: 999px !important;
+
+    transform: none !important;
+
+    transform-origin: center bottom !important;
+
+    z-index: 10 !important;
+
+    box-shadow: 0 2px 5px rgba(0,0,0,.18) !important;
+}
+
+
+/* ------------------------------------------------------------
+   PUNTA / CIRCULO DE LA AGUJA
+   ------------------------------------------------------------ */
+
+.gauge .needle::after,
+.needle::after {
+
+    content: "" !important;
+
+    position: absolute !important;
+
+    left: 50% !important;
+
+    bottom: -7px !important;
+
+    transform: translateX(-50%) !important;
+
+    width: 17px !important;
+
+    height: 17px !important;
+
+    background: #172033 !important;
+
+    border-radius: 50% !important;
+
+    box-shadow: 0 2px 4px rgba(0,0,0,.20) !important;
+}
+
+
+/* ============================================================
+   PORCENTAJE
+   ============================================================ */
+
+.gauge-value {
+
+    position: absolute !important;
+
+    left: 50% !important;
+
+    top: -70px !important;
+
+    transform: translateX(-50%) !important;
+
+    width: auto !important;
+
+    height: auto !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    background: transparent !important;
+
+    border: none !important;
+
+    border-radius: 0 !important;
+
+    color: #172033 !important;
+
+    font-size: 52px !important;
+
+    font-weight: 800 !important;
+
+    line-height: 1 !important;
+
+    white-space: nowrap !important;
+
+    z-index: 20 !important;
+
+    box-shadow: none !important;
+}
+
+
+/* ============================================================
+   ESTADO
+   ============================================================ */
+
+.gauge-label {
+
+    position: absolute !important;
+
+    left: 50% !important;
+
+    top: -12px !important;
+
+    transform: translateX(-50%) !important;
+
+    width: auto !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    color: #667085 !important;
+
+    font-size: 18px !important;
+
+    font-weight: 500 !important;
+
+    line-height: 1.2 !important;
+
+    white-space: nowrap !important;
+
+    z-index: 20 !important;
+}
+
+
+/* ============================================================
+   ESCALA INFERIOR
+   ============================================================ */
+
+.gauge::before {
+
+    content: "0%                              70%                    85%                              100%" !important;
+
+    position: absolute !important;
+
+    left: 0 !important;
+
+    top: 137px !important;
+
+    width: 100% !important;
+
+    color: #475467 !important;
+
+    font-size: 14px !important;
+
+    font-weight: 500 !important;
+
+    white-space: pre !important;
+
+    text-align: center !important;
+
+    z-index: 5 !important;
+}
+
+
+/* ============================================================
+   ETIQUETA DEL PUNTO ACTUAL
+   ============================================================ */
+
+.gauge::after {
+
+    content: "{{ porcentaje|default(0) }}%" !important;
+
+    position: absolute !important;
+
+    left: {{ porcentaje|default(0)|float }}% !important;
+
+    top: 151px !important;
+
+    transform: translateX(-50%) !important;
+
+    background: #172033 !important;
+
+    color: white !important;
+
+    padding: 5px 9px !important;
+
+    border-radius: 7px !important;
+
+    font-size: 12px !important;
+
+    font-weight: 700 !important;
+
+    line-height: 1 !important;
+
+    white-space: nowrap !important;
+
+    z-index: 15 !important;
+}
+
+
+/* ============================================================
+   LEYENDA EXISTENTE
+   ============================================================ */
+
+.semaforo-leyenda {
+    margin-top: 10px !important;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 700px) {
+
+    .gauge {
+        max-width: 95% !important;
+        height: 170px !important;
+    }
+
+    .gauge-value {
+        font-size: 44px !important;
+    }
+
+    .gauge::before {
+        font-size: 11px !important;
+    }
+
+}
+
+</style>
+
+
+<style>
+
+/* ============================================================
+   GAUGE ILUO - CORRECCION VISUAL FINAL
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   CONTENEDOR
+   ------------------------------------------------------------ */
+
+.gauge {
+
+    position: relative !important;
+
+    width: 100% !important;
+
+    max-width: 620px !important;
+
+    height: 190px !important;
+
+    margin: 35px auto 0 !important;
+
+    overflow: visible !important;
+
+    box-sizing: border-box !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   BARRA DE DOMINIO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-arc {
+
+    position: absolute !important;
+
+    left: 0 !important;
+
+    top: 95px !important;
+
+    width: 100% !important;
+
+    height: 42px !important;
+
+    border-radius: 999px !important;
+
+    background:
+        linear-gradient(
+            to right,
+            #dc2626 0%,
+            #dc2626 70%,
+            #f2c94c 70%,
+            #f2c94c 85%,
+            #16a34a 85%,
+            #16a34a 100%
+        ) !important;
+
+    box-shadow:
+        0 3px 8px rgba(15, 23, 42, 0.12) !important;
+
+    z-index: 2 !important;
+
+}
+
+
+/* Eliminar hueco/circulo del gauge original */
+
+.gauge .gauge-arc::after {
+
+    display: none !important;
+
+    content: none !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ELIMINAR CENTRO ANTIGUO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-center {
+
+    display: none !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ELIMINAR LA ESCALA/PSEUDOELEMENTOS ANTIGUOS
+   ------------------------------------------------------------ */
+
+/*
+   El primer juego de 0 / 70 / 85 / 100
+   provenia de las reglas antiguas del gauge.
+*/
+
+.gauge::before {
+
+    display: none !important;
+
+    content: none !important;
+
+}
+
+
+/*
+   También eliminamos el pequeño globo 81.2%
+   que estaba apareciendo debajo de la escala.
+*/
+
+.gauge::after {
+
+    display: none !important;
+
+    content: none !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   AGUJA NEGRA
+   ------------------------------------------------------------ */
+
+.gauge .needle {
+
+    position: absolute !important;
+
+    left: 0% !important;
+
+    top: 57px !important;
+
+    width: 5px !important;
+
+    height: 48px !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    background: #111827 !important;
+
+    border-radius: 999px !important;
+
+    transform:
+        translateX(-50%) !important;
+
+    transform-origin:
+        center bottom !important;
+
+    z-index: 50 !important;
+
+    display: block !important;
+
+    box-shadow:
+        0 2px 5px rgba(15, 23, 42, 0.22) !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   CIRCULO EN LA PUNTA DE LA AGUJA
+   ------------------------------------------------------------ */
+
+.gauge .needle::after {
+
+    content: "" !important;
+
+    position: absolute !important;
+
+    left: 50% !important;
+
+    bottom: -8px !important;
+
+    width: 18px !important;
+
+    height: 18px !important;
+
+    transform:
+        translateX(-50%) !important;
+
+    background: #111827 !important;
+
+    border-radius: 50% !important;
+
+    box-shadow:
+        0 2px 4px rgba(15, 23, 42, 0.25) !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   INDICADOR AMARILLO
+   ------------------------------------------------------------ */
+
+/*
+   El porcentaje y el estado viven juntos dentro
+   de un circulo amarillo.
+*/
+
+.gauge .gauge-value {
+
+    position: absolute !important;
+
+    left: 50% !important;
+
+    top: -5px !important;
+
+    transform:
+        translateX(-50%) !important;
+
+    z-index: 100 !important;
+
+    width: 155px !important;
+
+    height: 105px !important;
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    gap: 5px !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    background: #f2c94c !important;
+
+    color: #111827 !important;
+
+    border: 4px solid #ffffff !important;
+
+    border-radius: 50% !important;
+
+    box-shadow:
+        0 4px 12px rgba(15, 23, 42, 0.16) !important;
+
+    box-sizing: border-box !important;
+
+    font-size: 34px !important;
+
+    font-weight: 800 !important;
+
+    line-height: 1 !important;
+
+    text-align: center !important;
+
+    white-space: nowrap !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ESTADO DENTRO DEL CIRCULO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value::after {
+
+    content: "{{ estado|default('') }}" !important;
+
+    display: block !important;
+
+    color: #111827 !important;
+
+    font-size: 14px !important;
+
+    font-weight: 800 !important;
+
+    line-height: 1 !important;
+
+    text-transform: uppercase !important;
+
+    letter-spacing: 0.3px !important;
+
+    white-space: nowrap !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   OCULTAR COMPLETAMENTE EL LABEL ORIGINAL
+   ------------------------------------------------------------ */
+
+.gauge .gauge-label {
+
+    display: none !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ESCALA NUEVA
+   ------------------------------------------------------------ */
+
+.gauge-scale-final {
+
+    position: absolute !important;
+
+    left: 0 !important;
+
+    top: 150px !important;
+
+    width: 100% !important;
+
+    height: 38px !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    z-index: 70 !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   MARCAS VERTICALES
+   ------------------------------------------------------------ */
+
+.gauge-scale-final .gauge-mark {
+
+    position: absolute !important;
+
+    top: 0 !important;
+
+    width: 2px !important;
+
+    height: 10px !important;
+
+    background: #98a2b3 !important;
+
+    border-radius: 2px !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   NUMEROS
+   ------------------------------------------------------------ */
+
+.gauge-scale-final .gauge-number {
+
+    position: absolute !important;
+
+    top: 15px !important;
+
+    transform:
+        translateX(-50%) !important;
+
+    color: #344054 !important;
+
+    font-size: 14px !important;
+
+    font-weight: 600 !important;
+
+    line-height: 1 !important;
+
+    white-space: nowrap !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   POSICIONES EXACTAS
+   ------------------------------------------------------------ */
+
+.gauge-scale-final .inicio {
+
+    left: 0% !important;
+
+}
+
+
+.gauge-scale-final .setenta {
+
+    left: 70% !important;
+
+}
+
+
+.gauge-scale-final .ochenta-cinco {
+
+    left: 85% !important;
+
+}
+
+
+/*
+   Para que 100% no se salga del extremo derecho.
+*/
+
+.gauge-scale-final .final {
+
+    left: 100% !important;
+
+    transform:
+        translateX(-100%) !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   RESPONSIVE
+   ------------------------------------------------------------ */
+
+@media (max-width: 700px) {
+
+    .gauge {
+
+        max-width: 95% !important;
+
+        height: 180px !important;
+
+    }
+
+    .gauge .gauge-value {
+
+        width: 135px !important;
+
+        height: 94px !important;
+
+        font-size: 30px !important;
+
+    }
+
+    .gauge .gauge-value::after {
+
+        font-size: 12px !important;
+
+    }
+
+    .gauge-scale-final .gauge-number {
+
+        font-size: 12px !important;
+
+    }
+
+}
+
+
+/* ============================================================
+   FIN DE LA CORRECCION VISUAL FINAL
+   ============================================================ */
+
+</style>
+
+
+<style>
+
+/* ============================================================
+   GAUGE ILUO - OVERRIDE FINAL
+   INDICADOR + AGUJA + ESCALA
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   CONTENEDOR
+   ------------------------------------------------------------ */
+
+.gauge {
+
+    --gauge-pct: 0%;
+
+    position: relative !important;
+
+    width: 100% !important;
+
+    max-width: 620px !important;
+
+    height: 225px !important;
+
+    margin: 35px auto 0 !important;
+
+    overflow: visible !important;
+
+    box-sizing: border-box !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   BARRA
+   ------------------------------------------------------------ */
+
+.gauge .gauge-arc {
+
+    position: absolute !important;
+
+    left: 0 !important;
+
+    top: 110px !important;
+
+    width: 100% !important;
+
+    height: 42px !important;
+
+    border-radius: 999px !important;
+
+    background:
+        linear-gradient(
+            to right,
+            #dc2626 0%,
+            #dc2626 70%,
+            #f2c94c 70%,
+            #f2c94c 85%,
+            #16a34a 85%,
+            #16a34a 100%
+        ) !important;
+
+    box-shadow:
+        0 3px 9px rgba(15, 23, 42, 0.14) !important;
+
+    z-index: 2 !important;
+
+}
+
+
+/* Quitar arco interior antiguo */
+
+.gauge .gauge-arc::after {
+
+    display: none !important;
+
+    content: none !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ELIMINAR CENTROS ANTIGUOS
+   ------------------------------------------------------------ */
+
+.gauge .gauge-center,
+.gauge-center,
+#fondo-centro-gauge {
+
+    display: none !important;
+
+}
+
+
+/* ============================================================
+   INDICADOR DEL NIVEL
+   ============================================================ */
+
+.gauge .gauge-value {
+
+    position: absolute !important;
+
+    left: 50% !important;
+
+    top: 0 !important;
+
+    transform: translateX(-50%) !important;
+
+    z-index: 200 !important;
+
+    width: 170px !important;
+
+    height: 92px !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    background: #f2c94c !important;
+
+    color: #111827 !important;
+
+    border: 4px solid #ffffff !important;
+
+    border-radius: 999px !important;
+
+    box-shadow:
+        0 5px 15px rgba(15, 23, 42, 0.15) !important;
+
+    box-sizing: border-box !important;
+
+    font-size: 34px !important;
+
+    font-weight: 800 !important;
+
+    line-height: 1 !important;
+
+    text-align: center !important;
+
+    white-space: nowrap !important;
+
+}
+
+
+/* Texto EN DESARROLLO dentro del indicador */
+
+.gauge .gauge-value::after {
+
+    content: "{{ estado|default('') }}" !important;
+
+    display: block !important;
+
+    margin-top: 5px !important;
+
+    color: #111827 !important;
+
+    font-size: 13px !important;
+
+    font-weight: 800 !important;
+
+    line-height: 1 !important;
+
+    text-transform: uppercase !important;
+
+    letter-spacing: .4px !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   COLORES SEGUN ESTADO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value.estado-rojo {
+
+    background: #dc2626 !important;
+
+    color: #ffffff !important;
+
+}
+
+
+.gauge .gauge-value.estado-rojo::after {
+
+    color: #ffffff !important;
+
+}
+
+
+.gauge .gauge-value.estado-amarillo {
+
+    background: #f2c94c !important;
+
+    color: #111827 !important;
+
+}
+
+
+.gauge .gauge-value.estado-amarillo::after {
+
+    color: #111827 !important;
+
+}
+
+
+.gauge .gauge-value.estado-verde {
+
+    background: #16a34a !important;
+
+    color: #ffffff !important;
+
+}
+
+
+.gauge .gauge-value.estado-verde::after {
+
+    color: #ffffff !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   OCULTAR LABEL ANTIGUO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-label {
+
+    display: none !important;
+
+}
+
+
+/* ============================================================
+   AGUJA NEGRA
+   ============================================================ */
+
+.gauge .needle {
+
+    position: absolute !important;
+
+    left: var(--gauge-pct) !important;
+
+    top: 66px !important;
+
+    width: 5px !important;
+
+    height: 46px !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    background: #111827 !important;
+
+    border-radius: 999px !important;
+
+    transform:
+        translateX(-50%) !important;
+
+    transform-origin:
+        50% 100% !important;
+
+    display: block !important;
+
+    z-index: 150 !important;
+
+    box-shadow:
+        0 2px 5px rgba(15, 23, 42, 0.28) !important;
+
+}
+
+
+/* Punta de la aguja */
+
+.gauge .needle::after {
+
+    content: "" !important;
+
+    position: absolute !important;
+
+    left: 50% !important;
+
+    bottom: -9px !important;
+
+    width: 18px !important;
+
+    height: 18px !important;
+
+    transform:
+        translateX(-50%) !important;
+
+    background: #111827 !important;
+
+    border-radius: 50% !important;
+
+    box-shadow:
+        0 2px 5px rgba(15, 23, 42, 0.28) !important;
+
+}
+
+
+/* ============================================================
+   ESCALA
+   ============================================================ */
+
+.gauge-scale-final {
+
+    position: absolute !important;
+
+    left: 0 !important;
+
+    top: 170px !important;
+
+    width: 100% !important;
+
+    height: 48px !important;
+
+    z-index: 100 !important;
+
+}
+
+
+/* Marcas */
+
+.gauge-scale-final .gauge-mark {
+
+    position: absolute !important;
+
+    top: 0 !important;
+
+    width: 2px !important;
+
+    height: 9px !important;
+
+    background: #98a2b3 !important;
+
+    border-radius: 2px !important;
+
+}
+
+
+/* Numeros */
+
+.gauge-scale-final .gauge-number {
+
+    position: absolute !important;
+
+    top: 16px !important;
+
+    transform:
+        translateX(-50%) !important;
+
+    color: #344054 !important;
+
+    font-size: 14px !important;
+
+    font-weight: 600 !important;
+
+    line-height: 1 !important;
+
+    white-space: nowrap !important;
+
+}
+
+
+/* Posiciones */
+
+.gauge-scale-final .inicio {
+
+    left: 0% !important;
+
+}
+
+
+.gauge-scale-final .setenta {
+
+    left: 70% !important;
+
+}
+
+
+.gauge-scale-final .ochenta-cinco {
+
+    left: 85% !important;
+
+}
+
+
+.gauge-scale-final .final {
+
+    left: 100% !important;
+
+    transform:
+        translateX(-100%) !important;
+
+}
+
+
+/* ============================================================
+   ELIMINAR CUALQUIER MARCADOR ANTIGUO
+   ============================================================ */
+
+.gauge::before,
+.gauge::after {
+
+    display: none !important;
+
+    content: none !important;
+
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 700px) {
+
+    .gauge {
+
+        height: 215px !important;
+
+    }
+
+    .gauge .gauge-value {
+
+        width: 145px !important;
+
+        height: 82px !important;
+
+        font-size: 29px !important;
+
+    }
+
+    .gauge .gauge-value::after {
+
+        font-size: 11px !important;
+
+    }
+
+    .gauge-scale-final .gauge-number {
+
+        font-size: 12px !important;
+
+    }
+
+}
+
+</style>
+
+
+
+<style>
+
+/* ============================================================
+   AJUSTE FINAL DEL INDICADOR ILUO
+   ============================================================ */
+
+/*
+   Subimos el indicador amarillo para separarlo claramente
+   de la barra.
+*/
+
+.gauge .gauge-value {
+
+    top: -48px !important;
+
+}
+
+
+/*
+   Mantener el texto interno bien centrado.
+*/
+
+.gauge .gauge-value::after {
+
+    margin-top: 5px !important;
+
+}
+
+
+/*
+   Conservamos la aguja debajo del indicador.
+*/
+
+.gauge .needle {
+
+    z-index: 150 !important;
+
+}
+
+
+/*
+   La barra permanece debajo y separada.
+*/
+
+.gauge .gauge-arc {
+
+    top: 110px !important;
+
+}
+
+
+/* ============================================================
+   FIN DEL AJUSTE
+   ============================================================ */
+
+</style>
+
+
+
+<style>
+
+/* ============================================================
+   LIMPIEZA FINAL DEL INDICADOR ILUO
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   CONTENEDOR
+   ------------------------------------------------------------ */
+
+.gauge {
+
+    position: relative !important;
+
+    overflow: visible !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   INDICADOR AMARILLO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value {
+
+    position: absolute !important;
+
+    left: 50% !important;
+
+    top: -90px !important;
+
+    transform: translateX(-50%) !important;
+
+    z-index: 300 !important;
+
+    width: 170px !important;
+
+    height: 92px !important;
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    gap: 4px !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    border-radius: 999px !important;
+
+    border: 4px solid #ffffff !important;
+
+    background: #f2c94c !important;
+
+    color: #111827 !important;
+
+    box-sizing: border-box !important;
+
+    font-size: 34px !important;
+
+    font-weight: 800 !important;
+
+    line-height: 1 !important;
+
+    text-align: center !important;
+
+    white-space: nowrap !important;
+
+    box-shadow:
+        0 5px 15px rgba(15,23,42,.15) !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   TEXTO INTERNO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value::after {
+
+    content: "EN DESARROLLO" !important;
+
+    display: block !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    color: #111827 !important;
+
+    font-size: 13px !important;
+
+    font-weight: 800 !important;
+
+    line-height: 1 !important;
+
+    letter-spacing: .35px !important;
+
+    text-transform: uppercase !important;
+
+    white-space: nowrap !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ESTADOS DE COLOR
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value.estado-rojo {
+
+    background: #dc2626 !important;
+
+    color: #ffffff !important;
+
+}
+
+.gauge .gauge-value.estado-rojo::after {
+
+    color: #ffffff !important;
+
+}
+
+
+.gauge .gauge-value.estado-amarillo {
+
+    background: #f2c94c !important;
+
+    color: #111827 !important;
+
+}
+
+.gauge .gauge-value.estado-amarillo::after {
+
+    color: #111827 !important;
+
+}
+
+
+.gauge .gauge-value.estado-verde {
+
+    background: #16a34a !important;
+
+    color: #ffffff !important;
+
+}
+
+.gauge .gauge-value.estado-verde::after {
+
+    color: #ffffff !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ELIMINAR EL LABEL ORIGINAL
+   ------------------------------------------------------------ */
+
+.gauge .gauge-label,
+.gauge-label {
+
+    display: none !important;
+
+    position: static !important;
+
+    left: auto !important;
+
+    top: auto !important;
+
+    right: auto !important;
+
+    bottom: auto !important;
+
+    transform: none !important;
+
+    visibility: hidden !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   AGUJA
+   ------------------------------------------------------------ */
+
+.gauge .needle {
+
+    z-index: 200 !important;
+
+    display: block !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   BARRA
+   ------------------------------------------------------------ */
+
+.gauge .gauge-arc {
+
+    top: 110px !important;
+
+    height: 42px !important;
+
+    z-index: 2 !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ESCALA
+   ------------------------------------------------------------ */
+
+.gauge-scale-final {
+
+    top: 170px !important;
+
+    z-index: 100 !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ELIMINAR PSEUDOELEMENTOS ANTIGUOS
+   ------------------------------------------------------------ */
+
+.gauge::before,
+.gauge::after {
+
+    content: none !important;
+
+    display: none !important;
+
+}
+
+
+/* ============================================================
+   FIN LIMPIEZA FINAL
+   ============================================================ */
+
+</style>
+
+
+
+<style>
+
+/* ============================================================
+   AJUSTE FINAL DE POSICION DEL INDICADOR ILUO
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   GAUGE
+   ------------------------------------------------------------ */
+
+.gauge {
+
+    position: relative !important;
+
+    height: 220px !important;
+
+    overflow: visible !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   BARRA
+   MAS CENTRADA EN EL ESPACIO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-arc {
+
+    position: absolute !important;
+
+    left: 0 !important;
+
+    top: 125px !important;
+
+    width: 100% !important;
+
+    height: 42px !important;
+
+    border-radius: 999px !important;
+
+    z-index: 2 !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   INDICADOR AMARILLO
+   MAS PEQUEÑO Y MUCHO MAS ARRIBA
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value {
+
+    position: absolute !important;
+
+    left: 50% !important;
+
+    top: -135px !important;
+
+    transform: translateX(-50%) !important;
+
+    z-index: 300 !important;
+
+    width: 145px !important;
+
+    height: 78px !important;
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    gap: 3px !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    border-radius: 999px !important;
+
+    border: 3px solid #ffffff !important;
+
+    box-sizing: border-box !important;
+
+    font-size: 30px !important;
+
+    font-weight: 800 !important;
+
+    line-height: 1 !important;
+
+    text-align: center !important;
+
+    white-space: nowrap !important;
+
+    box-shadow:
+        0 4px 12px rgba(15,23,42,.15) !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   TEXTO EN DESARROLLO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value::after {
+
+    content: "EN DESARROLLO" !important;
+
+    display: block !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    color: #111827 !important;
+
+    font-size: 11px !important;
+
+    font-weight: 800 !important;
+
+    line-height: 1 !important;
+
+    letter-spacing: .25px !important;
+
+    text-transform: uppercase !important;
+
+    white-space: nowrap !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   COLOR ROJO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value.estado-rojo {
+
+    background: #dc2626 !important;
+
+    color: #ffffff !important;
+
+}
+
+.gauge .gauge-value.estado-rojo::after {
+
+    color: #ffffff !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   COLOR AMARILLO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value.estado-amarillo {
+
+    background: #f2c94c !important;
+
+    color: #111827 !important;
+
+}
+
+.gauge .gauge-value.estado-amarillo::after {
+
+    color: #111827 !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   COLOR VERDE
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value.estado-verde {
+
+    background: #16a34a !important;
+
+    color: #ffffff !important;
+
+}
+
+.gauge .gauge-value.estado-verde::after {
+
+    color: #ffffff !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   LABEL ORIGINAL ELIMINADO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-label,
+.gauge-label {
+
+    display: none !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   AGUJA
+   NO CAMBIAR SU LOGICA
+   ------------------------------------------------------------ */
+
+.gauge .needle {
+
+    position: absolute !important;
+
+    top: 79px !important;
+
+    width: 5px !important;
+
+    height: 48px !important;
+
+    z-index: 200 !important;
+
+}
+
+
+/* Punta */
+
+.gauge .needle::after {
+
+    width: 18px !important;
+
+    height: 18px !important;
+
+    bottom: -9px !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ESCALA
+   ------------------------------------------------------------ */
+
+.gauge-scale-final {
+
+    position: absolute !important;
+
+    left: 0 !important;
+
+    top: 185px !important;
+
+    width: 100% !important;
+
+    height: 35px !important;
+
+    z-index: 100 !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   NUMEROS
+   ------------------------------------------------------------ */
+
+.gauge-scale-final .gauge-number {
+
+    top: 14px !important;
+
+    font-size: 14px !important;
+
+    font-weight: 600 !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   MARCAS
+   ------------------------------------------------------------ */
+
+.gauge-scale-final .gauge-mark {
+
+    top: 0 !important;
+
+    height: 9px !important;
+
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 700px) {
+
+    .gauge {
+
+        height: 210px !important;
+
+    }
+
+    .gauge .gauge-value {
+
+        width: 130px !important;
+
+        height: 72px !important;
+
+        top: -120px !important;
+
+        font-size: 26px !important;
+
+    }
+
+    .gauge .gauge-value::after {
+
+        font-size: 10px !important;
+
+    }
+
+}
+
+
+/* ============================================================
+   FIN DEL AJUSTE
+   ============================================================ */
+
+</style>
+
+
+
+<style>
+
+/* ============================================================
+   GAUGE ILUO - INDICADOR COMPACTO EN ESQUINA
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   GAUGE
+   ------------------------------------------------------------ */
+
+.gauge {
+
+    position: relative !important;
+
+    width: 100% !important;
+
+    max-width: 620px !important;
+
+    height: 220px !important;
+
+    overflow: visible !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   BARRA
+   ------------------------------------------------------------ */
+
+.gauge .gauge-arc {
+
+    position: absolute !important;
+
+    left: 0 !important;
+
+    top: 125px !important;
+
+    width: 100% !important;
+
+    height: 42px !important;
+
+    border-radius: 999px !important;
+
+    background:
+        linear-gradient(
+            to right,
+            #dc2626 0%,
+            #dc2626 70%,
+            #f2c94c 70%,
+            #f2c94c 85%,
+            #16a34a 85%,
+            #16a34a 100%
+        ) !important;
+
+    z-index: 2 !important;
+
+}
+
+
+/* Quitar arco interior antiguo */
+
+.gauge .gauge-arc::after {
+
+    display: none !important;
+
+    content: none !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   CENTRO ANTIGUO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-center {
+
+    display: none !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   INDICADOR COMPACTO
+   ------------------------------------------------------------
+
+   YA NO SE COLOCA SOBRE EL CENTRO DE LA BARRA.
+
+   Ahora vive en la esquina superior izquierda
+   del area del gauge.
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value {
+
+    position: absolute !important;
+
+    left: 12px !important;
+
+    top: -135px !important;
+
+    transform: none !important;
+
+    z-index: 500 !important;
+
+    width: 125px !important;
+
+    height: 68px !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    gap: 3px !important;
+
+    box-sizing: border-box !important;
+
+    border-radius: 16px !important;
+
+    border: 3px solid #ffffff !important;
+
+    background: #f2c94c !important;
+
+    color: #111827 !important;
+
+    font-size: 28px !important;
+
+    font-weight: 800 !important;
+
+    line-height: 1 !important;
+
+    white-space: nowrap !important;
+
+    text-align: center !important;
+
+    box-shadow:
+        0 4px 12px rgba(15, 23, 42, 0.14) !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ESTADO DEL INDICADOR
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value::after {
+
+    content: "EN DESARROLLO" !important;
+
+    display: block !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    color: #111827 !important;
+
+    font-size: 10px !important;
+
+    font-weight: 800 !important;
+
+    line-height: 1 !important;
+
+    letter-spacing: .3px !important;
+
+    text-transform: uppercase !important;
+
+    white-space: nowrap !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ROJO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value.estado-rojo {
+
+    background: #dc2626 !important;
+
+    color: #ffffff !important;
+
+}
+
+.gauge .gauge-value.estado-rojo::after {
+
+    color: #ffffff !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   AMARILLO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value.estado-amarillo {
+
+    background: #f2c94c !important;
+
+    color: #111827 !important;
+
+}
+
+.gauge .gauge-value.estado-amarillo::after {
+
+    color: #111827 !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   VERDE
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value.estado-verde {
+
+    background: #16a34a !important;
+
+    color: #ffffff !important;
+
+}
+
+.gauge .gauge-value.estado-verde::after {
+
+    color: #ffffff !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ELIMINAR LABEL SUELTO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-label,
+.gauge-label {
+
+    display: none !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   AGUJA NEGRA
+   ------------------------------------------------------------ */
+
+.gauge .needle {
+
+    position: absolute !important;
+
+    left: var(--gauge-pct) !important;
+
+    top: 79px !important;
+
+    width: 5px !important;
+
+    height: 48px !important;
+
+    margin: 0 !important;
+
+    background: #111827 !important;
+
+    border-radius: 999px !important;
+
+    transform:
+        translateX(-50%) !important;
+
+    z-index: 300 !important;
+
+    display: block !important;
+
+}
+
+
+/* Punta */
+
+.gauge .needle::after {
+
+    content: "" !important;
+
+    position: absolute !important;
+
+    left: 50% !important;
+
+    bottom: -9px !important;
+
+    width: 18px !important;
+
+    height: 18px !important;
+
+    transform:
+        translateX(-50%) !important;
+
+    background: #111827 !important;
+
+    border-radius: 50% !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ESCALA
+   ------------------------------------------------------------ */
+
+.gauge-scale-final {
+
+    position: absolute !important;
+
+    left: 0 !important;
+
+    top: 185px !important;
+
+    width: 100% !important;
+
+    height: 35px !important;
+
+    z-index: 100 !important;
+
+}
+
+
+/* Numeros */
+
+.gauge-scale-final .gauge-number {
+
+    top: 14px !important;
+
+    font-size: 14px !important;
+
+    font-weight: 600 !important;
+
+}
+
+
+/* Marcas */
+
+.gauge-scale-final .gauge-mark {
+
+    top: 0 !important;
+
+    height: 9px !important;
+
+}
+
+
+/* Extremo derecho */
+
+.gauge-scale-final .final {
+
+    left: 100% !important;
+
+    transform:
+        translateX(-100%) !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ELIMINAR CUALQUIER PSEUDOELEMENTO ANTIGUO
+   ------------------------------------------------------------ */
+
+.gauge::before,
+.gauge::after {
+
+    content: none !important;
+
+    display: none !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   RESPONSIVE
+   ------------------------------------------------------------ */
+
+@media (max-width: 700px) {
+
+    .gauge {
+
+        height: 215px !important;
+
+    }
+
+    .gauge .gauge-value {
+
+        left: 8px !important;
+
+        top: -115px !important;
+
+        width: 112px !important;
+
+        height: 62px !important;
+
+        font-size: 25px !important;
+
+    }
+
+    .gauge .gauge-value::after {
+
+        font-size: 9px !important;
+
+    }
+
+}
+
+
+/* ============================================================
+   FIN INDICADOR COMPACTO
+   ============================================================ */
+
+</style>
+
+
+
+<style>
+
+/* ============================================================
+   INDICADOR ILUO - ELEFANTE
+   ============================================================ */
+
+.iluoe-indicador {
+
+    position: absolute !important;
+
+    /*
+       Esquina superior derecha del espacio del gauge.
+    */
+
+    right: 10px !important;
+
+    top: -70px !important;
+
+    width: 190px !important;
+
+    height: 125px !important;
+
+    z-index: 600 !important;
+
+    pointer-events: none !important;
+
+}
+
+
+/* ============================================================
+   ELEFANTE
+   ============================================================ */
+
+.iluoe-elefante {
+
+    width: 100% !important;
+
+    height: 100% !important;
+
+    display: block !important;
+
+    overflow: visible !important;
+
+}
+
+
+/* ============================================================
+   COLOR DEL ELEFANTE
+   ============================================================ */
+
+.iluoe-silueta {
+
+    fill: #f2c94c !important;
+
+    stroke: #ffffff !important;
+
+    stroke-width: 8 !important;
+
+    stroke-linejoin: round !important;
+
+    filter:
+        drop-shadow(
+            0 5px 8px rgba(15, 23, 42, .16)
+        ) !important;
+
+}
+
+
+/* ============================================================
+   OJO
+   ============================================================ */
+
+.iluoe-ojo {
+
+    fill: #111827 !important;
+
+}
+
+
+/* ============================================================
+   PORCENTAJE
+   ============================================================ */
+
+.iluoe-porcentaje {
+
+    fill: #111827 !important;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif !important;
+
+    font-size: 55px !important;
+
+    font-weight: 800 !important;
+
+    letter-spacing: -1px !important;
+
+}
+
+
+/* ============================================================
+   ESTADO
+   ============================================================ */
+
+.iluoe-estado {
+
+    fill: #111827 !important;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif !important;
+
+    font-size: 18px !important;
+
+    font-weight: 800 !important;
+
+    text-transform: uppercase !important;
+
+    letter-spacing: .5px !important;
+
+}
+
+
+/* ============================================================
+   ROJO
+   ============================================================ */
+
+.iluoe-indicador.estado-rojo
+.iluoe-silueta {
+
+    fill: #dc2626 !important;
+
+}
+
+.iluoe-indicador.estado-rojo
+.iluoe-porcentaje,
+
+.iluoe-indicador.estado-rojo
+.iluoe-estado {
+
+    fill: #ffffff !important;
+
+}
+
+
+/* ============================================================
+   AMARILLO
+   ============================================================ */
+
+.iluoe-indicador.estado-amarillo
+.iluoe-silueta {
+
+    fill: #f2c94c !important;
+
+}
+
+.iluoe-indicador.estado-amarillo
+.iluoe-porcentaje,
+
+.iluoe-indicador.estado-amarillo
+.iluoe-estado {
+
+    fill: #111827 !important;
+
+}
+
+
+/* ============================================================
+   VERDE
+   ============================================================ */
+
+.iluoe-indicador.estado-verde
+.iluoe-silueta {
+
+    fill: #16a34a !important;
+
+}
+
+.iluoe-indicador.estado-verde
+.iluoe-porcentaje,
+
+.iluoe-indicador.estado-verde
+.iluoe-estado {
+
+    fill: #ffffff !important;
+
+}
+
+
+/* ============================================================
+   OCULTAR EL INDICADOR ANTIGUO
+   ============================================================ */
+
+.gauge .gauge-value {
+
+    display: none !important;
+
+}
+
+.gauge .gauge-label {
+
+    display: none !important;
+
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 700px) {
+
+    .iluoe-indicador {
+
+        right: 0 !important;
+
+        top: -50px !important;
+
+        width: 155px !important;
+
+        height: 105px !important;
+
+    }
+
+    .iluoe-porcentaje {
+
+        font-size: 46px !important;
+
+    }
+
+    .iluoe-estado {
+
+        font-size: 14px !important;
+
+    }
+
+}
+
+
+/* ============================================================
+   FIN ELEFANTE
+   ============================================================ */
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="contenedor">
+
+    <aside class="menu">
+
+        <h2>MATRIZ ILUO</h2>
+
+        <a href="/">🏠 Inicio</a>
+
+        <a href="/colaboradores">
+            👥 Empleados
+        </a>
+
+        <a href="/colaboradores/inactivos">
+            🔴 Inactivos
+        </a>
+
+        <a href="/habilidades">
+            🛠️ Habilidades
+        </a>
+
+        <a href="/evaluaciones">
+            📝 Evaluaciones
+        </a>
+
+        <a href="/matriz">
+            📊 Matriz ILUO
+        </a>
+
+        <a href="/cursos">
+            📚 Cursos
+        </a>
+
+        <a href="/">
+            📈 Dashboard
+        </a>
+
+    </aside>
+
+
+    <main class="contenido">
+
+        <div class="dashboard-page">
+
+            <!-- =================================================
+                 ENCABEZADO
+                 ================================================= -->
+
+            <div class="dashboard-header">
+
+                <h1>
+                    Dashboard de
+                    {{ area_seleccionada.nombre if area_seleccionada else "Operaciones" }}
+                </h1>
+
+                <p>
+                    Indicadores generales de dominio,
+                    desarrollo de habilidades y necesidades
+                    de capacitación.
+                </p>
+
+            </div>
+
+
+            <!-- =================================================
+                 FILTROS
+                 ================================================= -->
+
+            <form
+                method="GET"
+                action="/"
+                class="dashboard-filtros"
+            >
+
+                <div class="filtro">
+
+                    <label>
+                        Área
+                    </label>
+
+                    <select
+                        name="area_id"
+                        onchange="this.form.submit()"
+                    >
+
+                        {% for area in areas %}
+
+                            <option
+                                value="{{ area.id }}"
+                                {% if area_seleccionada and area.id == area_seleccionada.id %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {{ area.nombre }}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="filtro">
+
+                    <label>
+                        Departamento
+                    </label>
+
+                    <select
+                        name="departamento_id"
+                    >
+
+                        <option value="">
+                            Todos los departamentos
+                        </option>
+
+                        {% for departamento in departamentos %}
+
+                            <option
+                                value="{{ departamento.id }}"
+                                {% if departamento_seleccionado and departamento.id == departamento_seleccionado.id %}
+                                    selected
+                                {% endif %}
+                            >
+
+                                {{ departamento.nombre }}
+
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="filtro">
+
+                    <button type="submit">
+                        Actualizar dashboard
+                    </button>
+
+                </div>
+
+            </form>
+
+
+            <!-- =================================================
+                 DOMINIO
+                 ================================================= -->
+
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <div>
+
+                        <h2>
+                            Dominio general
+                        </h2>
+
+                        <p>
+                            Nivel general de dominio
+                            de la vista seleccionada
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="dominio-layout">
+
+
+                    <div class="gauge-container">
+
+                        <div class="gauge">
+
+                            <div class="gauge-arc"></div>
+
+                            <div class="needle"></div>
+
+                            <div class="gauge-center"></div>
+
+                            <div class="gauge-value">
+
+                                {{ porcentaje|default(0) }}%
+
+                            </div>
+
+                        </div>
+
+
+                        
+<!-- ============================================================
+     INDICADOR ILUO - ELEFANTE
+     ============================================================ -->
+
+<div class="iluoe-indicador">
+
+    <svg
+        class="iluoe-elefante"
+        viewBox="0 0 500 320"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-label="Indicador de dominio ILUO"
+        role="img"
+    >
+
+        <!-- ==================================================
+             SILUETA SIMPLIFICADA DEL ELEFANTE
+             ================================================== -->
+
+        <path
+            class="iluoe-silueta"
+            d="
+                M95 205
+                C72 187 61 159 64 130
+                C67 92 92 64 129 54
+                C170 42 223 47 257 70
+
+                C287 48 330 47 363 62
+                C397 78 414 108 416 142
+
+                C419 158 414 174 402 188
+
+                L424 185
+                C437 183 447 189 452 201
+                C458 215 452 227 439 232
+
+                L401 245
+
+                L398 279
+                L378 279
+                L373 235
+
+                L333 235
+                L330 281
+                L309 281
+                L305 232
+
+                L265 231
+                L254 278
+                L234 278
+                L240 223
+
+                L197 216
+                L188 276
+                L168 276
+                L171 210
+
+                C139 219 113 218 95 205
+
+                Z
+
+                M92 122
+                C67 112 47 99 35 82
+                C31 76 33 68 39 65
+                C47 61 53 65 60 71
+                C74 84 86 92 105 96
+
+                C102 105 98 114 92 122
+
+                Z
+
+                M369 92
+                C387 97 399 110 403 126
+                C391 117 379 112 365 109
+
+                Z
+            "
+        />
+
+        <!-- Ojo -->
+        <circle
+            class="iluoe-ojo"
+            cx="349"
+            cy="101"
+            r="7"
+        />
+
+        <!-- ==================================================
+             TEXTO DEL INDICADOR
+             ================================================== -->
+
+        <text
+            x="247"
+            y="145"
+            class="iluoe-porcentaje"
+            text-anchor="middle"
+        >
+            {{ porcentaje|default(0) }}%
+        </text>
+
+        <text
+            x="247"
+            y="178"
+            class="iluoe-estado"
+            text-anchor="middle"
+        >
+            {{ estado|default('') }}
+        </text>
+
+    </svg>
+
+</div>
+
+<div class="gauge-label">
+
+                            {{ estado|default("Sin evaluaciones") }}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="semaforo-leyenda">
+
+                        <div class="semaforo-item">
+
+                            <span class="semaforo-dot rojo"></span>
+
+                            <div>
+
+                                <strong>
+                                    Requiere Atención
+                                </strong>
+
+                                <span>
+                                    0% — menos de 70%
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="semaforo-item">
+
+                            <span class="semaforo-dot amarillo"></span>
+
+                            <div>
+
+                                <strong>
+                                    En desarrollo
+                                </strong>
+
+                                <span>
+                                    70% — menos de 85%
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="semaforo-item">
+
+                            <span class="semaforo-dot verde"></span>
+
+                            <div>
+
+                                <strong>
+                                    Buen dominio
+                                </strong>
+
+                                <span>
+                                    85% — 100%
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 METRICAS
+                 ================================================= -->
+
+            <div class="dashboard-card">
+
+                <div class="metricas">
+
+                    <div class="metrica">
+
+                        <div class="metrica-titulo">
+                            Colaboradores activos
+                        </div>
+
+                        <div class="metrica-numero">
+                            {{ colaboradores|length }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="metrica">
+
+                        <div class="metrica-titulo">
+                            Habilidades evaluadas
+                        </div>
+
+                        <div class="metrica-numero">
+                            {{ habilidades|length }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="metrica">
+
+                        <div class="metrica-titulo">
+                            Evaluaciones
+                        </div>
+
+                        <div class="metrica-numero">
+                            {{ evaluaciones }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 DISTRIBUCION ILUO
+                 ================================================= -->
+
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <div>
+
+                        <h2>
+                            Distribución ILUO
+                        </h2>
+
+                        <p>
+                            Composición de las evaluaciones
+                            consideradas en esta vista.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="iluos">
+
+                    <div class="iluo-item">
+
+                        <div class="iluo-letra">
+                            I
+                        </div>
+
+                        <div class="iluo-nombre">
+                            Inicial / Aprendiz
+                        </div>
+
+                        <div class="iluo-numero">
+                            {{ niveles.I|default(0) }}
+                        </div>
+
+                        <div class="barra">
+
+                            <span
+                                style="width: {{ niveles_porcentaje.I|default(0) }}%;"
+                            ></span>
+
+                        </div>
+
+                        <small>
+                            {{ niveles_porcentaje.I|default(0) }}%
+                        </small>
+
+                    </div>
+
+
+                    <div class="iluo-item">
+
+                        <div class="iluo-letra">
+                            L
+                        </div>
+
+                        <div class="iluo-nombre">
+                            Local / Operario
+                        </div>
+
+                        <div class="iluo-numero">
+                            {{ niveles.L|default(0) }}
+                        </div>
+
+                        <div class="barra">
+
+                            <span
+                                style="width: {{ niveles_porcentaje.L|default(0) }}%;"
+                            ></span>
+
+                        </div>
+
+                        <small>
+                            {{ niveles_porcentaje.L|default(0) }}%
+                        </small>
+
+                    </div>
+
+
+                    <div class="iluo-item">
+
+                        <div class="iluo-letra">
+                            U
+                        </div>
+
+                        <div class="iluo-nombre">
+                            Útil / Autónomo
+                        </div>
+
+                        <div class="iluo-numero">
+                            {{ niveles.U|default(0) }}
+                        </div>
+
+                        <div class="barra">
+
+                            <span
+                                style="width: {{ niveles_porcentaje.U|default(0) }}%;"
+                            ></span>
+
+                        </div>
+
+                        <small>
+                            {{ niveles_porcentaje.U|default(0) }}%
+                        </small>
+
+                    </div>
+
+
+                    <div class="iluo-item">
+
+                        <div class="iluo-letra">
+                            O
+                        </div>
+
+                        <div class="iluo-nombre">
+                            Óptimo / Instructor
+                        </div>
+
+                        <div class="iluo-numero">
+                            {{ niveles.O|default(0) }}
+                        </div>
+
+                        <div class="barra">
+
+                            <span
+                                style="width: {{ niveles_porcentaje.O|default(0) }}%;"
+                            ></span>
+
+                        </div>
+
+                        <small>
+                            {{ niveles_porcentaje.O|default(0) }}%
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 DIAGNOSTICO
+                 ================================================= -->
+
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <div>
+
+                        <h2>
+                            Diagnóstico de talento
+                        </h2>
+
+                        <p>
+                            Identificación automática de
+                            oportunidades de capacitación
+                            y fortalezas.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="diagnostico-grid">
+
+
+                    <!-- CAPACITACION -->
+
+                    <div class="diagnostico-card capacitacion">
+
+                        <h3>
+                            🎯 Necesidades de capacitación
+                        </h3>
+
+                        {% if necesidades %}
+
+                            {% for necesidad in necesidades[:5] %}
+
+                                <div class="necesidad">
+
+                                    <div class="necesidad-nombre">
+
+                                        {{ necesidad.nombre }}
+
+                                    </div>
+
+                                    <div class="necesidad-meta">
+
+                                        <span>
+
+                                            {{ necesidad.total }}
+                                            evaluación(es) I/L
+
+                                        </span>
+
+                                        <span class="badge">
+
+                                            {{ necesidad.departamentos|join(", ") }}
+
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            {% endfor %}
+
+                        {% else %}
+
+                            <p>
+                                No se detectaron necesidades
+                                de capacitación con las
+                                evaluaciones actuales.
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- FORTALEZAS -->
+
+                    <div class="diagnostico-card fortaleza">
+
+                        <h3>
+                            ⭐ Fortalezas y especialización
+                        </h3>
+
+                        {% if fortalezas %}
+
+                            {% for fortaleza in fortalezas[:5] %}
+
+                                <div class="necesidad">
+
+                                    <div class="necesidad-nombre">
+
+                                        {{ fortaleza.nombre }}
+
+                                    </div>
+
+                                    <div class="necesidad-meta">
+
+                                        <span>
+
+                                            {{ fortaleza.total }}
+                                            evaluación(es) U/O
+
+                                        </span>
+
+                                        <span class="badge">
+
+                                            {{ fortaleza.departamentos|join(", ") }}
+
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            {% endfor %}
+
+                        {% else %}
+
+                            <p>
+                                Aún no hay suficientes evaluaciones
+                                U/O para identificar fortalezas.
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 NECESIDADES POR DEPARTAMENTO
+                 ================================================= -->
+
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <div>
+
+                        <h2>
+                            Enfoque de capacitación por departamento
+                        </h2>
+
+                        <p>
+                            Habilidades que concentran
+                            mayor cantidad de niveles I y L.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="diagnostico-grid">
+
+                    {% for departamento in departamentos %}
+
+                        <div class="diagnostico-card">
+
+                            <h3>
+                                {{ departamento.nombre }}
+                            </h3>
+
+                            {% set lista =
+                                necesidades_departamentos.get(
+                                    departamento.id,
+                                    []
+                                )
+                            %}
+
+                            {% if lista %}
+
+                                {% for item in lista[:3] %}
+
+                                    <div class="necesidad">
+
+                                        <div class="necesidad-nombre">
+
+                                            {{ item.nombre }}
+
+                                        </div>
+
+                                        <div class="necesidad-meta">
+
+                                            <span>
+                                                Necesidad detectada
+                                            </span>
+
+                                            <span class="badge">
+                                                {{ item.total }}
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                {% endfor %}
+
+                            {% else %}
+
+                                <p>
+                                    Sin necesidades detectadas.
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 LEYENDA
+                 ================================================= -->
+
+            <div class="dashboard-card">
+
+                <div class="dashboard-card-header">
+
+                    <div>
+
+                        <h2>
+                            Leyenda del Dashboard de
+                            {{ area_seleccionada.nombre
+                               if area_seleccionada
+                               else "Operaciones" }}
+                        </h2>
+
+                        <p>
+                            Criterios utilizados para
+                            interpretar el nivel de dominio.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="semaforo-leyenda">
+
+                    <div class="semaforo-item">
+
+                        <span class="semaforo-dot rojo"></span>
+
+                        <div>
+
+                            <strong>
+                                Requiere Atención
+                            </strong>
+
+                            <span>
+                                Dominio inferior al 70%.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="semaforo-item">
+
+                        <span class="semaforo-dot amarillo"></span>
+
+                        <div>
+
+                            <strong>
+                                En desarrollo
+                            </strong>
+
+                            <span>
+                                Dominio de 70% a menos de 85%.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="semaforo-item">
+
+                        <span class="semaforo-dot verde"></span>
+
+                        <div>
+
+                            <strong>
+                                Buen dominio
+                            </strong>
+
+                            <span>
+                                Dominio de 85% a 100%.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+
+
+<script>
+
+/* ============================================================
+   GAUGE BARRA FINAL - POSICION DE AGUJA
+   ============================================================ */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const gauge = document.querySelector(".gauge");
+
+    if (!gauge) {
+        return;
+    }
+
+    const needle = gauge.querySelector(".needle");
+
+    if (!needle) {
+        return;
+    }
+
+    let porcentaje = Number(
+        "{{ porcentaje|default(0) }}"
+    );
+
+    if (isNaN(porcentaje)) {
+        porcentaje = 0;
+    }
+
+    porcentaje = Math.max(
+        0,
+        Math.min(100, porcentaje)
+    );
+
+    /* ---------------------------------------------
+       POSICION EXACTA DE LA AGUJA
+       --------------------------------------------- */
+
+    needle.style.left = porcentaje + "%";
+
+
+    /* ---------------------------------------------
+       CREAR ESCALA
+       --------------------------------------------- */
+
+    let escala = gauge.querySelector(".gauge-scale-final");
+
+    if (!escala) {
+
+        escala = document.createElement("div");
+
+        escala.className = "gauge-scale-final";
+
+        escala.innerHTML = `
+
+            <span
+                class="gauge-mark inicio">
+            </span>
+
+            <span
+                class="gauge-mark setenta">
+            </span>
+
+            <span
+                class="gauge-mark ochenta-cinco">
+            </span>
+
+            <span
+                class="gauge-mark final">
+            </span>
+
+
+            <span
+                class="gauge-number inicio">
+                0%
+            </span>
+
+            <span
+                class="gauge-number setenta">
+                70%
+            </span>
+
+            <span
+                class="gauge-number ochenta-cinco">
+                85%
+            </span>
+
+            <span
+                class="gauge-number final">
+                100%
+            </span>
+
+        `;
+
+        gauge.appendChild(escala);
+
+    }
+
+});
+
+</script>
+
+
+
+<script>
+
+/* ============================================================
+   GAUGE ILUO - POSICIONAMIENTO VISUAL FINAL
+   ============================================================ */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const gauge =
+        document.querySelector(".gauge");
+
+    if (!gauge) {
+        return;
+    }
+
+
+    const needle =
+        gauge.querySelector(".needle");
+
+    if (!needle) {
+        return;
+    }
+
+
+    let porcentaje =
+        Number(
+            "{{ porcentaje|default(0) }}"
+        );
+
+
+    if (isNaN(porcentaje)) {
+
+        porcentaje = 0;
+
+    }
+
+
+    porcentaje =
+        Math.max(
+            0,
+            Math.min(100, porcentaje)
+        );
+
+
+    /*
+       Aguja exactamente sobre el porcentaje.
+    */
+
+    needle.style.left =
+        porcentaje + "%";
+
+
+    /*
+       Eliminar cualquier escala antigua
+       que pudiera quedar dentro del gauge.
+    */
+
+    const escalasAntiguas =
+        gauge.querySelectorAll(
+            ".gauge-scale:not(.gauge-scale-final)"
+        );
+
+
+    escalasAntiguas.forEach(
+        function (elemento) {
+            elemento.remove();
+        }
+    );
+
+
+    /*
+       Crear la escala nueva solo si no existe.
+    */
+
+    let escala =
+        gauge.querySelector(
+            ".gauge-scale-final"
+        );
+
+
+    if (!escala) {
+
+        escala =
+            document.createElement("div");
+
+        escala.className =
+            "gauge-scale-final";
+
+
+        escala.innerHTML = `
+
+            <span class="gauge-mark inicio"></span>
+
+            <span class="gauge-mark setenta"></span>
+
+            <span class="gauge-mark ochenta-cinco"></span>
+
+            <span class="gauge-mark final"></span>
+
+
+            <span class="gauge-number inicio">
+                0%
+            </span>
+
+            <span class="gauge-number setenta">
+                70%
+            </span>
+
+            <span class="gauge-number ochenta-cinco">
+                85%
+            </span>
+
+            <span class="gauge-number final">
+                100%
+            </span>
+
+        `;
+
+
+        gauge.appendChild(escala);
+
+    }
+
+});
+
+</script>
+
+
+
+<script>
+
+/* ============================================================
+   GAUGE ILUO - CONTROL FINAL DE AGUJA Y ESTADO
+   ============================================================ */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const gauge = document.querySelector(".gauge");
+
+    if (!gauge) {
+        return;
+    }
+
+
+    const needle =
+        gauge.querySelector(".needle");
+
+    const value =
+        gauge.querySelector(".gauge-value");
+
+
+    if (!needle || !value) {
+        return;
+    }
+
+
+    let porcentaje =
+        Number(
+            "{{ porcentaje|default(0) }}"
+        );
+
+
+    if (isNaN(porcentaje)) {
+        porcentaje = 0;
+    }
+
+
+    porcentaje =
+        Math.max(
+            0,
+            Math.min(100, porcentaje)
+        );
+
+
+    /*
+       GUARDAR PORCENTAJE COMO VARIABLE CSS.
+
+       Esto elimina el problema anterior
+       donde la aguja se quedaba en 0%.
+    */
+
+    gauge.style.setProperty(
+        "--gauge-pct",
+        porcentaje + "%"
+    );
+
+
+    /*
+       RESPALDO DIRECTO SOBRE EL ELEMENTO
+       para asegurar posicionamiento.
+    */
+
+    needle.style.setProperty(
+        "left",
+        porcentaje + "%",
+        "important"
+    );
+
+
+    /*
+       DETERMINAR COLOR DEL INDICADOR.
+    */
+
+    value.classList.remove(
+        "estado-rojo",
+        "estado-amarillo",
+        "estado-verde"
+    );
+
+
+    if (porcentaje < 70) {
+
+        value.classList.add(
+            "estado-rojo"
+        );
+
+    }
+    else if (porcentaje < 85) {
+
+        value.classList.add(
+            "estado-amarillo"
+        );
+
+    }
+    else {
+
+        value.classList.add(
+            "estado-verde"
+        );
+
+    }
+
+
+    /*
+       ELIMINAR ESCALAS DUPLICADAS.
+
+       Conservamos solamente
+       .gauge-scale-final.
+    */
+
+    const escalas =
+        gauge.querySelectorAll(
+            ".gauge-scale:not(.gauge-scale-final)"
+        );
+
+
+    escalas.forEach(
+        function (escala) {
+
+            escala.remove();
+
+        }
+    );
+
+
+    /*
+       CREAR ESCALA SI NO EXISTE.
+    */
+
+    let escala =
+        gauge.querySelector(
+            ".gauge-scale-final"
+        );
+
+
+    if (!escala) {
+
+        escala =
+            document.createElement(
+                "div"
+            );
+
+
+        escala.className =
+            "gauge-scale-final";
+
+
+        escala.innerHTML = `
+
+            <span
+                class="gauge-mark inicio">
+            </span>
+
+            <span
+                class="gauge-mark setenta">
+            </span>
+
+            <span
+                class="gauge-mark ochenta-cinco">
+            </span>
+
+            <span
+                class="gauge-mark final">
+            </span>
+
+
+            <span
+                class="gauge-number inicio">
+                0%
+            </span>
+
+            <span
+                class="gauge-number setenta">
+                70%
+            </span>
+
+            <span
+                class="gauge-number ochenta-cinco">
+                85%
+            </span>
+
+            <span
+                class="gauge-number final">
+                100%
+            </span>
+
+        `;
+
+
+        gauge.appendChild(
+            escala
+        );
+
+    }
+
+});
+
+</script>
+
+
+
+<script>
+
+/* ============================================================
+   LIMPIEZA FINAL DEL INDICADOR ILUO - JAVASCRIPT
+   ============================================================ */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const gauges =
+            document.querySelectorAll(".gauge");
+
+
+        gauges.forEach(
+            function (gauge) {
+
+                /*
+                   Eliminar cualquier label independiente.
+                   Asi evitamos que "En desarrollo" aparezca
+                   accidentalmente arriba en el dashboard.
+                */
+
+                const labels =
+                    gauge.querySelectorAll(
+                        ".gauge-label"
+                    );
+
+
+                labels.forEach(
+                    function (label) {
+
+                        label.remove();
+
+                    }
+                );
+
+
+                /*
+                   Buscar aguja y porcentaje.
+                */
+
+                const needle =
+                    gauge.querySelector(".needle");
+
+
+                const value =
+                    gauge.querySelector(
+                        ".gauge-value"
+                    );
+
+
+                if (!needle || !value) {
+
+                    return;
+
+                }
+
+
+                /*
+                   Obtener porcentaje REAL
+                   desde Flask.
+                */
+
+                let porcentaje =
+                    Number(
+                        "{{ porcentaje|default(0) }}"
+                    );
+
+
+                if (isNaN(porcentaje)) {
+
+                    porcentaje = 0;
+
+                }
+
+
+                porcentaje =
+                    Math.max(
+                        0,
+                        Math.min(
+                            100,
+                            porcentaje
+                        )
+                    );
+
+
+                /*
+                   Posicion exacta de la aguja.
+                */
+
+                needle.style.setProperty(
+                    "left",
+                    porcentaje + "%",
+                    "important"
+                );
+
+
+                /*
+                   Determinar estado.
+                */
+
+                value.classList.remove(
+                    "estado-rojo",
+                    "estado-amarillo",
+                    "estado-verde"
+                );
+
+
+                if (porcentaje < 70) {
+
+                    value.classList.add(
+                        "estado-rojo"
+                    );
+
+                }
+                else if (porcentaje < 85) {
+
+                    value.classList.add(
+                        "estado-amarillo"
+                    );
+
+                }
+                else {
+
+                    value.classList.add(
+                        "estado-verde"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+);
+
+</script>
+
+
+
+<style>
+
+/* ============================================================
+   SUBIDA DEFINITIVA DEL INDICADOR ILUO
+   ============================================================ */
+
+
+/*
+   EL INDICADOR SE SUBE MUCHO MAS ARRIBA.
+
+   La posicion vertical final se consigue combinando:
+   - top
+   - transform
+
+   Asi no dependemos de las reglas antiguas.
+*/
+
+.gauge .gauge-value {
+
+    position: absolute !important;
+
+    left: 50% !important;
+
+    top: -155px !important;
+
+    transform:
+        translate(-50%, -45px) !important;
+
+    z-index: 999 !important;
+
+    width: 145px !important;
+
+    height: 78px !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    gap: 3px !important;
+
+    border-radius: 999px !important;
+
+    border: 3px solid #ffffff !important;
+
+    background: #f2c94c !important;
+
+    color: #111827 !important;
+
+    box-sizing: border-box !important;
+
+    font-size: 30px !important;
+
+    font-weight: 800 !important;
+
+    line-height: 1 !important;
+
+    text-align: center !important;
+
+    white-space: nowrap !important;
+
+    box-shadow:
+        0 4px 12px rgba(15,23,42,.15) !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   TEXTO INTERNO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value::after {
+
+    content: "EN DESARROLLO" !important;
+
+    display: block !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    color: #111827 !important;
+
+    font-size: 11px !important;
+
+    font-weight: 800 !important;
+
+    line-height: 1 !important;
+
+    letter-spacing: .3px !important;
+
+    text-transform: uppercase !important;
+
+    white-space: nowrap !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   COLORES AUTOMATICOS
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value.estado-rojo {
+
+    background: #dc2626 !important;
+
+    color: #ffffff !important;
+
+}
+
+.gauge .gauge-value.estado-rojo::after {
+
+    color: #ffffff !important;
+
+}
+
+
+.gauge .gauge-value.estado-amarillo {
+
+    background: #f2c94c !important;
+
+    color: #111827 !important;
+
+}
+
+.gauge .gauge-value.estado-amarillo::after {
+
+    color: #111827 !important;
+
+}
+
+
+.gauge .gauge-value.estado-verde {
+
+    background: #16a34a !important;
+
+    color: #ffffff !important;
+
+}
+
+.gauge .gauge-value.estado-verde::after {
+
+    color: #ffffff !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   BARRA
+   ------------------------------------------------------------ */
+
+.gauge .gauge-arc {
+
+    top: 125px !important;
+
+    height: 42px !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   AGUJA
+   ------------------------------------------------------------ */
+
+.gauge .needle {
+
+    z-index: 200 !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ELIMINAR CUALQUIER LABEL ANTIGUO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-label,
+.gauge-label {
+
+    display: none !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ESCALA
+   ------------------------------------------------------------ */
+
+.gauge-scale-final {
+
+    top: 185px !important;
+
+}
+
+
+/* ============================================================
+   FIN
+   ============================================================ */
+
+</style>
+
+
+
+<script>
+
+/* ============================================================
+   GAUGE ILUO - AGUJA FINAL COMPACTA
+   ============================================================ */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const gauge =
+            document.querySelector(".gauge");
+
+
+        if (!gauge) {
+            return;
+        }
+
+
+        const needle =
+            gauge.querySelector(".needle");
+
+
+        const value =
+            gauge.querySelector(".gauge-value");
+
+
+        if (!needle || !value) {
+            return;
+        }
+
+
+        let porcentaje =
+            Number(
+                "{{ porcentaje|default(0) }}"
+            );
+
+
+        if (isNaN(porcentaje)) {
+
+            porcentaje = 0;
+
+        }
+
+
+        porcentaje =
+            Math.max(
+                0,
+                Math.min(
+                    100,
+                    porcentaje
+                )
+            );
+
+
+        /*
+           La aguja utiliza directamente
+           el porcentaje real.
+        */
+
+        gauge.style.setProperty(
+            "--gauge-pct",
+            porcentaje + "%"
+        );
+
+
+        needle.style.setProperty(
+            "left",
+            porcentaje + "%",
+            "important"
+        );
+
+
+        /*
+           COLOR DEL INDICADOR
+        */
+
+        value.classList.remove(
+            "estado-rojo",
+            "estado-amarillo",
+            "estado-verde"
+        );
+
+
+        if (porcentaje < 70) {
+
+            value.classList.add(
+                "estado-rojo"
+            );
+
+        }
+        else if (porcentaje < 85) {
+
+            value.classList.add(
+                "estado-amarillo"
+            );
+
+        }
+        else {
+
+            value.classList.add(
+                "estado-verde"
+            );
+
+        }
+
+
+        /*
+           ELIMINAR LABEL ANTIGUO
+        */
+
+        const labels =
+            gauge.querySelectorAll(
+                ".gauge-label"
+            );
+
+
+        labels.forEach(
+            function (label) {
+
+                label.remove();
+
+            }
+        );
+
+    }
+);
+
+</script>
+
+
+
+<style>
+
+/* ============================================================
+   INDICADOR ILUO - ESQUINA SUPERIOR DERECHA
+   ============================================================ */
+
+.gauge .gauge-value {
+
+    position: absolute !important;
+
+    /* Quitamos el centrado anterior */
+    left: auto !important;
+
+    right: 0 !important;
+
+    /* Lo mantenemos arriba y claramente separado de la barra */
+    top: -35px !important;
+
+    transform: none !important;
+
+    z-index: 500 !important;
+
+    width: 132px !important;
+
+    height: 70px !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    gap: 3px !important;
+
+    box-sizing: border-box !important;
+
+    border-radius: 16px !important;
+
+    border: 3px solid #ffffff !important;
+
+    background: #f2c94c !important;
+
+    color: #111827 !important;
+
+    font-size: 27px !important;
+
+    font-weight: 800 !important;
+
+    line-height: 1 !important;
+
+    white-space: nowrap !important;
+
+    text-align: center !important;
+
+    box-shadow:
+        0 4px 12px rgba(15, 23, 42, 0.14) !important;
+}
+
+
+/* ------------------------------------------------------------
+   TEXTO DEL ESTADO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value::after {
+
+    content: "EN DESARROLLO" !important;
+
+    display: block !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    color: #111827 !important;
+
+    font-size: 10px !important;
+
+    font-weight: 800 !important;
+
+    line-height: 1 !important;
+
+    letter-spacing: .25px !important;
+
+    text-transform: uppercase !important;
+
+    white-space: nowrap !important;
+}
+
+
+/* ------------------------------------------------------------
+   COLORES AUTOMATICOS
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value.estado-rojo {
+
+    background: #dc2626 !important;
+
+    color: #ffffff !important;
+}
+
+.gauge .gauge-value.estado-rojo::after {
+
+    color: #ffffff !important;
+}
+
+
+.gauge .gauge-value.estado-amarillo {
+
+    background: #f2c94c !important;
+
+    color: #111827 !important;
+}
+
+.gauge .gauge-value.estado-amarillo::after {
+
+    color: #111827 !important;
+}
+
+
+.gauge .gauge-value.estado-verde {
+
+    background: #16a34a !important;
+
+    color: #ffffff !important;
+}
+
+.gauge .gauge-value.estado-verde::after {
+
+    color: #ffffff !important;
+}
+
+
+/* ------------------------------------------------------------
+   BARRA
+   ------------------------------------------------------------ */
+
+.gauge .gauge-arc {
+
+    top: 125px !important;
+
+    height: 42px !important;
+}
+
+
+/* ------------------------------------------------------------
+   AGUJA
+   ------------------------------------------------------------ */
+
+.gauge .needle {
+
+    z-index: 250 !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ESCALA
+   ------------------------------------------------------------ */
+
+.gauge-scale-final {
+
+    top: 185px !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   OCULTAR LABEL ANTIGUO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-label,
+.gauge-label {
+
+    display: none !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ELIMINAR PSEUDOELEMENTOS ANTIGUOS
+   ------------------------------------------------------------ */
+
+.gauge::before,
+.gauge::after {
+
+    display: none !important;
+
+    content: none !important;
+
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 700px) {
+
+    .gauge .gauge-value {
+
+        right: 5px !important;
+
+        top: -30px !important;
+
+        width: 116px !important;
+
+        height: 62px !important;
+
+        font-size: 24px !important;
+
+    }
+
+    .gauge .gauge-value::after {
+
+        font-size: 9px !important;
+
+    }
+
+}
+
+</style>
+
+
+
+<script>
+
+/* ============================================================
+   ELEFANTE ILUO - ESTADO DINAMICO
+   ============================================================ */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const indicador =
+            document.querySelector(
+                ".iluoe-indicador"
+            );
+
+
+        if (!indicador) {
+            return;
+        }
+
+
+        let porcentaje =
+            Number(
+                "{{ porcentaje|default(0) }}"
+            );
+
+
+        if (isNaN(porcentaje)) {
+
+            porcentaje = 0;
+
+        }
+
+
+        porcentaje =
+            Math.max(
+                0,
+                Math.min(
+                    100,
+                    porcentaje
+                )
+            );
+
+
+        /* ------------------------------------------------------
+           COLOR
+           ------------------------------------------------------ */
+
+        indicador.classList.remove(
+            "estado-rojo",
+            "estado-amarillo",
+            "estado-verde"
+        );
+
+
+        if (porcentaje < 70) {
+
+            indicador.classList.add(
+                "estado-rojo"
+            );
+
+        }
+        else if (porcentaje < 85) {
+
+            indicador.classList.add(
+                "estado-amarillo"
+            );
+
+        }
+        else {
+
+            indicador.classList.add(
+                "estado-verde"
+            );
+
+        }
+
+
+        /* ------------------------------------------------------
+           ESTADO REAL
+           ------------------------------------------------------ */
+
+        const textoEstado =
+            indicador.querySelector(
+                ".iluoe-estado"
+            );
+
+
+        if (textoEstado) {
+
+            if (porcentaje < 70) {
+
+                textoEstado.textContent =
+                    "REQUIERE ATENCION";
+
+            }
+            else if (porcentaje < 85) {
+
+                textoEstado.textContent =
+                    "EN DESARROLLO";
+
+            }
+            else {
+
+                textoEstado.textContent =
+                    "BUEN DOMINIO";
+
+            }
+
+        }
+
+    }
+);
+
+</script>
+
+
+<style>
+
+/* ============================================================
+   REGRESO AL INDICADOR EN RECUADRO
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   ELIMINAR COMPLETAMENTE EL ELEFANTE
+   ------------------------------------------------------------ */
+
+.iluoe-indicador,
+.iluoe-elefante {
+
+    display: none !important;
+
+    visibility: hidden !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ELIMINAR LABELS ANTIGUOS
+   ------------------------------------------------------------ */
+
+.gauge .gauge-label,
+.gauge-label {
+
+    display: none !important;
+
+    visibility: hidden !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   INDICADOR AMARILLO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value {
+
+    position: absolute !important;
+
+    left: 50% !important;
+
+    top: -65px !important;
+
+    right: auto !important;
+
+    transform: translateX(-50%) !important;
+
+    z-index: 500 !important;
+
+    width: 145px !important;
+
+    height: 76px !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    gap: 3px !important;
+
+    box-sizing: border-box !important;
+
+    border-radius: 15px !important;
+
+    border: 3px solid #ffffff !important;
+
+    background: #f2c94c !important;
+
+    color: #111827 !important;
+
+    font-size: 25px !important;
+
+    font-weight: 800 !important;
+
+    line-height: 1 !important;
+
+    text-align: center !important;
+
+    white-space: nowrap !important;
+
+    box-shadow:
+        0 4px 12px rgba(15,23,42,.14) !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   TEXTO DEL ESTADO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value::after {
+
+    content: "EN DESARROLLO" !important;
+
+    display: block !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    color: #111827 !important;
+
+    font-size: 10px !important;
+
+    font-weight: 800 !important;
+
+    line-height: 1 !important;
+
+    letter-spacing: .25px !important;
+
+    text-transform: uppercase !important;
+
+    white-space: nowrap !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   COLOR ROJO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value.estado-rojo {
+
+    background: #dc2626 !important;
+
+    color: #ffffff !important;
+
+}
+
+.gauge .gauge-value.estado-rojo::after {
+
+    color: #ffffff !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   COLOR AMARILLO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value.estado-amarillo {
+
+    background: #f2c94c !important;
+
+    color: #111827 !important;
+
+}
+
+.gauge .gauge-value.estado-amarillo::after {
+
+    color: #111827 !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   COLOR VERDE
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value.estado-verde {
+
+    background: #16a34a !important;
+
+    color: #ffffff !important;
+
+}
+
+.gauge .gauge-value.estado-verde::after {
+
+    color: #ffffff !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   BARRA
+   ------------------------------------------------------------ */
+
+.gauge .gauge-arc {
+
+    top: 125px !important;
+
+    height: 42px !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   AGUJA
+   ------------------------------------------------------------ */
+
+.gauge .needle {
+
+    display: block !important;
+
+    z-index: 200 !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ESCALA
+   ------------------------------------------------------------ */
+
+.gauge-scale-final {
+
+    top: 185px !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ELIMINAR PSEUDOELEMENTOS ANTIGUOS
+   ------------------------------------------------------------ */
+
+.gauge::before,
+.gauge::after {
+
+    display: none !important;
+
+    content: none !important;
+
+}
+
+
+/* ============================================================
+   FIN
+   ============================================================ */
+
+</style>
+
+<script>
+
+/* ============================================================
+   LIMPIEZA DEL INDICADOR ILUO
+   ============================================================ */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        /*
+           Eliminar elefante y cualquier indicador
+           que haya quedado de la prueba anterior.
+        */
+
+        document
+            .querySelectorAll(
+                ".iluoe-indicador"
+            )
+            .forEach(
+                function (elemento) {
+                    elemento.remove();
+                }
+            );
+
+
+        const gauges =
+            document.querySelectorAll(
+                ".gauge"
+            );
+
+
+        gauges.forEach(
+            function (gauge) {
+
+                /*
+                   Eliminar label antiguo.
+                */
+
+                gauge
+                    .querySelectorAll(
+                        ".gauge-label"
+                    )
+                    .forEach(
+                        function (label) {
+                            label.remove();
+                        }
+                    );
+
+
+                const value =
+                    gauge.querySelector(
+                        ".gauge-value"
+                    );
+
+
+                if (!value) {
+                    return;
+                }
+
+
+                /*
+                   Obtener porcentaje.
+                */
+
+                let porcentaje =
+                    Number(
+                        "{{ porcentaje|default(0) }}"
+                    );
+
+
+                if (isNaN(porcentaje)) {
+                    porcentaje = 0;
+                }
+
+
+                porcentaje =
+                    Math.max(
+                        0,
+                        Math.min(
+                            100,
+                            porcentaje
+                        )
+                    );
+
+
+                /*
+                   Color del indicador.
+                */
+
+                value.classList.remove(
+                    "estado-rojo",
+                    "estado-amarillo",
+                    "estado-verde"
+                );
+
+
+                if (porcentaje < 70) {
+
+                    value.classList.add(
+                        "estado-rojo"
+                    );
+
+                }
+                else if (porcentaje < 85) {
+
+                    value.classList.add(
+                        "estado-amarillo"
+                    );
+
+                }
+                else {
+
+                    value.classList.add(
+                        "estado-verde"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+);
+
+</script>
+
+
+<style>
+
+/* ============================================================
+   INDICADOR ILUO - TAMANO COMPACTO FINAL
+   ============================================================ */
+
+.gauge .gauge-value {
+
+    width: 112px !important;
+
+    height: 62px !important;
+
+    left: 50% !important;
+
+    right: auto !important;
+
+    top: -95px !important;
+
+    transform: translateX(-50%) !important;
+
+    padding: 0 !important;
+
+    margin: 0 !important;
+
+    border-radius: 14px !important;
+
+    border-width: 3px !important;
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    align-items: center !important;
+
+    justify-content: center !important;
+
+    gap: 2px !important;
+
+    box-sizing: border-box !important;
+
+    font-size: 23px !important;
+
+    line-height: 1 !important;
+
+    z-index: 999 !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   TEXTO EN DESARROLLO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value::after {
+
+    font-size: 9px !important;
+
+    line-height: 1 !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    letter-spacing: .15px !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   BARRA
+   ------------------------------------------------------------ */
+
+.gauge .gauge-arc {
+
+    top: 125px !important;
+
+    height: 42px !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   AGUJA
+   ------------------------------------------------------------ */
+
+.gauge .needle {
+
+    z-index: 200 !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   LABEL ANTIGUO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-label,
+.gauge-label {
+
+    display: none !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ELEFANTE DE LA PRUEBA ANTERIOR
+   ------------------------------------------------------------ */
+
+.iluoe-indicador,
+.iluoe-elefante {
+
+    display: none !important;
+
+}
+
+
+/* ------------------------------------------------------------
+   ESCALA
+   ------------------------------------------------------------ */
+
+.gauge-scale-final {
+
+    top: 185px !important;
+
+}
+
+
+/* ============================================================
+   FIN
+   ============================================================ */
+
+</style>
+
+
+<style>
+
+/* ============================================================
+   ULTIMO AJUSTE DEL INDICADOR ILUO
+   ============================================================ */
+
+.gauge .gauge-value {
+
+    width: 132px !important;
+
+    height: 62px !important;
+
+    left: 50% !important;
+
+    right: auto !important;
+
+    top: -95px !important;
+
+    transform: translateX(-50%) !important;
+
+    font-size: 23px !important;
+
+    padding: 0 6px !important;
+
+    border-radius: 14px !important;
+
+    box-sizing: border-box !important;
+
+}
+
+.gauge .gauge-value::after {
+
+    font-size: 9px !important;
+
+    white-space: nowrap !important;
+
+}
+
+</style>
+
+<style>
+
+/* ============================================================
+   AJUSTE FINAL DEL INDICADOR ILUO
+   ============================================================ */
+
+.gauge .gauge-value {
+
+    width: 150px !important;
+
+    min-width: 150px !important;
+
+    height: 62px !important;
+
+    left: 50% !important;
+
+    right: auto !important;
+
+    top: -95px !important;
+
+    transform: translateX(-50%) !important;
+
+    padding: 0 10px !important;
+
+    box-sizing: border-box !important;
+
+    border-radius: 14px !important;
+
+    font-size: 23px !important;
+
+    line-height: 1 !important;
+
+    white-space: nowrap !important;
+
+}
+
+
+/* Texto del nivel */
+
+.gauge .gauge-value::after {
+
+    font-size: 9px !important;
+
+    margin: 0 !important;
+
+    white-space: nowrap !important;
+
+}
+
+
+/* Mantener la barra intacta */
+
+.gauge .gauge-arc {
+
+    top: 125px !important;
+
+    height: 42px !important;
+
+}
+
+
+/* Mantener la aguja */
+
+.gauge .needle {
+
+    z-index: 200 !important;
+
+}
+
+</style>
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+<style>
+
+/* ===== INICIO CORRECCION CENTRO GAUGE REAL ===== */
+
+/*
+   CAPAS DEL GAUGE
+
+   1 = arco
+   10 = aguja
+   20 = centro blanco
+   30 = porcentaje
+   40 = estado
+*/
+
+.gauge {
+    position: relative !important;
+}
+
+/* ------------------------------------------------------------
+   AGUJA
+   ------------------------------------------------------------ */
+
+.gauge .needle {
+    z-index: 10 !important;
+}
+
+/* ------------------------------------------------------------
+   CENTRO BLANCO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-center {
+    position: absolute !important;
+
+    z-index: 20 !important;
+
+    width: 118px !important;
+    height: 118px !important;
+
+    left: 50% !important;
+    top: 50% !important;
+
+    transform: translate(-50%, -50%) !important;
+
+    border-radius: 50% !important;
+
+    background: #ffffff !important;
+
+    border: 0 !important;
+
+    box-shadow: none !important;
+
+    pointer-events: none !important;
+}
+
+/* ------------------------------------------------------------
+   PORCENTAJE
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value {
+
+    position: absolute !important;
+
+    z-index: 30 !important;
+
+    left: 50% !important;
+
+    transform: translateX(-50%) !important;
+
+    background: #ffffff !important;
+
+    padding: 5px 16px !important;
+
+    border-radius: 12px !important;
+
+    white-space: nowrap !important;
+
+    box-sizing: border-box !important;
+
+    line-height: 1 !important;
+
+    text-align: center !important;
+
+    /* El numero queda por encima de la aguja */
+    isolation: isolate !important;
+}
+
+/* ------------------------------------------------------------
+   ESTADO
+   ------------------------------------------------------------ */
+
+.gauge .gauge-label {
+
+    position: relative !important;
+
+    z-index: 40 !important;
+
+    background: #ffffff !important;
+}
+
+/* ===== FIN CORRECCION CENTRO GAUGE REAL ===== */
+
+
+
+/* ============================================================
+   CENTRO REAL DEL GAUGE ILUO
+   VERSION LIMPIA
+   ============================================================ */
+
+.gauge {
+    position: relative;
+}
+
+/*
+   El arco permanece atras.
+*/
+.gauge-arc {
+    z-index: 1;
+}
+
+/*
+   La aguja queda encima del arco.
+*/
+.gauge .needle {
+    z-index: 5 !important;
+}
+
+/*
+   El centro blanco queda encima de la base
+   de la aguja.
+*/
+.gauge .gauge-center {
+    z-index: 10 !important;
+
+    position: absolute;
+
+    left: 50%;
+    bottom: 0;
+
+    transform: translateX(-50%);
+
+    width: 145px;
+    height: 78px;
+
+    background: #ffffff;
+
+    border-radius: 145px 145px 0 0;
+
+    pointer-events: none;
+}
+
+/*
+   El porcentaje queda por encima de todo.
+*/
+.gauge .gauge-value {
+    z-index: 20 !important;
+
+    position: absolute;
+
+    left: 50% !important;
+
+    transform: translateX(-50%) !important;
+
+    background: #ffffff;
+
+    padding: 4px 12px;
+
+    border-radius: 10px;
+
+    white-space: nowrap;
+
+    box-sizing: border-box;
+
+    pointer-events: none;
+}
+
+/*
+   El texto de estado queda fuera
+   de la zona de la aguja.
+*/
+.gauge-label {
+    position: relative;
+
+    z-index: 21;
+
+    background: #ffffff;
+}
+
+/* ============================================================
+   FIN CENTRO REAL DEL GAUGE
+   ============================================================ */
+
+
+
+/* ============================================================
+   GAUGE ILUO - VERSION FINAL BARRA HORIZONTAL
+   ============================================================ */
+
+.gauge {
+    position: relative !important;
+
+    width: 100% !important;
+    max-width: 620px !important;
+
+    height: 105px !important;
+
+    margin: 25px auto 0 !important;
+
+    overflow: visible !important;
+
+    box-sizing: border-box !important;
+}
+
+
+/* ------------------------------------------------------------
+   LA ANTIGUA AGUJA DESAPARECE
+   ------------------------------------------------------------ */
+
+.gauge .needle,
+.needle {
+    display: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   EL ANTIGUO CENTRO BLANCO DESAPARECE
+   ------------------------------------------------------------ */
+
+.gauge .gauge-center,
+.gauge-center {
+    display: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   LA ANTIGUA MASCARA CENTRAL DESAPARECE
+   ------------------------------------------------------------ */
+
+#fondo-centro-gauge {
+    display: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   BARRA PRINCIPAL
+   0-70   = ROJO
+   70-85  = AMARILLO
+   85-100 = VERDE
+   ------------------------------------------------------------ */
+
+.gauge-arc {
+    position: absolute !important;
+
+    left: 0 !important;
+    top: 45px !important;
+
+    width: 100% !important;
+    height: 28px !important;
+
+    border-radius: 999px !important;
+
+    background:
+        linear-gradient(
+            to right,
+            #dc2626 0%,
+            #dc2626 70%,
+            #f2c94c 70%,
+            #f2c94c 85%,
+            #16a34a 85%,
+            #16a34a 100%
+        ) !important;
+
+    overflow: visible !important;
+
+    box-shadow: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   EL CIRCULO INTERIOR DEL ANTIGUO GAUGE SE ELIMINA
+   ------------------------------------------------------------ */
+
+.gauge-arc::after {
+    display: none !important;
+
+    content: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   PORCENTAJE
+   ------------------------------------------------------------ */
+
+.gauge .gauge-value,
+.gauge-value,
+#gauge-porcentaje {
+    position: absolute !important;
+
+    left: 50% !important;
+    top: 0 !important;
+
+    transform: translateX(-50%) !important;
+
+    z-index: 100 !important;
+
+    display: block !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    background: transparent !important;
+
+    border: none !important;
+
+    color: #172033 !important;
+
+    font-size: 38px !important;
+
+    font-weight: 800 !important;
+
+    line-height: 1 !important;
+
+    white-space: nowrap !important;
+}
+
+
+/* ------------------------------------------------------------
+   TEXTO "EN DESARROLLO"
+   ------------------------------------------------------------ */
+
+.gauge-label {
+    position: absolute !important;
+
+    left: 50% !important;
+    top: 78px !important;
+
+    transform: translateX(-50%) !important;
+
+    z-index: 100 !important;
+
+    margin: 0 !important;
+
+    color: #667085 !important;
+
+    font-size: 16px !important;
+
+    line-height: 1.2 !important;
+
+    white-space: nowrap !important;
+}
+
+
+/* ------------------------------------------------------------
+   OCULTAR CUALQUIER CAPA BLANCA DE CORRECCIONES ANTERIORES
+   ------------------------------------------------------------ */
+
+[id*="centro-blanco"],
+[id*="fondo-centro"],
+.centro-blanco-gauge-final {
+    display: none !important;
+}
+
+
+/* ------------------------------------------------------------
+   ASEGURAR QUE NADA VUELVA A CREAR EL SEMICIRCULO
+   ------------------------------------------------------------ */
+
+.gauge-arc {
+    border-radius: 999px !important;
+}
+
+
+/* ------------------------------------------------------------
+   RESPONSIVE
+   ------------------------------------------------------------ */
+
+@media (max-width: 700px) {
+
+    .gauge {
+        width: 100% !important;
+        height: 105px !important;
+    }
+
+    .gauge .gauge-value,
+    .gauge-value,
+    #gauge-porcentaje {
+        font-size: 32px !important;
+    }
+
+}
+
+
+
+/* ============================================================
+   GAUGE ILUO - BARRA HORIZONTAL ESTETICA
+   VERSION FINAL
+   ============================================================ */
+
+.gauge {
+
+    position: relative !important;
+
+    width: 100% !important;
+    max-width: 620px !important;
+
+    height: 165px !important;
+
+    margin: 28px auto 0 !important;
+
+    overflow: visible !important;
+
+    box-sizing: border-box !important;
+
+}
+
+
+/* ============================================================
+   BARRA
+   ============================================================ */
+
+.gauge .gauge-arc {
+
+    position: absolute !important;
+
+    left: 0 !important;
+    top: 72px !important;
+
+    width: 100% !important;
+    height: 36px !important;
+
+    border-radius: 999px !important;
+
+    background:
+        linear-gradient(
+            to right,
+            #dc2626 0%,
+            #dc2626 70%,
+            #f2c94c 70%,
+            #f2c94c 85%,
+            #16a34a 85%,
+            #16a34a 100%
+        ) !important;
+
+    overflow: visible !important;
+
+    box-shadow:
+        0 2px 6px rgba(15, 23, 42, 0.10) !important;
+
+}
+
+
+/* ============================================================
+   ELIMINAR EL CIRCULO INTERIOR ANTIGUO
+   ============================================================ */
+
+.gauge .gauge-arc::after {
+
+    display: none !important;
+    content: none !important;
+
+}
+
+
+/* ============================================================
+   EL CENTRO BLANCO ANTIGUO NO SE UTILIZA
+   ============================================================ */
+
+.gauge .gauge-center {
+
+    display: none !important;
+
+}
+
+
+/* ============================================================
+   PORCENTAJE
+   ============================================================ */
+
+.gauge .gauge-value {
+
+    position: absolute !important;
+
+    left: 50% !important;
+    top: 0 !important;
+
+    transform: translateX(-50%) !important;
+
+    z-index: 100 !important;
+
+    display: block !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    background: transparent !important;
+
+    border: none !important;
+
+    color: #172033 !important;
+
+    font-size: 42px !important;
+
+    font-weight: 800 !important;
+
+    line-height: 1 !important;
+
+    white-space: nowrap !important;
+
+    text-align: center !important;
+
+}
+
+
+/* ============================================================
+   ESTADO
+   SOLO DENTRO DEL GAUGE
+   ============================================================ */
+
+.gauge .gauge-label {
+
+    position: absolute !important;
+
+    left: 50% !important;
+    top: 46px !important;
+
+    transform: translateX(-50%) !important;
+
+    z-index: 101 !important;
+
+    display: block !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    background: transparent !important;
+
+    border: none !important;
+
+    color: #667085 !important;
+
+    font-size: 17px !important;
+
+    font-weight: 600 !important;
+
+    line-height: 1.2 !important;
+
+    white-space: nowrap !important;
+
+    text-align: center !important;
+
+}
+
+
+/* ============================================================
+   AGUJA NEGRA
+   ============================================================ */
+
+.gauge .needle {
+
+    position: absolute !important;
+
+    left: 0%;
+
+    top: 45px !important;
+
+    width: 4px !important;
+
+    height: 45px !important;
+
+    margin: 0 !important;
+
+    padding: 0 !important;
+
+    background: #172033 !important;
+
+    border-radius: 999px !important;
+
+    z-index: 120 !important;
+
+    transform: translateX(-50%) !important;
+
+    display: block !important;
+
+    box-shadow:
+        0 1px 3px rgba(15, 23, 42, 0.20) !important;
+
+}
+
+
+/* PUNTA DE LA AGUJA */
+
+.gauge .needle::after {
+
+    content: "" !important;
+
+    position: absolute !important;
+
+    left: 50% !important;
+
+    bottom: -7px !important;
+
+    width: 16px !important;
+
+    height: 16px !important;
+
+    transform: translateX(-50%) !important;
+
+    background: #172033 !important;
+
+    border-radius: 50% !important;
+
+    box-shadow:
+        0 1px 3px rgba(15, 23, 42, 0.20) !important;
+
+}
+
+
+/* ============================================================
+   ESCALA
+   ============================================================ */
+
+.gauge-scale-final {
+
+    position: absolute !important;
+
+    left: 0 !important;
+    top: 120px !important;
+
+    width: 100% !important;
+    height: 45px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    z-index: 110 !important;
+
+}
+
+
+/* MARCAS */
+
+.gauge-scale-final .gauge-mark {
+
+    position: absolute !important;
+
+    top: 0 !important;
+
+    width: 2px !important;
+    height: 10px !important;
+
+    background: #98a2b3 !important;
+
+}
+
+
+/* NUMEROS */
+
+.gauge-scale-final .gauge-number {
+
+    position: absolute !important;
+
+    top: 16px !important;
+
+    transform: translateX(-50%) !important;
+
+    color: #344054 !important;
+
+    font-size: 15px !important;
+
+    font-weight: 500 !important;
+
+    line-height: 1 !important;
+
+    white-space: nowrap !important;
+
+}
+
+
+/* ============================================================
+   PUNTOS EXTREMOS
+   ============================================================ */
+
+.gauge-scale-final .inicio {
+
+    left: 0% !important;
+
+}
+
+.gauge-scale-final .setenta {
+
+    left: 70% !important;
+
+}
+
+.gauge-scale-final .ochenta-cinco {
+
+    left: 85% !important;
+
+}
+
+.gauge-scale-final .final {
+
+    left: 100% !important;
+
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 700px) {
+
+    .gauge {
+
+        max-width: 100% !important;
+
+        height: 155px !important;
+
+    }
+
+    .gauge .gauge-value {
+
+        font-size: 36px !important;
+
+    }
+
+    .gauge .gauge-label {
+
+        font-size: 15px !important;
+
+    }
+
+    .gauge-scale-final .gauge-number {
+
+        font-size: 13px !important;
+
+    }
+
+}
+
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

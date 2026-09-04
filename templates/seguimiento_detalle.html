@@ -1,0 +1,695 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Seguimiento de brechas | MATRIZ ILUO
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for(
+            'static',
+            filename='style.css'
+        ) }}"
+    >
+
+    <style>
+
+        .detalle-pagina {
+            max-width: 1480px;
+            margin: 0 auto;
+        }
+
+        .detalle-identificacion {
+            margin-top: 2px;
+            margin-bottom: 24px;
+        }
+
+        .detalle-colaborador-nombre {
+            display: block;
+            font-size: 26px;
+            line-height: 1.15;
+            font-weight: 800;
+            color: #172033;
+            margin-bottom: 7px;
+        }
+
+        .detalle-colaborador-datos {
+            display: block;
+            font-size: 15px;
+            line-height: 1.4;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .detalle-resumen {
+            display: grid;
+            grid-template-columns:
+                repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .detalle-resumen-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 18px;
+            box-shadow:
+                0 3px 12px rgba(0,0,0,.06);
+        }
+
+        .detalle-resumen-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+
+        .detalle-resumen-numero {
+            font-size: 26px;
+            font-weight: 800;
+            margin-top: 4px;
+        }
+
+        .detalle-tarjeta {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow:
+                0 3px 12px rgba(0,0,0,.06);
+        }
+
+        .detalle-tabla-wrap {
+            overflow-x: auto;
+            margin-top: 16px;
+        }
+
+        .detalle-tabla {
+            width: 100%;
+            min-width: 1100px;
+            border-collapse: collapse;
+        }
+
+        .detalle-tabla th {
+            background: #172033;
+            color: white;
+            padding: 12px 10px;
+            font-size: 12px;
+            text-align: left;
+        }
+
+        .detalle-tabla td {
+            padding: 12px 10px;
+            border-bottom:
+                1px solid #e5e7eb;
+            vertical-align: top;
+        }
+
+        .detalle-tabla tr:hover td {
+            background: #f8fafc;
+        }
+
+        .nivel-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 30px;
+            padding: 0 8px;
+            border-radius: 8px;
+            font-weight: 800;
+        }
+
+        .nivel-requerido {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .nivel-actual {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .nivel-sin-evaluar {
+            background: #f1f5f9;
+            color: #64748b;
+            font-size: 11px;
+        }
+
+        .brecha-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+            height: 28px;
+            border-radius: 7px;
+            background: #fef3c7;
+            color: #92400e;
+            font-weight: 800;
+        }
+
+        .estado-brecha {
+            color: #b45309;
+            font-weight: 800;
+        }
+
+        .estado-pendiente {
+            color: #b91c1c;
+            font-weight: 800;
+        }
+
+        .estado-cumple {
+            color: #166534;
+            font-weight: 800;
+        }
+
+        .material-card {
+            border:
+                1px solid #e2e8f0;
+            border-radius: 9px;
+            padding: 10px;
+            background: #f8fafc;
+            margin-bottom: 8px;
+        }
+
+        .material-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .material-titulo {
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .material-descripcion {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 7px;
+        }
+
+        .material-estado {
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 7px;
+        }
+
+        .material-visto {
+            color: #166534;
+        }
+
+        .material-no-visto {
+            color: #991b1b;
+        }
+
+        .material-boton {
+            display: inline-flex;
+            padding: 6px 10px;
+            border-radius: 7px;
+            text-decoration: none;
+            background: #172033;
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .material-boton:hover {
+            background: #26344d;
+        }
+
+        .sin-material {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .detalle-volver {
+            display: inline-flex;
+            padding: 8px 12px;
+            border-radius: 7px;
+            background: #f1f5f9;
+            color: #172033;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 900px) {
+
+            .detalle-resumen {
+                grid-template-columns:
+                    1fr 1fr;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .detalle-resumen {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <aside class="menu">
+
+    {% include "_menu_principal.html" %}
+
+</aside>
+
+
+    <main class="contenido">
+
+        <div class="detalle-pagina">
+
+            <a
+                href="{{ url_for('seguimiento') }}"
+                class="detalle-volver"
+            >
+                ← Volver a seguimiento
+            </a>
+
+
+            <div class="encabezado">
+
+                <h1>
+                    🎯 Seguimiento de brechas
+                </h1>
+
+                <div class="detalle-identificacion">
+
+                    <span class="detalle-colaborador-nombre">
+                        {{ colaborador.nombre }}
+                    </span>
+
+                    <span class="detalle-colaborador-datos">
+
+                        No. empleado:
+                        <strong>
+                            {{ colaborador.numero_empleado }}
+                        </strong>
+
+                        {% if colaborador.puesto %}
+
+                            · Puesto:
+                            <strong>
+                                {{ colaborador.puesto.nombre }}
+                            </strong>
+
+                        {% endif %}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="detalle-resumen">
+
+                <div class="detalle-resumen-card">
+
+                    <div class="detalle-resumen-label">
+                        Habilidades
+                    </div>
+
+                    <div class="detalle-resumen-numero">
+                        {{ resultado.total_habilidades }}
+                    </div>
+
+                </div>
+
+
+                <div class="detalle-resumen-card">
+
+                    <div class="detalle-resumen-label">
+                        Brechas
+                    </div>
+
+                    <div class="detalle-resumen-numero">
+                        {{ resultado.brechas }}
+                    </div>
+
+                </div>
+
+
+                <div class="detalle-resumen-card">
+
+                    <div class="detalle-resumen-label">
+                        Pendientes
+                    </div>
+
+                    <div class="detalle-resumen-numero">
+                        {{ resultado.pendientes }}
+                    </div>
+
+                </div>
+
+
+                <div class="detalle-resumen-card">
+
+                    <div class="detalle-resumen-label">
+                        Cumplimiento
+                    </div>
+
+                    <div class="detalle-resumen-numero">
+                        {{ resultado.porcentaje_cumplimiento }}%
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="detalle-tarjeta">
+
+                <h2>
+                    📋 Brechas y materiales recomendados
+                </h2>
+
+                <p style="color:#64748b; margin-top:4px;">
+                    Aquí se muestra el nivel actual frente al requerido
+                    y el material asociado a cada habilidad.
+                </p>
+
+
+                <div class="detalle-tabla-wrap">
+
+                    <table class="detalle-tabla">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Habilidad
+                                </th>
+
+                                <th>
+                                    Nivel requerido
+                                </th>
+
+                                <th>
+                                    Nivel actual
+                                </th>
+
+                                <th>
+                                    Brecha
+                                </th>
+
+                                <th>
+                                    Estado
+                                </th>
+
+                                <th>
+                                    Material recomendado
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for detalle in detalles %}
+
+                                <tr>
+
+                                    <td>
+
+                                        <strong>
+                                            {{ detalle.habilidad.nombre }}
+                                        </strong>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <span
+                                            class="nivel-badge nivel-requerido"
+                                        >
+                                            {{ detalle.nivel_requerido }}
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if detalle.nivel_actual %}
+
+                                            <span
+                                                class="nivel-badge nivel-actual"
+                                            >
+                                                {{ detalle.nivel_actual }}
+                                            </span>
+
+                                        {% else %}
+
+                                            <span
+                                                class="
+                                                    nivel-badge
+                                                    nivel-sin-evaluar
+                                                "
+                                            >
+                                                Sin evaluar
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if detalle.diferencia is not none %}
+
+                                            {% if detalle.diferencia > 0 %}
+
+                                                <span
+                                                    class="brecha-badge"
+                                                >
+                                                    {{ detalle.diferencia }}
+                                                </span>
+
+                                            {% else %}
+
+                                                <span
+                                                    style="
+                                                        color:#166534;
+                                                        font-weight:800;
+                                                    "
+                                                >
+                                                    0
+                                                </span>
+
+                                            {% endif %}
+
+                                        {% else %}
+
+                                            —
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if detalle.estado == "brecha" %}
+
+                                            <span
+                                                class="estado-brecha"
+                                            >
+                                                Requiere desarrollo
+                                            </span>
+
+                                        {% elif detalle.estado == "pendiente" %}
+
+                                            <span
+                                                class="estado-pendiente"
+                                            >
+                                                Pendiente de evaluación
+                                            </span>
+
+                                        {% else %}
+
+                                            <span
+                                                class="estado-cumple"
+                                            >
+                                                Cumple
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if detalle.materiales %}
+
+                                            {% for material in detalle.materiales %}
+
+                                                <div
+                                                    class="material-card"
+                                                >
+
+                                                    <div
+                                                        class="material-titulo"
+                                                    >
+                                                        {{
+                                                            material.curso.nombre
+                                                        }}
+                                                    </div>
+
+
+                                                    {% if
+                                                        material.curso.descripcion
+                                                    %}
+
+                                                        <div
+                                                            class="
+                                                                material-descripcion
+                                                            "
+                                                        >
+                                                            {{
+                                                                material.curso.descripcion
+                                                            }}
+                                                        </div>
+
+                                                    {% endif %}
+
+
+                                                    {% if material.visto %}
+
+                                                        <div
+                                                            class="
+                                                                material-estado
+                                                                material-visto
+                                                            "
+                                                        >
+                                                            ✅ Visto
+                                                            ·
+                                                            {{ material.veces }}
+                                                            vez{% if material.veces != 1 %}es{% endif %}
+                                                        </div>
+
+                                                    {% else %}
+
+                                                        <div
+                                                            class="
+                                                                material-estado
+                                                                material-no-visto
+                                                            "
+                                                        >
+                                                            ⬜ No visto
+                                                        </div>
+
+                                                    {% endif %}
+
+
+                                                    {% if
+                                                        material.curso.enlace
+                                                        or
+                                                        material.curso.archivo_pdf
+                                                    %}
+
+                                                        <a
+                                                            href="{{
+                                                                url_for(
+                                                                    'seguimiento_material',
+                                                                    colaborador_id=
+                                                                        colaborador.id,
+                                                                    curso_id=
+                                                                        material.curso.id
+                                                                )
+                                                            }}"
+                                                            class="
+                                                                material-boton
+                                                            "
+                                                        >
+                                                            📚 Abrir material
+                                                        </a>
+
+                                                    {% else %}
+
+                                                        <span
+                                                            class="sin-material"
+                                                        >
+                                                            Material no disponible
+                                                        </span>
+
+                                                    {% endif %}
+
+                                                </div>
+
+                                            {% endfor %}
+
+                                        {% else %}
+
+                                            <span class="sin-material">
+                                                No hay material asociado
+                                                a esta habilidad.
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+
+                            {% if not detalles %}
+
+                                <tr>
+
+                                    <td colspan="6">
+
+                                        No hay habilidades configuradas
+                                        para este puesto.
+
+                                    </td>
+
+                                </tr>
+
+                            {% endif %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
+

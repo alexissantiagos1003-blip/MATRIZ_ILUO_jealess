@@ -1,0 +1,651 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Puestos - Matriz ILUO</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        .jerarquia-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 18px;
+            background: #fff;
+        }
+
+        .jerarquia-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .jerarquia-header h3 {
+            margin: 0;
+        }
+
+        .jerarquia-info {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .editor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .editor-grid label {
+            font-weight: bold;
+        }
+
+        .editor-grid input,
+        .editor-grid select {
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 6px;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 18px;
+        }
+
+        .boton-guardar {
+            background: #198754;
+            color: white;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .boton-guardar:hover {
+            opacity: .9;
+        }
+
+        .boton-eliminar {
+            color: #b02a37;
+        }
+
+        .badge-raiz {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background: #e9ecef;
+            color: #495057;
+            font-size: 12px;
+        }
+
+        .badge-hijo {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background: #d1e7dd;
+            color: #0f5132;
+            font-size: 12px;
+        }
+
+        .tabla-responsive {
+            overflow-x: auto;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="contenedor">
+
+
+    <!-- ====================================================== -->
+    <!-- MENU -->
+    <!-- ====================================================== -->
+
+    <aside class="menu">
+
+        <h2>MATRIZ ILUO</h2>
+
+        <a href="/">🏠 Inicio</a>
+
+        <a href="/puestos">🏭 Puestos</a>
+
+        <a href="/colaboradores">👥 Empleados</a>
+
+        <a href="/habilidades">🛠️ Habilidades</a>
+
+        <a href="/puesto-habilidades">
+            🔗 Habilidades por puesto
+        </a>
+
+        <a href="/evaluaciones">📝 Evaluaciones</a>
+
+        <a href="/matriz">📊 Matriz ILUO</a>
+
+        <a href="/cursos">📚 Cursos</a>
+
+        <a href="/dashboard">📈 Dashboard</a>
+
+    </aside>
+
+
+    <!-- ====================================================== -->
+    <!-- CONTENIDO -->
+    <!-- ====================================================== -->
+
+    <main class="contenido">
+
+
+        <div class="encabezado">
+
+            <h1>🏭 Gestión de puestos</h1>
+
+            <p>
+                Administra los puestos, departamentos
+                y la estructura jerárquica de la organización.
+            </p>
+
+        </div>
+
+
+        <!-- ================================================== -->
+        <!-- AGREGAR PUESTO -->
+        <!-- ================================================== -->
+
+        <div class="tarjeta">
+
+            <h2>➕ Agregar puesto</h2>
+
+            <p>
+                Registra un nuevo puesto dentro de la estructura.
+            </p>
+
+            <br>
+
+            <form method="POST"
+                  action="/puestos/agregar">
+
+                <div class="editor-grid">
+
+
+                    <div>
+
+                        <label>
+                            Nombre del puesto
+                        </label>
+
+                        <input
+                            type="text"
+                            name="nombre"
+                            placeholder="Ej. Supervisor de Producción"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div>
+
+                        <label>
+                            Departamento
+                        </label>
+
+                        <select
+                            name="departamento_id"
+                            required
+                        >
+
+                            <option value="">
+                                Selecciona un departamento
+                            </option>
+
+                            {% for departamento in departamentos %}
+
+                                <option value="{{ departamento.id }}">
+                                    {{ departamento.nombre }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <div>
+
+                        <label>
+                            Puesto superior
+                        </label>
+
+                        <select
+                            name="puesto_padre_id"
+                        >
+
+                            <option value="">
+                                — Sin puesto superior —
+                            </option>
+
+                            {% for padre in puestos_padre %}
+
+                                <option value="{{ padre.id }}">
+                                    {{ padre.nombre }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="acciones">
+
+                    <button
+                        type="submit"
+                        class="boton-guardar"
+                    >
+                        ➕ Crear puesto
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <br>
+
+
+        <!-- ================================================== -->
+        <!-- EDITOR DE JERARQUIA -->
+        <!-- ================================================== -->
+
+        <div class="tarjeta">
+
+            <h2>🌳 Estructura jerárquica</h2>
+
+            <p>
+                Define qué puesto depende directamente de otro.
+                Los cambios se guardan de forma individual.
+            </p>
+
+            <br>
+
+
+            {% if puestos %}
+
+                {% for puesto in puestos %}
+
+                <div class="jerarquia-card">
+
+
+                    <div class="jerarquia-header">
+
+                        <div>
+
+                            <h3>
+                                {{ puesto.nombre }}
+                            </h3>
+
+                            <div class="jerarquia-info">
+
+                                ID: {{ puesto.id }}
+
+                                {% if puesto.departamento %}
+
+                                    · Departamento:
+                                    {{ puesto.departamento.nombre }}
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            {% if puesto.puesto_padre %}
+
+                                <span class="badge-hijo">
+
+                                    ↑ Depende de:
+                                    {{ puesto.puesto_padre.nombre }}
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge-raiz">
+
+                                    ● Puesto raíz
+
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ====================================== -->
+                    <!-- FORMULARIO DE EDICION -->
+                    <!-- ====================================== -->
+
+                    <form method="POST"
+                          action="/puestos/editar/{{ puesto.id }}">
+
+
+                        <div class="editor-grid">
+
+
+                            <div>
+
+                                <label>
+                                    Nombre
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="nombre"
+                                    value="{{ puesto.nombre }}"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div>
+
+                                <label>
+                                    Departamento
+                                </label>
+
+                                <select
+                                    name="departamento_id"
+                                >
+
+                                    <option value="">
+                                        Sin departamento
+                                    </option>
+
+                                    {% for departamento in departamentos %}
+
+                                        <option
+                                            value="{{ departamento.id }}"
+                                            {% if puesto.departamento_id == departamento.id %}
+                                                selected
+                                            {% endif %}
+                                        >
+
+                                            {{ departamento.nombre }}
+
+                                        </option>
+
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+
+
+                            <div>
+
+                                <label>
+                                    Puesto superior
+                                </label>
+
+                                <select
+                                    name="puesto_padre_id"
+                                >
+
+                                    <option value="">
+                                        — Sin puesto superior —
+                                    </option>
+
+
+                                    {% for padre in puestos_padre %}
+
+                                        {% if padre.id != puesto.id %}
+
+                                            <option
+                                                value="{{ padre.id }}"
+                                                {% if puesto.puesto_padre_id == padre.id %}
+                                                    selected
+                                                {% endif %}
+                                            >
+
+                                                {{ padre.nombre }}
+
+                                            </option>
+
+                                        {% endif %}
+
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="acciones">
+
+                            <button
+                                type="submit"
+                                class="boton-guardar"
+                            >
+                                💾 Guardar cambios
+                            </button>
+
+
+                            <a
+                                href="/puestos/eliminar/{{ puesto.id }}"
+                                class="boton-eliminar"
+                                onclick="return confirm('¿Seguro que deseas eliminar este puesto?');"
+                            >
+                                🗑️ Eliminar puesto
+                            </a>
+
+                        </div>
+
+
+                    </form>
+
+
+                    <!-- ====================================== -->
+                    <!-- HIJOS DIRECTOS -->
+                    <!-- ====================================== -->
+
+                    {% if puesto.puestos_hijos %}
+
+                        <div style="margin-top:15px;">
+
+                            <strong>
+                                Puestos subordinados:
+                            </strong>
+
+                            <ul>
+
+                                {% for hijo in puesto.puestos_hijos %}
+
+                                    <li>
+                                        {{ hijo.nombre }}
+                                    </li>
+
+                                {% endfor %}
+
+                            </ul>
+
+                        </div>
+
+                    {% endif %}
+
+
+                </div>
+
+                {% endfor %}
+
+
+            {% else %}
+
+                <p>
+                    Todavía no hay puestos registrados.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <br>
+
+
+        <!-- ================================================== -->
+        <!-- TABLA RESUMEN -->
+        <!-- ================================================== -->
+
+        <div class="tarjeta">
+
+            <h2>📋 Resumen de puestos</h2>
+
+            <br>
+
+            {% if puestos %}
+
+            <div class="tabla-responsive">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Área</th>
+
+                            <th>Departamento</th>
+
+                            <th>Puesto</th>
+
+                            <th>Puesto superior</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for puesto in puestos %}
+
+                        <tr>
+
+                            <td>
+                                {{ puesto.id }}
+                            </td>
+
+
+                            <td>
+
+                                {% if puesto.departamento
+                                      and puesto.departamento.area %}
+
+                                    {{ puesto.departamento.area.nombre }}
+
+                                {% else %}
+
+                                    Sin área
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                {% if puesto.departamento %}
+
+                                    {{ puesto.departamento.nombre }}
+
+                                {% else %}
+
+                                    Sin departamento
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+                                <strong>
+                                    {{ puesto.nombre }}
+                                </strong>
+                            </td>
+
+
+                            <td>
+
+                                {% if puesto.puesto_padre %}
+
+                                    {{ puesto.puesto_padre.nombre }}
+
+                                {% else %}
+
+                                    —
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+
+    </main>
+
+</div>
+
+
+</body>
+
+</html>
+

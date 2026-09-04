@@ -1,0 +1,285 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Necesidades de Capacitación</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        .tabla-capacitacion {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+        }
+
+        .tabla-capacitacion th,
+        .tabla-capacitacion td {
+            border: 1px solid #d1d5db;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .tabla-capacitacion th {
+            background: #1f2937;
+            color: white;
+        }
+
+        .nombre,
+        .habilidad {
+            text-align: left !important;
+        }
+
+        .nombre {
+            font-weight: bold;
+        }
+
+        .nivel-I {
+            background: #fca5a5;
+            color: #7f1d1d;
+            font-weight: bold;
+        }
+
+        .nivel-L {
+            background: #fde68a;
+            color: #78350f;
+            font-weight: bold;
+        }
+
+        .prioridad-alta {
+            background: #ef4444;
+            color: white;
+            font-weight: bold;
+            border-radius: 6px;
+            padding: 6px 12px;
+        }
+
+        .prioridad-media {
+            background: #f59e0b;
+            color: white;
+            font-weight: bold;
+            border-radius: 6px;
+            padding: 6px 12px;
+        }
+
+        .accion {
+            font-weight: bold;
+        }
+
+        .contador {
+            margin-top: 20px;
+            padding: 18px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .sin-necesidades {
+            padding: 30px;
+            text-align: center;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <aside class="menu">
+
+        <h2>MATRIZ ILUO</h2>
+
+        <a href="/">
+            🏠 Inicio
+        </a>
+
+        <a href="/colaboradores">
+            👥 Empleados
+        </a>
+
+        <a href="/habilidades">
+            🛠️ Habilidades
+        </a>
+
+        <a href="/puesto-habilidades">
+            🔗 Habilidades por puesto
+        </a>
+
+        <a href="/evaluaciones">
+            📝 Evaluaciones
+        </a>
+
+        <a href="/matriz">
+            📊 Matriz ILUO
+        </a>
+
+        <a href="/capacitacion">
+            🎓 Necesidades de capacitación
+        </a>
+
+        <a href="/">`n            📈 Dashboard`n        </a>
+
+    </aside>
+
+
+    <main class="contenido">
+
+        <div class="encabezado">
+
+            <h1>
+                Necesidades de Capacitación
+            </h1>
+
+            <p>
+                Habilidades que requieren desarrollo
+                de acuerdo con la evaluación ILUO.
+            </p>
+
+        </div>
+
+
+        <div class="tarjeta">
+
+            <h2>
+                📋 Lista de necesidades
+            </h2>
+
+
+            {% if necesidades %}
+
+            <table class="tabla-capacitacion">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Colaborador</th>
+
+                        <th>Puesto</th>
+
+                        <th>Habilidad</th>
+
+                        <th>Nivel actual</th>
+
+                        <th>Prioridad</th>
+
+                        <th>Acción recomendada</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                {% for necesidad in necesidades %}
+
+                    <tr>
+
+                        <td class="nombre">
+                            {{ necesidad.colaborador }}
+                        </td>
+
+                        <td>
+                            {{ necesidad.puesto }}
+                        </td>
+
+                        <td class="habilidad">
+                            {{ necesidad.habilidad }}
+                        </td>
+
+
+                        {% if necesidad.nivel == "I" %}
+
+                            <td class="nivel-I">
+                                I
+                            </td>
+
+                            <td>
+                                <span class="prioridad-alta">
+                                    🔴 Alta
+                                </span>
+                            </td>
+
+                            <td class="accion">
+                                Capacitación inicial
+                            </td>
+
+                        {% else %}
+
+                            <td class="nivel-L">
+                                L
+                            </td>
+
+                            <td>
+                                <span class="prioridad-media">
+                                    🟠 Media
+                                </span>
+                            </td>
+
+                            <td class="accion">
+                                Reforzamiento
+                            </td>
+
+                        {% endif %}
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+
+            <div class="contador">
+
+                <strong>
+                    Total de necesidades detectadas:
+                </strong>
+
+                {{ necesidades|length }}
+
+            </div>
+
+
+            {% else %}
+
+            <div class="sin-necesidades">
+
+                <h2>
+                    🎉 No hay necesidades de capacitación
+                </h2>
+
+                <p>
+                    Todos los colaboradores evaluados
+                    tienen niveles U u O.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
+
+
