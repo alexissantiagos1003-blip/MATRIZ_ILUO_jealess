@@ -7,7 +7,10 @@ from werkzeug.utils import secure_filename
 import uuid
 app = Flask(__name__)
 
-app.config["SECRET_KEY"] = "c22afc3d9b2a9ac6f3c7a6ee8f845725ae2665a1e697cb98f1205da561a3cd51"
+app.config["SECRET_KEY"] = os.environ.get(
+    "SECRET_KEY",
+    "c22afc3d9b2a9ac6f3c7a6ee8f845725ae2665a1e697cb98f1205da561a3cd51"
+)
 
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///matriz_iluo.db"

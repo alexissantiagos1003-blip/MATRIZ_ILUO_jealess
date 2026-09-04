@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Backups (no versionar)
+app_backup*.py
+app_BACKUP*.py
+*_backup_*.py
+*_BACKUP_*.py
+MATRIZ_ILUO_BACKUP_*/
+templates_BACKUP_*/
+*_backup_*.html
+*_BACKUP_*.html
+*_backup_*.db
+*_BACKUP_*.db
+*.css.bak
+
+# Bases de datos y archivos generados (contienen datos; no deben ir al repo)
+instance/
+*.db
+uploads/
+static/uploads/
+
+# Sistema
+.DS_Store
+Thumbs.db
